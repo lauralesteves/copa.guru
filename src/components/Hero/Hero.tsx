@@ -1,40 +1,30 @@
-import { useEffect, useRef } from 'react';
+import { Suspense, lazy, useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ParticleField } from '../3d/ParticleField';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const FLOATING_FLAGS = [
-  { code: 'BRA', x: '8%', y: '15%', size: 32, delay: 0 },
-  { code: 'ARG', x: '85%', y: '20%', size: 28, delay: 0.5 },
-  { code: 'GER', x: '12%', y: '70%', size: 24, delay: 1.2 },
-  { code: 'FRA', x: '90%', y: '65%', size: 30, delay: 0.8 },
-  { code: 'ESP', x: '20%', y: '40%', size: 20, delay: 1.5 },
-  { code: 'ENG', x: '78%', y: '80%', size: 22, delay: 0.3 },
-  { code: 'POR', x: '5%', y: '50%', size: 26, delay: 1.0 },
-  { code: 'JPN', x: '92%', y: '40%', size: 22, delay: 1.8 },
-];
+const Trophy = lazy(() =>
+  import('../3d/Trophy').then((m) => ({ default: m.Trophy })),
+);
 
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const bgRef = useRef<HTMLDivElement>(null);
-  const circle1Ref = useRef<HTMLDivElement>(null);
-  const circle2Ref = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const flagsRef = useRef<HTMLDivElement>(null);
+  const trophyRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const section = sectionRef.current;
     const bg = bgRef.current;
-    const c1 = circle1Ref.current;
-    const c2 = circle2Ref.current;
     const content = contentRef.current;
+    const trophy = trophyRef.current;
 
-    if (!section || !bg || !c1 || !c2 || !content) return;
+    if (!section || !bg || !content) return;
 
     const triggers: ScrollTrigger[] = [];
 
-    // Parallax: background moves slower than scroll
     triggers.push(
       ScrollTrigger.create({
         trigger: section,
@@ -44,37 +34,18 @@ export function Hero() {
         onUpdate: (self) => {
           const p = self.progress;
           gsap.set(bg, { y: p * 150 });
-          gsap.set(c1, { y: p * 80, x: p * -30, scale: 1 + p * 0.3 });
-          gsap.set(c2, { y: p * 120, x: p * 40, scale: 1 - p * 0.2 });
           gsap.set(content, { y: p * -60, opacity: 1 - p * 1.5 });
+          if (trophy) gsap.set(trophy, { y: p * 100, opacity: 1 - p * 2 });
         },
       }),
     );
 
-    // Entrance animation
     const tl = gsap.timeline();
     tl.fromTo(
       content.children,
       { y: 50, opacity: 0 },
       { y: 0, opacity: 1, duration: 0.8, stagger: 0.2, ease: 'power3.out' },
     );
-
-    // Floating flags subtle animation
-    if (flagsRef.current) {
-      const flags = flagsRef.current.children;
-      for (let i = 0; i < flags.length; i++) {
-        gsap.to(flags[i], {
-          y: 'random(-15, 15)',
-          x: 'random(-8, 8)',
-          rotation: 'random(-5, 5)',
-          duration: 'random(3, 5)',
-          repeat: -1,
-          yoyo: true,
-          ease: 'sine.inOut',
-          delay: FLOATING_FLAGS[i]?.delay ?? 0,
-        });
-      }
-    }
 
     return () => {
       for (const t of triggers) t.kill();
@@ -87,42 +58,29 @@ export function Hero() {
       ref={sectionRef}
       className="relative min-h-dvh flex flex-col items-center justify-center text-center px-6 overflow-hidden"
     >
-      {/* Background gradient - parallax layer */}
+      {/* Background gradient */}
       <div
         ref={bgRef}
         className="absolute inset-0 bg-gradient-to-b from-copa-purple via-copa-dark to-copa-dark will-change-transform"
       />
 
-      {/* Decorative circles - parallax layers */}
-      <div
-        ref={circle1Ref}
-        className="absolute top-1/4 left-1/4 w-96 h-96 bg-copa-gold/5 rounded-full blur-3xl will-change-transform"
-      />
-      <div
-        ref={circle2Ref}
-        className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-copa-blue/5 rounded-full blur-3xl will-change-transform"
-      />
-
-      {/* Floating flags */}
-      <div ref={flagsRef} className="absolute inset-0 pointer-events-none">
-        {FLOATING_FLAGS.map((f) => (
-          <img
-            key={f.code}
-            src={`/images/flags/48/${f.code}.png`}
-            alt=""
-            className="absolute opacity-[0.07] will-change-transform"
-            style={{
-              left: f.x,
-              top: f.y,
-              width: f.size,
-            }}
-            aria-hidden="true"
-          />
-        ))}
+      {/* Particle field background */}
+      <div className="absolute inset-0 z-[1]">
+        <ParticleField />
       </div>
 
-      {/* Content - parallax layer */}
+      {/* Content */}
       <div ref={contentRef} className="relative z-10 will-change-transform">
+        {/* Trophy 3D */}
+        <div
+          ref={trophyRef}
+          className="w-32 h-40 sm:w-40 sm:h-48 md:w-48 md:h-56 mx-auto mb-4 will-change-transform"
+        >
+          <Suspense fallback={<div className="w-full h-full" />}>
+            <Trophy />
+          </Suspense>
+        </div>
+
         <h1 className="font-display text-6xl sm:text-8xl md:text-[120px] lg:text-[150px] text-copa-gold leading-none tracking-wider">
           COPA.GURU
         </h1>
