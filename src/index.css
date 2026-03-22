@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Bebas Neue", sans-serif;
+  --font-body: "Outfit", "Source Sans Pro", sans-serif;
+  --font-heading: "Source Sans Pro", sans-serif;
+
+  --color-copa-dark: #0a0118;
+  --color-copa-purple: #1a0533;
+  --color-copa-purple-light: #2d0a54;
+  --color-copa-gold: #d4a843;
+  --color-copa-gold-light: #f0d078;
+  --color-copa-green: #008000;
+  --color-copa-blue: #0047a0;
+  --color-copa-red: #ce1126;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-body);
+  background-color: var(--color-copa-dark);
+  color: #ffffff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scroll progress bar */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-copa-gold), var(--color-copa-gold-light));
+  z-index: 100;
+  transition: width 50ms linear;
+}
+
+/* Skeleton loading animation */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-copa-purple) 25%,
+    var(--color-copa-purple-light) 50%,
+    var(--color-copa-purple) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+/* Flag wave animation */
+@keyframes flag-wave {
+  0%, 100% { transform: skewX(0deg) scaleX(1); }
+  25% { transform: skewX(-1deg) scaleX(1.01); }
+  75% { transform: skewX(1deg) scaleX(0.99); }
+}
+
+.flag-wave:hover {
+  animation: flag-wave 1s ease-in-out infinite;
+}
+
+/* Glow effect for interactive elements */
+.glow {
+  box-shadow: 0 0 15px rgba(212, 168, 67, 0.3);
+}
+
+.glow:hover {
+  box-shadow: 0 0 25px rgba(212, 168, 67, 0.5);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-copa-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-copa-purple-light);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-copa-gold);
+}
