@@ -1,0 +1,4 @@
+#!/bin/sh
+echo "Running build before push..."
+bun run build || exit 1
+echo "Build successful, pushing..."
