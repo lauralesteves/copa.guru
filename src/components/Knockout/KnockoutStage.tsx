@@ -1,12 +1,17 @@
+import { useState } from 'react';
 import { useScrollReveal } from '../../hooks/useScrollReveal';
 import type { GroupName, GroupStanding } from '../../types/worldcup';
 import { Bracket } from './Bracket';
+import { MoleculeGraph } from './MoleculeGraph';
 
 interface KnockoutStageProps {
   allGroupStandings: Map<GroupName, GroupStanding[]>;
 }
 
+type View = 'bracket' | 'molecule';
+
 export function KnockoutStage({ allGroupStandings }: KnockoutStageProps) {
+  const [view, setView] = useState<View>('bracket');
   const titleRef = useScrollReveal<HTMLHeadingElement>({ y: 30 });
   const subtitleRef = useScrollReveal<HTMLParagraphElement>({
     y: 20,
@@ -24,12 +29,42 @@ export function KnockoutStage({ allGroupStandings }: KnockoutStageProps) {
         </h2>
         <p
           ref={subtitleRef}
-          className="text-white/50 text-center mb-12 text-sm uppercase tracking-widest"
+          className="text-white/50 text-center mb-8 text-sm uppercase tracking-widest"
         >
           Dos 32 avos ate a grande final
         </p>
 
-        <Bracket allGroupStandings={allGroupStandings} />
+        {/* View toggle */}
+        <div className="flex justify-center gap-2 mb-8">
+          <button
+            type="button"
+            onClick={() => setView('bracket')}
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all ${
+              view === 'bracket'
+                ? 'bg-copa-gold text-copa-dark'
+                : 'bg-white/5 text-white/60 border border-white/10 hover:border-copa-gold/30'
+            }`}
+          >
+            Chave
+          </button>
+          <button
+            type="button"
+            onClick={() => setView('molecule')}
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all ${
+              view === 'molecule'
+                ? 'bg-copa-gold text-copa-dark'
+                : 'bg-white/5 text-white/60 border border-white/10 hover:border-copa-gold/30'
+            }`}
+          >
+            Grafo
+          </button>
+        </div>
+
+        {view === 'bracket' ? (
+          <Bracket allGroupStandings={allGroupStandings} />
+        ) : (
+          <MoleculeGraph allGroupStandings={allGroupStandings} />
+        )}
       </div>
     </section>
   );
