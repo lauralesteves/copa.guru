@@ -100,6 +100,15 @@ function App() {
           />
         </Suspense>
       </main>
+      <div className="flex justify-center py-12">
+        <button
+          type="button"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="cursor-pointer"
+        >
+          <img src="/images/logo.webp" alt="Voltar ao topo" className="w-20 h-20 opacity-40 hover:opacity-70 transition-opacity" />
+        </button>
+      </div>
       <Footer />
       <EasterEgg active={konamiActive} onDismiss={dismissKonami} />
     </div>
