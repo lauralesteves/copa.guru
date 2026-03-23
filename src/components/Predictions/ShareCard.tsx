@@ -35,12 +35,12 @@ export function ShareCard({
     const lines = [
       'Meus palpites Copa 2026 - Copa.Guru',
       '',
-      champion ? `Campeao: ${championTeam?.name ?? champion}` : '',
+      champion ? `Campeão: ${championTeam?.name ?? champion}` : '',
       `Jogos preenchidos: ${stats.filled}/${stats.total}`,
       `Total de gols: ${totalGoals}`,
-      `Vitorias mandante: ${homeWins} | Empates: ${draws} | Vitorias visitante: ${awayWins}`,
+      `Vitórias mandante: ${homeWins} | Empates: ${draws} | Vitórias visitante: ${awayWins}`,
       '',
-      'Faca seus palpites em copa.guru',
+      'Faça seus palpites em copa.guru',
     ]
       .filter(Boolean)
       .join('\n');
@@ -80,7 +80,7 @@ export function ShareCard({
             <Flag code={championTeam.code} size={96} className="rounded" />
             <div>
               <p className="text-[10px] text-white/40 uppercase tracking-widest">
-                Campeao
+                Campeão
               </p>
               <p className="text-copa-gold font-bold text-xl">
                 {championTeam.name}
@@ -101,7 +101,7 @@ export function ShareCard({
           </div>
           <div className="bg-white/5 rounded-lg p-3 text-center">
             <p className="text-2xl font-bold text-green-400">{homeWins}</p>
-            <p className="text-[10px] text-white/40 uppercase">Vit. mandante</p>
+            <p className="text-[10px] text-white/40 uppercase">Vit. Mandante</p>
           </div>
           <div className="bg-white/5 rounded-lg p-3 text-center">
             <p className="text-2xl font-bold text-blue-400">{draws}</p>

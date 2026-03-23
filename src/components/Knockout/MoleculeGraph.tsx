@@ -112,7 +112,7 @@ function buildNodes(
 
   // Champion node
   const champId = 'champion';
-  nodes.push({ id: champId, teamCode: null, label: 'Campeao', size: BASE_SIZE * 5, stage: 'champion' });
+  nodes.push({ id: champId, teamCode: null, label: 'Campeão', size: BASE_SIZE * 5, stage: 'champion' });
   links.push({ source: finalId, target: champId });
 
   return { nodes, links };

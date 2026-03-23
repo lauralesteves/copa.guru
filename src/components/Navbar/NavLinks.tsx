@@ -5,7 +5,7 @@ interface NavLinksProps {
 
 const sections = [
   { label: 'Grupos', href: '#grupos' },
-  { label: 'Selecoes', href: '#selecoes' },
+  { label: 'Seleções', href: '#selecoes' },
   { label: 'Mata-Mata', href: '#mata-mata' },
   { label: 'Palpites', href: '#palpites' },
 ];

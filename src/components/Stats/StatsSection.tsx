@@ -27,7 +27,7 @@ const teamStats: Record<string, number[]> = {
   SEN: [72, 70, 68, 70, 70, 42],
 };
 
-const STAT_LABELS = ['Ataque', 'Defesa', 'Posse', 'Passes', 'Finalizacoes', 'Faltas'];
+const STAT_LABELS = ['Ataque', 'Defesa', 'Posse', 'Passes', 'Finalizações', 'Faltas'];
 
 const selectableTeams = teams.filter((t) => teamStats[t.code]);
 
@@ -59,7 +59,7 @@ export function StatsSection() {
           ref={titleRef}
           className="font-display text-4xl sm:text-5xl md:text-6xl text-copa-gold text-center tracking-wider mb-4"
         >
-          COMPARAR SELECOES
+          COMPARAR SELEÇÕES
         </h2>
         <p className="text-white/50 text-center mb-10 text-sm uppercase tracking-widest">
           Radar de atributos lado a lado
@@ -92,7 +92,7 @@ export function StatsSection() {
               value={teams.length}
               className="text-3xl font-bold text-copa-gold"
             />
-            <p className="text-white/40 text-xs mt-1 uppercase">Selecoes</p>
+            <p className="text-white/40 text-xs mt-1 uppercase">Seleções</p>
           </div>
           <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
             <AnimatedCounter

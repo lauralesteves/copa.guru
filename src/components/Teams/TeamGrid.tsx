@@ -60,7 +60,7 @@ export function TeamGrid() {
           ref={subtitleRef}
           className="text-white/50 text-center mb-8 text-sm uppercase tracking-widest"
         >
-          {teams.length} selecoes classificadas
+          {teams.length} seleções classificadas
         </p>
 
         {/* Filter pills */}

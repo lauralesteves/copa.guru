@@ -91,7 +91,7 @@ export function MatchNode({
             fill="rgba(255, 255, 255, 0.2)"
             fontSize={10}
           >
-            A definir
+            A definir...
           </text>
         )}
       </g>

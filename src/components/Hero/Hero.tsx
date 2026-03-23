@@ -116,7 +116,7 @@ export function Hero() {
             href="#palpites"
             className="border border-white/20 text-white/80 font-semibold px-8 py-3 rounded-lg hover:border-copa-gold hover:text-copa-gold transition-colors text-sm uppercase tracking-wider"
           >
-            Fazer Palpites
+            Fazer Palpites!
           </a>
         </div>
       </div>
