@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { getTeamByCode } from '../../data/teams';
 import type { Match } from '../../types/worldcup';
 import { Flag } from '../ui/Flag';
+import { GoalTimeline } from './GoalTimeline';
 
 interface MatchCardProps {
   match: Match;
@@ -112,12 +113,13 @@ export function MatchCard({ match, onScoreChange }: MatchCardProps) {
 
   return (
     <div
-      className={`flex items-center gap-2 py-2 px-3 rounded-lg transition-all ${
+      className={`py-2 px-3 rounded-lg transition-all ${
         hasResult
           ? 'bg-white/5 border border-white/10'
           : 'bg-transparent border border-transparent hover:border-white/5'
       }`}
     >
+      <div className="flex items-center gap-2">
       {/* Team 1 */}
       <div className="flex items-center gap-2 flex-1 justify-end min-w-0">
         <span
@@ -164,6 +166,8 @@ export function MatchCard({ match, onScoreChange }: MatchCardProps) {
           {team2?.name ?? match.team2}
         </span>
       </div>
+      </div>
+      <GoalTimeline match={match} />
     </div>
   );
 }
