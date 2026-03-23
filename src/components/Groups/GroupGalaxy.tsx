@@ -62,7 +62,7 @@ function OrbitingTeam({
           color="white"
           anchorX="center"
           anchorY="top"
-          font="https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfAZ9hiA.woff2"
+          font="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.ttf"
         >
           {team?.name ?? teamCode}
         </Text>
@@ -110,7 +110,7 @@ function GalaxyScene({ teamCodes, standings, groupName }: GroupGalaxyProps) {
         fontSize={0.12}
         color="#d4a843"
         anchorX="center"
-        font="https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfAZ9hiA.woff2"
+        font="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.ttf"
         fontWeight={700}
       >
         {groupName}
