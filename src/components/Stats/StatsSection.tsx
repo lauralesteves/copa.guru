@@ -53,7 +53,7 @@ export function StatsSection() {
   ];
 
   return (
-    <section className="py-20 px-6">
+    <section id="comparar" className="py-20 px-6">
       <div className="max-w-4xl mx-auto">
         <h2
           ref={titleRef}
@@ -61,7 +61,7 @@ export function StatsSection() {
         >
           COMPARAR SELEÇÕES
         </h2>
-        <p className="text-white/50 text-center mb-10 text-sm uppercase tracking-widest">
+        <p className="text-white text-center mb-10 text-sm uppercase tracking-widest">
           Radar de atributos lado a lado
         </p>
 
@@ -92,21 +92,21 @@ export function StatsSection() {
               value={teams.length}
               className="text-3xl font-bold text-copa-gold"
             />
-            <p className="text-white/40 text-xs mt-1 uppercase">Seleções</p>
+            <p className="text-white/60 text-xs mt-1 uppercase">Seleções</p>
           </div>
           <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
             <AnimatedCounter
               value={12}
               className="text-3xl font-bold text-white"
             />
-            <p className="text-white/40 text-xs mt-1 uppercase">Grupos</p>
+            <p className="text-white/60 text-xs mt-1 uppercase">Grupos</p>
           </div>
           <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
             <AnimatedCounter
               value={104}
               className="text-3xl font-bold text-copa-gold"
             />
-            <p className="text-white/40 text-xs mt-1 uppercase">Jogos</p>
+            <p className="text-white/60 text-xs mt-1 uppercase">Jogos</p>
           </div>
         </div>
       </div>

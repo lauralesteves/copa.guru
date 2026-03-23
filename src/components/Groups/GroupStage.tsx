@@ -41,10 +41,16 @@ export function GroupStage({
         </h2>
         <p
           ref={subtitleRef}
-          className="text-white/50 text-center mb-12 text-sm uppercase tracking-widest"
+          className="text-white text-center mb-4 text-sm uppercase tracking-widest"
         >
           12 grupos · 48 seleções · Insira seus palpites
         </p>
+        <div className="flex flex-wrap justify-center gap-x-6 gap-y-1 mb-12 text-xs text-white/60">
+          <span><strong className="text-white/60">Tabela</strong> — classificação ao vivo</span>
+          <span><strong className="text-white/60">Jogos</strong> — insira seus placares</span>
+          <span><strong className="text-white/60">Gráfico</strong> — diagrama de confrontos</span>
+          <span><strong className="text-white/60">3D</strong> — visualização orbital</span>
+        </div>
 
         <div
           ref={gridRef}

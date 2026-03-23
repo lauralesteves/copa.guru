@@ -32,7 +32,7 @@ export function TeamCard({ team }: TeamCardProps) {
         >
           <Flag code={team.code} size={96} className="rounded" />
           <span className="text-white text-sm font-semibold">{team.name}</span>
-          <span className="text-white/40 text-[10px] uppercase tracking-widest">
+          <span className="text-white/60 text-[10px] uppercase tracking-widest">
             Grupo {team.group}
           </span>
           {team.isHost && (
@@ -68,7 +68,7 @@ export function TeamCard({ team }: TeamCardProps) {
           <span className="text-white/60 text-[10px] uppercase">
             {team.confederation}
           </span>
-          <span className="text-white/40 text-[10px]">
+          <span className="text-white/60 text-[10px]">
             Grupo {team.group}
           </span>
         </div>

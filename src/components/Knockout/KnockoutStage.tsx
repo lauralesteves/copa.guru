@@ -15,7 +15,7 @@ interface KnockoutStageProps {
 type View = 'bracket' | 'molecule' | '3d';
 
 export function KnockoutStage({ allGroupStandings }: KnockoutStageProps) {
-  const [view, setView] = useState<View>('bracket');
+  const [view, setView] = useState<View>('molecule');
   const titleRef = useScrollReveal<HTMLHeadingElement>({ y: 30 });
   const subtitleRef = useScrollReveal<HTMLParagraphElement>({
     y: 20,
@@ -33,7 +33,7 @@ export function KnockoutStage({ allGroupStandings }: KnockoutStageProps) {
         </h2>
         <p
           ref={subtitleRef}
-          className="text-white/50 text-center mb-8 text-sm uppercase tracking-widest"
+          className="text-white text-center mb-8 text-sm uppercase tracking-widest"
         >
           Dos 32 avos até a grande final
         </p>

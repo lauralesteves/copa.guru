@@ -42,7 +42,7 @@ export function PredictionSection({
         >
           PALPITES
         </h2>
-        <p className="text-white/50 text-center mb-12 text-sm uppercase tracking-widest">
+        <p className="text-white text-center mb-12 text-sm uppercase tracking-widest">
           Faça seus palpites e compartilhe
         </p>
 
@@ -61,15 +61,15 @@ export function PredictionSection({
                 style={{ width: `${stats.percentage}%` }}
               />
             </div>
-            <p className="text-xs text-white/40 mt-2">
-              Insira placares na aba "Jogos" de cada grupo acima
+            <p className="text-xs text-white mt-2">
+              <a href="#grupos" className="text-copa-gold hover:text-copa-gold-light transition-colors underline underline-offset-2">Ir para Fase de Grupos</a> e inserir placares na aba "Jogos" de cada grupo
             </p>
           </div>
 
           {/* Champion pick */}
           <div className="bg-white/5 border border-white/10 rounded-xl p-6">
             <h3 className="font-display text-xl text-copa-gold tracking-wider mb-4">
-              QUEM SERA O CAMPEAO?
+              QUEM SERÁ O CAMPEÃO?
             </h3>
 
             {champion ? (
@@ -80,7 +80,7 @@ export function PredictionSection({
                     <p className="text-copa-gold font-bold text-lg">
                       {teams.find((t) => t.code === champion)?.name ?? champion}
                     </p>
-                    <p className="text-white/40 text-xs uppercase">
+                    <p className="text-white/60 text-xs uppercase">
                       Seu palpite de campeão
                     </p>
                   </div>
@@ -108,7 +108,7 @@ export function PredictionSection({
                       className="rounded-sm"
                     />
                     <span className="text-[9px] text-white/60 truncate w-full text-center">
-                      {team.code}
+                      {team.name}
                     </span>
                   </button>
                 ))}
@@ -137,7 +137,7 @@ export function PredictionSection({
                   setTimeout(() => setConfirmClear(false), 3000);
                 }
               }}
-              className="px-6 py-3 border border-white/10 text-white/40 rounded-lg hover:border-red-500/30 hover:text-red-400 transition-colors text-sm uppercase tracking-wider"
+              className="px-6 py-3 border border-white/10 text-white/60 rounded-lg hover:border-red-500/30 hover:text-red-400 transition-colors text-sm uppercase tracking-wider"
             >
               {confirmClear ? 'Confirmar reset?' : 'Limpar tudo'}
             </button>

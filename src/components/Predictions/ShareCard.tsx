@@ -40,7 +40,7 @@ export function ShareCard({
       `Total de gols: ${totalGoals}`,
       `Vitórias mandante: ${homeWins} | Empates: ${draws} | Vitórias visitante: ${awayWins}`,
       '',
-      'Faça seus palpites em copa.guru',
+      'Faça seus palpites em https://copa.guru',
     ]
       .filter(Boolean)
       .join('\n');
@@ -69,7 +69,7 @@ export function ShareCard({
           <h3 className="font-display text-3xl text-copa-gold tracking-wider">
             COPA.GURU
           </h3>
-          <p className="text-white/40 text-xs uppercase tracking-widest mt-1">
+          <p className="text-white/60 text-xs uppercase tracking-widest mt-1">
             Meus Palpites 2026
           </p>
         </div>
@@ -79,7 +79,7 @@ export function ShareCard({
           <div className="flex items-center justify-center gap-3 bg-copa-gold/10 border border-copa-gold/20 rounded-xl py-4 px-6 mb-6">
             <Flag code={championTeam.code} size={96} className="rounded" />
             <div>
-              <p className="text-[10px] text-white/40 uppercase tracking-widest">
+              <p className="text-[10px] text-white/60 uppercase tracking-widest">
                 Campeão
               </p>
               <p className="text-copa-gold font-bold text-xl">
@@ -93,25 +93,25 @@ export function ShareCard({
         <div className="grid grid-cols-2 gap-3 mb-6">
           <div className="bg-white/5 rounded-lg p-3 text-center">
             <p className="text-2xl font-bold text-white">{stats.filled}</p>
-            <p className="text-[10px] text-white/40 uppercase">Jogos</p>
+            <p className="text-[10px] text-white/60 uppercase">Jogos</p>
           </div>
           <div className="bg-white/5 rounded-lg p-3 text-center">
             <p className="text-2xl font-bold text-copa-gold">{totalGoals}</p>
-            <p className="text-[10px] text-white/40 uppercase">Gols totais</p>
+            <p className="text-[10px] text-white/60 uppercase">Gols totais</p>
           </div>
           <div className="bg-white/5 rounded-lg p-3 text-center">
             <p className="text-2xl font-bold text-green-400">{homeWins}</p>
-            <p className="text-[10px] text-white/40 uppercase">Vit. Mandante</p>
+            <p className="text-[10px] text-white/60 uppercase">Vit. Mandante</p>
           </div>
           <div className="bg-white/5 rounded-lg p-3 text-center">
             <p className="text-2xl font-bold text-blue-400">{draws}</p>
-            <p className="text-[10px] text-white/40 uppercase">Empates</p>
+            <p className="text-[10px] text-white/60 uppercase">Empates</p>
           </div>
         </div>
 
         {/* Progress bar */}
         <div className="mb-6">
-          <div className="flex justify-between text-xs text-white/40 mb-1">
+          <div className="flex justify-between text-xs text-white/60 mb-1">
             <span>Progresso</span>
             <span>{stats.percentage}%</span>
           </div>

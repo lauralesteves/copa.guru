@@ -46,7 +46,7 @@ export function GroupCard({
                   key={code}
                   className="w-7 h-5 bg-white/10 rounded-sm border border-white/20 flex items-center justify-center"
                 >
-                  <span className="text-[7px] text-white/40">TBD</span>
+                  <span className="text-[7px] text-white/60">TBD</span>
                 </div>
               );
             }
@@ -76,13 +76,13 @@ export function GroupCard({
                     : 'border-l-2 border-transparent'
                 }`}
               >
-                <span className="text-white/30 text-xs font-mono w-3">
+                <span className="text-white text-xs font-mono w-3">
                   {i + 1}
                 </span>
                 {isTBD ? (
                   <>
                     <div className="w-7 h-5 bg-white/10 rounded-sm" />
-                    <span className="text-white/40 text-xs">
+                    <span className="text-white/60 text-xs">
                       A definir
                     </span>
                   </>
@@ -125,7 +125,7 @@ export function GroupCard({
             className={`flex-1 py-2 text-[10px] font-semibold uppercase tracking-wider transition-colors ${
               tab === key
                 ? 'text-copa-gold border-b-2 border-copa-gold'
-                : 'text-white/40 border-b-2 border-transparent hover:text-white/60'
+                : 'text-white border-b-2 border-transparent hover:text-white/70'
             }`}
           >
             {label}
@@ -148,7 +148,7 @@ export function GroupCard({
                 />
               ))
             ) : (
-              <p className="text-white/30 text-xs text-center py-4">
+              <p className="text-white text-xs text-center py-4">
                 Nenhum jogo disponível
               </p>
             )}
