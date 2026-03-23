@@ -43,7 +43,7 @@ export function PredictionSection({
           PALPITES
         </h2>
         <p className="text-white/50 text-center mb-12 text-sm uppercase tracking-widest">
-          Faca seus palpites e compartilhe
+          Faça seus palpites e compartilhe
         </p>
 
         <div ref={contentRef} className="space-y-8">
@@ -81,7 +81,7 @@ export function PredictionSection({
                       {teams.find((t) => t.code === champion)?.name ?? champion}
                     </p>
                     <p className="text-white/40 text-xs uppercase">
-                      Seu palpite de campeao
+                      Seu palpite de campeão
                     </p>
                   </div>
                 </div>

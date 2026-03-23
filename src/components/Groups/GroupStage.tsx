@@ -43,7 +43,7 @@ export function GroupStage({
           ref={subtitleRef}
           className="text-white/50 text-center mb-12 text-sm uppercase tracking-widest"
         >
-          12 grupos - 48 selecoes - Insira seus palpites
+          12 grupos · 48 seleções · Insira seus palpites
         </p>
 
         <div

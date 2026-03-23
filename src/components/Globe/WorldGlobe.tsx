@@ -77,7 +77,7 @@ export function WorldGlobe() {
           MAPA MUNDIAL
         </h2>
         <p className="text-white/50 text-center mb-8 text-sm uppercase tracking-widest">
-          Selecoes classificadas ao redor do mundo
+          Seleções classificadas ao redor do mundo
         </p>
 
         <div className="relative w-full aspect-square max-w-[600px] mx-auto">

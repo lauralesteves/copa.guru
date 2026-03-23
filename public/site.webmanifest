@@ -1,0 +1,9 @@
+{
+  "name": "Copa.Guru",
+  "short_name": "Copa.Guru",
+  "description": "Copa do Mundo 2026 - Grupos, resultados e palpites",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0118",
+  "theme_color": "#1a0533"
+}

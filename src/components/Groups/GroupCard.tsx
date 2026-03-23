@@ -1,10 +1,14 @@
-import { useState } from 'react';
+import { Suspense, lazy, useState } from 'react';
 import { getTeamByCode } from '../../data/teams';
 import type { Group, GroupStanding, Match } from '../../types/worldcup';
 import { Flag } from '../ui/Flag';
 import { ChordDiagram } from './ChordDiagram';
 import { MatchCard } from './MatchCard';
 import { StandingsTable } from './StandingsTable';
+
+const GroupGalaxy = lazy(() =>
+  import('./GroupGalaxy').then((m) => ({ default: m.GroupGalaxy })),
+);
 
 interface GroupCardProps {
   group: Group;
@@ -17,7 +21,7 @@ interface GroupCardProps {
   ) => void;
 }
 
-type Tab = 'table' | 'matches' | 'chord';
+type Tab = 'table' | 'matches' | 'chord' | 'galaxy';
 
 export function GroupCard({
   group,
@@ -111,7 +115,8 @@ export function GroupCard({
         {([
           { key: 'table', label: 'Tabela' },
           { key: 'matches', label: 'Jogos' },
-          { key: 'chord', label: 'Grafico' },
+          { key: 'chord', label: 'Gráfico' },
+          { key: 'galaxy', label: '3D' },
         ] as { key: Tab; label: string }[]).map(({ key, label }) => (
           <button
             key={key}
@@ -144,7 +149,7 @@ export function GroupCard({
               ))
             ) : (
               <p className="text-white/30 text-xs text-center py-4">
-                Nenhum jogo disponivel
+                Nenhum jogo disponível
               </p>
             )}
           </div>
@@ -152,6 +157,16 @@ export function GroupCard({
 
         {tab === 'chord' && (
           <ChordDiagram teamCodes={group.teams} matches={matches} />
+        )}
+
+        {tab === 'galaxy' && (
+          <Suspense fallback={<div className="h-[200px] skeleton rounded-lg" />}>
+            <GroupGalaxy
+              teamCodes={group.teams}
+              standings={standings}
+              groupName={`Grupo ${group.name}`}
+            />
+          </Suspense>
         )}
       </div>
     </div>

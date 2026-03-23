@@ -52,7 +52,7 @@ export function StandingsTable({ standings }: StandingsTableProps) {
         <thead>
           <tr className="text-white/40 uppercase tracking-wider">
             <th className="text-left pb-2 font-medium w-5">#</th>
-            <th className="text-left pb-2 font-medium">Selecao</th>
+            <th className="text-left pb-2 font-medium">Seleção</th>
             <th className="text-center pb-2 font-medium w-7">PG</th>
             <th className="text-center pb-2 font-medium w-5">J</th>
             <th className="text-center pb-2 font-medium w-5">V</th>

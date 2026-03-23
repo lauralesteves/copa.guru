@@ -1,14 +1,18 @@
-import { useState } from 'react';
+import { Suspense, lazy, useState } from 'react';
 import { useScrollReveal } from '../../hooks/useScrollReveal';
 import type { GroupName, GroupStanding } from '../../types/worldcup';
 import { Bracket } from './Bracket';
 import { MoleculeGraph } from './MoleculeGraph';
 
+const Bracket3D = lazy(() =>
+  import('./Bracket3D').then((m) => ({ default: m.Bracket3D })),
+);
+
 interface KnockoutStageProps {
   allGroupStandings: Map<GroupName, GroupStanding[]>;
 }
 
-type View = 'bracket' | 'molecule';
+type View = 'bracket' | 'molecule' | '3d';
 
 export function KnockoutStage({ allGroupStandings }: KnockoutStageProps) {
   const [view, setView] = useState<View>('bracket');
@@ -31,7 +35,7 @@ export function KnockoutStage({ allGroupStandings }: KnockoutStageProps) {
           ref={subtitleRef}
           className="text-white/50 text-center mb-8 text-sm uppercase tracking-widest"
         >
-          Dos 32 avos ate a grande final
+          Dos 32 avos até a grande final
         </p>
 
         {/* View toggle */}
@@ -58,12 +62,35 @@ export function KnockoutStage({ allGroupStandings }: KnockoutStageProps) {
           >
             Grafo
           </button>
+          <button
+            type="button"
+            onClick={() => setView('3d')}
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all ${
+              view === '3d'
+                ? 'bg-copa-gold text-copa-dark'
+                : 'bg-white/5 text-white/60 border border-white/10 hover:border-copa-gold/30'
+            }`}
+          >
+            3D
+          </button>
         </div>
 
-        {view === 'bracket' ? (
+        {view === 'bracket' && (
           <Bracket allGroupStandings={allGroupStandings} />
-        ) : (
+        )}
+        {view === 'molecule' && (
           <MoleculeGraph allGroupStandings={allGroupStandings} />
+        )}
+        {view === '3d' && (
+          <Suspense
+            fallback={
+              <div className="w-full h-[500px] flex items-center justify-center">
+                <div className="skeleton w-64 h-64 rounded-xl" />
+              </div>
+            }
+          >
+            <Bracket3D allGroupStandings={allGroupStandings} />
+          </Suspense>
         )}
       </div>
     </section>
