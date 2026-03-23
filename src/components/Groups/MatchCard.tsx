@@ -127,7 +127,7 @@ export function MatchCard({ match, onScoreChange }: MatchCardProps) {
             resultClass === 'team1-win'
               ? 'text-copa-gold'
               : resultClass === 'team2-win'
-                ? 'text-white/40'
+                ? 'text-white/60'
                 : 'text-white/80'
           }`}
         >
@@ -159,7 +159,7 @@ export function MatchCard({ match, onScoreChange }: MatchCardProps) {
             resultClass === 'team2-win'
               ? 'text-copa-gold'
               : resultClass === 'team1-win'
-                ? 'text-white/40'
+                ? 'text-white/60'
                 : 'text-white/80'
           }`}
         >

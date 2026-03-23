@@ -54,11 +54,11 @@ export function TeamGrid() {
           ref={titleRef}
           className="font-display text-4xl sm:text-5xl md:text-6xl text-copa-gold text-center tracking-wider mb-4"
         >
-          SELECOES
+          SELEÇÕES
         </h2>
         <p
           ref={subtitleRef}
-          className="text-white/50 text-center mb-8 text-sm uppercase tracking-widest"
+          className="text-white text-center mb-8 text-sm uppercase tracking-widest"
         >
           {teams.length} seleções classificadas
         </p>

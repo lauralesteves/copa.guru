@@ -50,7 +50,7 @@ export function StandingsTable({ standings }: StandingsTableProps) {
     <div className="mt-4 border-t border-white/10 pt-3">
       <table className="w-full text-xs">
         <thead>
-          <tr className="text-white/40 uppercase tracking-wider">
+          <tr className="text-white/70 uppercase tracking-wider">
             <th className="text-left pb-2 font-medium w-5">#</th>
             <th className="text-left pb-2 font-medium">Seleção</th>
             <th className="text-center pb-2 font-medium w-7">PG</th>
@@ -71,7 +71,7 @@ export function StandingsTable({ standings }: StandingsTableProps) {
                 key={s.teamCode}
                 data-team={s.teamCode}
                 className={`border-t border-white/5 transition-colors duration-300 hover:bg-white/5 ${
-                  isQualified ? 'text-white' : 'text-white/60'
+                  isQualified ? 'text-white' : 'text-white/70'
                 }`}
                 style={{
                   backgroundColor:
@@ -85,7 +85,7 @@ export function StandingsTable({ standings }: StandingsTableProps) {
                     className={`inline-flex items-center justify-center w-4 h-4 rounded-full text-[10px] font-bold transition-colors duration-300 ${
                       isQualified
                         ? 'bg-copa-gold/20 text-copa-gold'
-                        : 'text-white/30'
+                        : 'text-white'
                     }`}
                   >
                     {i + 1}
