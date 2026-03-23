@@ -18,9 +18,19 @@ const KnockoutStage = lazy(() =>
     default: m.KnockoutStage,
   })),
 );
+const WorldGlobe = lazy(() =>
+  import('./components/Globe/WorldGlobe').then((m) => ({
+    default: m.WorldGlobe,
+  })),
+);
 const TeamGrid = lazy(() =>
   import('./components/Teams/TeamGrid').then((m) => ({
     default: m.TeamGrid,
+  })),
+);
+const StatsSection = lazy(() =>
+  import('./components/Stats/StatsSection').then((m) => ({
+    default: m.StatsSection,
   })),
 );
 const PredictionSection = lazy(() =>
@@ -71,8 +81,14 @@ function App() {
         <Suspense fallback={<SectionSkeleton lines={2} />}>
           <KnockoutStage allGroupStandings={allGroupStandings} />
         </Suspense>
+        <Suspense fallback={<SectionSkeleton lines={2} />}>
+          <WorldGlobe />
+        </Suspense>
         <Suspense fallback={<SectionSkeleton lines={8} />}>
           <TeamGrid />
+        </Suspense>
+        <Suspense fallback={<SectionSkeleton lines={2} />}>
+          <StatsSection />
         </Suspense>
         <Suspense fallback={<SectionSkeleton lines={2} />}>
           <PredictionSection
