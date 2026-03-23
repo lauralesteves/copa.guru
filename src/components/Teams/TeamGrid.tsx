@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { teams } from '../../data/teams';
+import { getTeams } from '../../data/teams';
 import type { Confederation } from '../../types/worldcup';
 import { useScrollReveal } from '../../hooks/useScrollReveal';
 import { TeamCard } from './TeamCard';
@@ -28,7 +28,7 @@ export function TeamGrid() {
   });
 
   const filtered =
-    filter === 'ALL' ? teams : teams.filter((t) => t.confederation === filter);
+    filter === 'ALL' ? getTeams() : getTeams().filter((t) => t.confederation === filter);
 
   useEffect(() => {
     if (!gridRef.current) return;
@@ -60,7 +60,7 @@ export function TeamGrid() {
           ref={subtitleRef}
           className="text-white text-center mb-8 text-sm uppercase tracking-widest"
         >
-          {teams.length} seleções classificadas
+          {getTeams().length} seleções classificadas
         </p>
 
         {/* Filter pills */}

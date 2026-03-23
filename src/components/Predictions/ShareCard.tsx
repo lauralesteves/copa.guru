@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { teams } from '../../data/teams';
+import { getTeams } from '../../data/teams';
 import type { Prediction } from '../../hooks/usePredictions';
 import { Flag } from '../ui/Flag';
 
@@ -18,6 +18,7 @@ export function ShareCard({
 }: ShareCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
 
+  const teams = getTeams();
   const championTeam = champion
     ? teams.find((t) => t.code === champion)
     : null;

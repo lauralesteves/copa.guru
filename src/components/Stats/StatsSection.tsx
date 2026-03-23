@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { teams } from '../../data/teams';
+import { getTeams } from '../../data/teams';
 import { useScrollReveal } from '../../hooks/useScrollReveal';
 import { AnimatedCounter } from '../ui/AnimatedCounter';
 import { Flag } from '../ui/Flag';
@@ -29,26 +29,26 @@ const teamStats: Record<string, number[]> = {
 
 const STAT_LABELS = ['Ataque', 'Defesa', 'Posse', 'Passes', 'Finalizações', 'Faltas'];
 
-const selectableTeams = teams.filter((t) => teamStats[t.code]);
+const selectableTeams = getTeams().filter((t) => teamStats[t.code]);
 
 export function StatsSection() {
   const [team1Code, setTeam1Code] = useState('BRA');
   const [team2Code, setTeam2Code] = useState('ARG');
   const titleRef = useScrollReveal<HTMLHeadingElement>({ y: 30 });
 
-  const t1 = teams.find((t) => t.code === team1Code);
-  const t2 = teams.find((t) => t.code === team2Code);
+  const t1 = getTeams().find((t) => t.code === team1Code);
+  const t2 = getTeams().find((t) => t.code === team2Code);
 
   const datasets = [
     {
       label: t1?.name ?? team1Code,
       values: teamStats[team1Code] ?? [50, 50, 50, 50, 50, 50],
-      color: t1?.primaryColor ?? '#d4a843',
+      color: t1?.primaryColor ?? '#00ff9c',
     },
     {
       label: t2?.name ?? team2Code,
       values: teamStats[team2Code] ?? [50, 50, 50, 50, 50, 50],
-      color: t2?.primaryColor ?? '#0047a0',
+      color: t2?.primaryColor ?? '#00c2ff',
     },
   ];
 
@@ -89,7 +89,7 @@ export function StatsSection() {
         <div className="grid grid-cols-3 gap-4 mt-10">
           <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
             <AnimatedCounter
-              value={teams.length}
+              value={getTeams().length}
               className="text-3xl font-bold text-copa-gold"
             />
             <p className="text-white/60 text-xs mt-1 uppercase">Seleções</p>
@@ -122,7 +122,7 @@ function TeamSelector({
 }: {
   value: string;
   onChange: (v: string) => void;
-  teams: typeof teams;
+  teams: { code: string; name: string }[];
   color?: string;
 }) {
   return (
