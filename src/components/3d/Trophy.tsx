@@ -12,7 +12,7 @@ function TrophyCup() {
     }
   });
 
-  const gold = '#d4a843';
+  const gold = '#00ff9c';
   const darkGold = '#b8922e';
 
   return (
@@ -109,9 +109,9 @@ export function Trophy() {
           style={{ background: 'transparent' }}
         >
           <ambientLight intensity={0.3} />
-          <directionalLight position={[5, 5, 5]} intensity={1.2} color="#fff5e0" />
-          <directionalLight position={[-3, 2, -2]} intensity={0.4} color="#d4a843" />
-          <pointLight position={[0, 3, 0]} intensity={0.5} color="#f0d078" />
+          <directionalLight position={[5, 5, 5]} intensity={1.2} color="#e6edf3" />
+          <directionalLight position={[-3, 2, -2]} intensity={0.4} color="#00ff9c" />
+          <pointLight position={[0, 3, 0]} intensity={0.5} color="#7afcff" />
           <Environment preset="city" />
           <TrophyCup />
         </Canvas>

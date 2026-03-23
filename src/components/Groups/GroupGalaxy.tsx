@@ -26,7 +26,7 @@ function OrbitingTeam({
 }) {
   const groupRef = useRef<THREE.Group>(null);
   const team = getTeamByCode(teamCode);
-  const color = team?.primaryColor ?? '#d4a843';
+  const color = team?.primaryColor ?? '#00ff9c';
 
   useFrame((state) => {
     if (groupRef.current) {
@@ -92,14 +92,14 @@ function GalaxyScene({ teamCodes, standings, groupName }: GroupGalaxyProps) {
   return (
     <>
       <ambientLight intensity={0.4} />
-      <pointLight position={[0, 0, 0]} intensity={1.5} color="#d4a843" distance={5} />
+      <pointLight position={[0, 0, 0]} intensity={1.5} color="#00ff9c" distance={5} />
 
       {/* Central star */}
       <mesh>
         <sphereGeometry args={[0.12, 16, 16]} />
         <meshStandardMaterial
-          color="#d4a843"
-          emissive="#d4a843"
+          color="#00ff9c"
+          emissive="#00ff9c"
           emissiveIntensity={1}
         />
       </mesh>
@@ -108,7 +108,7 @@ function GalaxyScene({ teamCodes, standings, groupName }: GroupGalaxyProps) {
       <Text
         position={[0, 0.25, 0]}
         fontSize={0.12}
-        color="#d4a843"
+        color="#00ff9c"
         anchorX="center"
         font="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.ttf"
         fontWeight={700}

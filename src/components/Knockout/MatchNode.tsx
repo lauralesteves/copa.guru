@@ -38,8 +38,8 @@ export function MatchNode({
         width={width}
         height={height}
         rx={8}
-        fill={highlighted ? 'rgba(212, 168, 67, 0.1)' : 'rgba(255, 255, 255, 0.03)'}
-        stroke={highlighted ? 'rgba(212, 168, 67, 0.4)' : 'rgba(255, 255, 255, 0.08)'}
+        fill={highlighted ? 'rgba(0, 255, 156, 0.1)' : 'rgba(255, 255, 255, 0.03)'}
+        stroke={highlighted ? 'rgba(0, 255, 156, 0.4)' : 'rgba(255, 255, 255, 0.08)'}
         strokeWidth={1}
         className="transition-all duration-300"
       />
@@ -77,7 +77,7 @@ export function MatchNode({
             <text
               x={36}
               y={17}
-              fill={highlighted ? '#d4a843' : 'rgba(255, 255, 255, 0.8)'}
+              fill={highlighted ? '#00ff9c' : 'rgba(255, 255, 255, 0.8)'}
               fontSize={11}
               fontWeight={600}
             >
@@ -120,7 +120,7 @@ export function MatchNode({
             <text
               x={36}
               y={17}
-              fill={highlighted ? '#d4a843' : 'rgba(255, 255, 255, 0.8)'}
+              fill={highlighted ? '#00ff9c' : 'rgba(255, 255, 255, 0.8)'}
               fontSize={11}
               fontWeight={600}
             >

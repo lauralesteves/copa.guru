@@ -10,7 +10,7 @@ interface Particle {
   opacity: number;
 }
 
-const COLORS = ['#d4a843', '#f0d078', '#ffffff', '#0047a0', '#008000', '#75AADB'];
+const COLORS = ['#00ff9c', '#7afcff', '#00c2ff', '#e6edf3', '#00ff9c', '#8b949e'];
 const COUNT = 80;
 const CONNECTION_DIST = 120;
 
@@ -123,7 +123,7 @@ export function ParticleField() {
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
             ctx.lineTo(b.x, b.y);
-            ctx.strokeStyle = `rgba(212, 168, 67, ${alpha})`;
+            ctx.strokeStyle = `rgba(0, 255, 156, ${alpha})`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
           }

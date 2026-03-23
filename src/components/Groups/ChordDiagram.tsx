@@ -121,7 +121,7 @@ export function ChordDiagram({ teamCodes, matches }: ChordDiagramProps) {
         g.append('path')
           .attr('class', `ring ring-${i}`)
           .attr('d', arcGen(null as never) ?? '')
-          .attr('fill', team?.primaryColor ?? '#d4a843')
+          .attr('fill', team?.primaryColor ?? '#00ff9c')
           .attr('fill-opacity', 0)
           .transition()
           .duration(750)
