@@ -93,9 +93,12 @@ export function Hero() {
 
       {/* Content */}
       <div ref={contentRef} className="relative z-10 will-change-transform">
-        <h1 className="font-display text-6xl sm:text-8xl md:text-[120px] lg:text-[150px] text-copa-gold leading-none tracking-wider">
-          COPA.GURU
-        </h1>
+        <div className="flex items-center justify-center gap-4 md:gap-6">
+          <img src="/images/logo.webp" alt="" className="w-16 h-16 sm:w-20 sm:h-20 md:w-28 md:h-28 lg:w-32 lg:h-32" />
+          <h1 className="font-display text-6xl sm:text-8xl md:text-[120px] lg:text-[150px] text-copa-gold leading-none tracking-wider">
+            COPA.GURU
+          </h1>
+        </div>
 
         <p className="font-heading text-lg sm:text-xl md:text-2xl text-white/70 mt-4 tracking-widest uppercase">
           Copa do Mundo 2026

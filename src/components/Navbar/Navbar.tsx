@@ -26,8 +26,9 @@ export function Navbar() {
       <div className="flex items-center px-6">
         <a
           href="#"
-          className="font-display text-copa-gold text-3xl md:text-4xl tracking-wider hover:text-copa-gold-light transition-colors"
+          className="flex items-center gap-2 font-display text-copa-gold text-3xl md:text-4xl tracking-wider hover:text-copa-gold-light transition-colors"
         >
+          <img src="/images/logo.webp" alt="" className="w-8 h-8 md:w-10 md:h-10" />
           COPA.GURU
         </a>
 
