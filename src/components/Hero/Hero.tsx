@@ -84,7 +84,7 @@ export function Hero() {
       {/* Trophy 3D — separate from content so it doesn't get stagger'd away */}
       <div
         ref={trophyRef}
-        className="relative z-10 w-32 h-40 sm:w-40 sm:h-48 md:w-48 md:h-56 mb-2 will-change-transform"
+        className="relative z-10 w-44 h-56 sm:w-56 sm:h-64 md:w-64 md:h-72 mb-2 will-change-transform"
       >
         <Suspense fallback={<div className="w-full h-full" />}>
           <Trophy />

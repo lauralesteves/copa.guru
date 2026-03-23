@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Float, Environment } from '@react-three/drei';
 import type * as THREE from 'three';
@@ -83,21 +83,39 @@ function TrophyCup() {
 }
 
 export function Trophy() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setVisible(entry.isIntersecting),
+      { threshold: 0.1 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className="w-full h-full">
-      <Canvas
-        camera={{ position: [0, 0, 5], fov: 35 }}
-        dpr={[1, 1.5]}
-        gl={{ alpha: true, antialias: true }}
-        style={{ background: 'transparent' }}
-      >
-        <ambientLight intensity={0.3} />
-        <directionalLight position={[5, 5, 5]} intensity={1.2} color="#fff5e0" />
-        <directionalLight position={[-3, 2, -2]} intensity={0.4} color="#d4a843" />
-        <pointLight position={[0, 3, 0]} intensity={0.5} color="#f0d078" />
-        <Environment preset="city" />
-        <TrophyCup />
-      </Canvas>
+    <div ref={containerRef} className="w-full h-full">
+      {visible && (
+        <Canvas
+          camera={{ position: [0, 0, 6.5], fov: 35 }}
+          dpr={[1, 1.5]}
+          gl={{ alpha: true, antialias: true, powerPreference: 'low-power' }}
+          frameloop="always"
+          style={{ background: 'transparent' }}
+        >
+          <ambientLight intensity={0.3} />
+          <directionalLight position={[5, 5, 5]} intensity={1.2} color="#fff5e0" />
+          <directionalLight position={[-3, 2, -2]} intensity={0.4} color="#d4a843" />
+          <pointLight position={[0, 3, 0]} intensity={0.5} color="#f0d078" />
+          <Environment preset="city" />
+          <TrophyCup />
+        </Canvas>
+      )}
     </div>
   );
 }

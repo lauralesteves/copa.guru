@@ -159,7 +159,7 @@ function BracketNode({ node }: { node: Node3D }) {
           color={node.teamCode ? '#ffffff' : 'rgba(255,255,255,0.3)'}
           anchorX="center"
           anchorY="top"
-          font="https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfAZ9hiA.woff2"
+          font="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.ttf"
         >
           {node.teamCode ? (team?.name ?? node.teamCode) : node.label}
         </Text>
