@@ -25,6 +25,7 @@ export function Hero() {
 
     const triggers: ScrollTrigger[] = [];
 
+    // Parallax on scroll
     triggers.push(
       ScrollTrigger.create({
         trigger: section,
@@ -35,17 +36,28 @@ export function Hero() {
           const p = self.progress;
           gsap.set(bg, { y: p * 150 });
           gsap.set(content, { y: p * -60, opacity: 1 - p * 1.5 });
-          if (trophy) gsap.set(trophy, { y: p * 100, opacity: 1 - p * 2 });
+          if (trophy) gsap.set(trophy, { y: p * -30, opacity: 1 - p * 1.2 });
         },
       }),
     );
 
+    // Entrance: animate text content children (not the trophy)
     const tl = gsap.timeline();
     tl.fromTo(
       content.children,
       { y: 50, opacity: 0 },
       { y: 0, opacity: 1, duration: 0.8, stagger: 0.2, ease: 'power3.out' },
     );
+
+    // Trophy entrance: separate, slightly delayed
+    if (trophy) {
+      tl.fromTo(
+        trophy,
+        { y: 30, opacity: 0, scale: 0.9 },
+        { y: 0, opacity: 1, scale: 1, duration: 1, ease: 'power3.out' },
+        0.1, // start slightly after content
+      );
+    }
 
     return () => {
       for (const t of triggers) t.kill();
@@ -69,18 +81,18 @@ export function Hero() {
         <ParticleField />
       </div>
 
+      {/* Trophy 3D — separate from content so it doesn't get stagger'd away */}
+      <div
+        ref={trophyRef}
+        className="relative z-10 w-32 h-40 sm:w-40 sm:h-48 md:w-48 md:h-56 mb-2 will-change-transform"
+      >
+        <Suspense fallback={<div className="w-full h-full" />}>
+          <Trophy />
+        </Suspense>
+      </div>
+
       {/* Content */}
       <div ref={contentRef} className="relative z-10 will-change-transform">
-        {/* Trophy 3D */}
-        <div
-          ref={trophyRef}
-          className="w-32 h-40 sm:w-40 sm:h-48 md:w-48 md:h-56 mx-auto mb-4 will-change-transform"
-        >
-          <Suspense fallback={<div className="w-full h-full" />}>
-            <Trophy />
-          </Suspense>
-        </div>
-
         <h1 className="font-display text-6xl sm:text-8xl md:text-[120px] lg:text-[150px] text-copa-gold leading-none tracking-wider">
           COPA.GURU
         </h1>
