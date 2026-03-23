@@ -1,7 +1,7 @@
 import { Suspense, lazy, useCallback, useMemo, useState } from 'react';
-import { teams } from '../../data/teams';
+import { getTeams } from '../../data/teams';
 import { teamCoordinates } from '../../data/coordinates';
-import { groups } from '../../data/groups';
+import { getGroups } from '../../data/groups';
 import { getTeamByCode } from '../../data/teams';
 import { useScrollReveal } from '../../hooks/useScrollReveal';
 
@@ -20,7 +20,7 @@ export function WorldGlobe() {
   const [hoveredTeam, setHoveredTeam] = useState<string | null>(null);
 
   const pointsData = useMemo(() => {
-    return teams
+    return getTeams()
       .filter((t) => teamCoordinates[t.code])
       .map((t) => ({
         lat: teamCoordinates[t.code].lat,
@@ -36,7 +36,7 @@ export function WorldGlobe() {
 
   const arcsData = useMemo(() => {
     const arcs: ArcData[] = [];
-    for (const group of groups) {
+    for (const group of getGroups()) {
       const validTeams = group.teams.filter(
         (c) => !c.startsWith('TBD') && teamCoordinates[c],
       );
@@ -51,7 +51,7 @@ export function WorldGlobe() {
             startLng: c1.lng,
             endLat: c2.lat,
             endLng: c2.lng,
-            color: t1?.primaryColor ?? '#d4a843',
+            color: t1?.primaryColor ?? '#00ff9c',
           });
         }
       }

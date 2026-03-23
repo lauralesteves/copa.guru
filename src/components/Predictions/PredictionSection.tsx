@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { teams } from '../../data/teams';
+import { getTeams } from '../../data/teams';
 import { useScrollReveal } from '../../hooks/useScrollReveal';
 import type { Prediction } from '../../hooks/usePredictions';
 import { Flag } from '../ui/Flag';
@@ -78,7 +78,7 @@ export function PredictionSection({
                   <Flag code={champion} size={96} className="rounded" />
                   <div>
                     <p className="text-copa-gold font-bold text-lg">
-                      {teams.find((t) => t.code === champion)?.name ?? champion}
+                      {getTeams().find((t) => t.code === champion)?.name ?? champion}
                     </p>
                     <p className="text-white/60 text-xs uppercase">
                       Seu palpite de campeão
@@ -95,7 +95,7 @@ export function PredictionSection({
               </div>
             ) : (
               <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
-                {teams.map((team) => (
+                {getTeams().map((team) => (
                   <button
                     key={team.code}
                     type="button"

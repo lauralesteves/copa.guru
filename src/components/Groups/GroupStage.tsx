@@ -1,4 +1,4 @@
-import { groups } from '../../data/groups';
+import { getGroups } from '../../data/groups';
 import { useScrollReveal, useStaggerReveal } from '../../hooks/useScrollReveal';
 import type { GroupStanding, Match } from '../../types/worldcup';
 import type { GroupName } from '../../types/worldcup';
@@ -56,7 +56,7 @@ export function GroupStage({
           ref={gridRef}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
         >
-          {groups.map((group) => (
+          {getGroups().map((group) => (
             <GroupCard
               key={group.name}
               group={group}
