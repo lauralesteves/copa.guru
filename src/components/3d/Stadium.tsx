@@ -21,7 +21,7 @@ function StadiumScene({ team1Color = '#006847', team2Color = '#002868' }: Stadiu
     <>
       <ambientLight intensity={0.4} />
       <directionalLight position={[5, 8, 5]} intensity={0.7} castShadow />
-      <pointLight position={[-3, 6, -3]} intensity={0.3} color="#f0d078" />
+      <pointLight position={[-3, 6, -3]} intensity={0.3} color="#7afcff" />
 
       <group ref={stadiumRef}>
         {/* Field */}
@@ -57,13 +57,13 @@ function StadiumScene({ team1Color = '#006847', team2Color = '#002868' }: Stadiu
         {/* Stands - back */}
         <mesh position={[0, 0.4, -1.5]} rotation={[-0.2, 0, 0]}>
           <boxGeometry args={[4, 0.8, 0.4]} />
-          <meshStandardMaterial color="#1a0533" roughness={0.7} />
+          <meshStandardMaterial color="#121826" roughness={0.7} />
         </mesh>
 
         {/* Stands - front */}
         <mesh position={[0, 0.4, 1.5]} rotation={[0.2, 0, 0]}>
           <boxGeometry args={[4, 0.8, 0.4]} />
-          <meshStandardMaterial color="#1a0533" roughness={0.7} />
+          <meshStandardMaterial color="#121826" roughness={0.7} />
         </mesh>
 
         {/* Floodlight towers */}
@@ -81,7 +81,7 @@ function StadiumScene({ team1Color = '#006847', team2Color = '#002868' }: Stadiu
             <pointLight
               position={[0, 2.5, 0]}
               intensity={0.6}
-              color="#fff5e0"
+              color="#e6edf3"
               distance={6}
             />
           </group>

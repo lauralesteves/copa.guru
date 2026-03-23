@@ -120,7 +120,7 @@ function TubeConnection({ from, to }: { from: [number, number, number]; to: [num
 
   return (
     <mesh geometry={geometry}>
-      <meshBasicMaterial color="#d4a843" transparent opacity={0.15} />
+      <meshBasicMaterial color="#00ff9c" transparent opacity={0.15} />
     </mesh>
   );
 }
@@ -128,7 +128,7 @@ function TubeConnection({ from, to }: { from: [number, number, number]; to: [num
 function BracketNode({ node }: { node: Node3D }) {
   const meshRef = useRef<THREE.Mesh>(null);
   const team = node.teamCode ? getTeamByCode(node.teamCode) : null;
-  const color = team?.primaryColor ?? (node.stage === 4 ? '#d4a843' : '#1a0533');
+  const color = team?.primaryColor ?? (node.stage === 4 ? '#00ff9c' : '#121826');
 
   useFrame((state) => {
     if (meshRef.current && node.stage === 4) {
@@ -175,7 +175,7 @@ function Scene({ allGroupStandings }: Bracket3DProps) {
     <>
       <ambientLight intensity={0.3} />
       <directionalLight position={[10, 5, 5]} intensity={0.8} />
-      <pointLight position={[6, 0, -6]} intensity={1} color="#d4a843" distance={10} />
+      <pointLight position={[6, 0, -6]} intensity={1} color="#00ff9c" distance={10} />
 
       {links.map((link, i) => (
         <TubeConnection key={`link-${i}-${link.from[0]}-${link.to[0]}`} from={link.from} to={link.to} />

@@ -337,7 +337,7 @@ export function Bracket({ allGroupStandings }: BracketProps) {
                 key={`conn-${i}-${c.x1}-${c.y1}`}
                 d={`M${c.x1},${c.y1} C${midX},${c.y1} ${midX},${c.y2} ${c.x2},${c.y2}`}
                 fill="none"
-                stroke="rgba(212, 168, 67, 0.15)"
+                stroke="rgba(0, 255, 156, 0.15)"
                 strokeWidth={1.5}
               />
             );
@@ -372,7 +372,7 @@ export function Bracket({ allGroupStandings }: BracketProps) {
             x={finalPos[0].x + NODE_W / 2}
             y={finalPos[0].y - 20}
             textAnchor="middle"
-            fill="rgba(212, 168, 67, 0.6)"
+            fill="rgba(0, 255, 156, 0.6)"
             fontSize={14}
             fontWeight={700}
             letterSpacing={4}

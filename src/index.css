@@ -5,14 +5,18 @@
   --font-body: "Outfit", "Source Sans Pro", sans-serif;
   --font-heading: "Source Sans Pro", sans-serif;
 
-  --color-copa-dark: #0a0118;
-  --color-copa-purple: #1a0533;
-  --color-copa-purple-light: #2d0a54;
-  --color-copa-gold: #d4a843;
-  --color-copa-gold-light: #f0d078;
-  --color-copa-green: #008000;
-  --color-copa-blue: #0047a0;
-  --color-copa-red: #ce1126;
+  --color-copa-dark: #0b0f1a;
+  --color-copa-purple: #121826;
+  --color-copa-purple-light: #1c2333;
+  --color-copa-gold: #00ff9c;
+  --color-copa-gold-light: #7afcff;
+  --color-copa-green: #00ff9c;
+  --color-copa-blue: #00c2ff;
+  --color-copa-red: #ff4d6a;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -20,7 +24,7 @@ body {
   padding: 0;
   font-family: var(--font-body);
   background-color: var(--color-copa-dark);
-  color: #ffffff;
+  color: #e6edf3;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -67,11 +71,11 @@ body {
 
 /* Glow effect for interactive elements */
 .glow {
-  box-shadow: 0 0 15px rgba(212, 168, 67, 0.3);
+  box-shadow: 0 0 15px rgba(0, 255, 156, 0.3);
 }
 
 .glow:hover {
-  box-shadow: 0 0 25px rgba(212, 168, 67, 0.5);
+  box-shadow: 0 0 25px rgba(0, 255, 156, 0.5);
 }
 
 /* Custom scrollbar */

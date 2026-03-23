@@ -145,7 +145,7 @@ function Globe({ pointsData, arcsData, onPointHover }: GlobeCanvasProps) {
       <mesh>
         <sphereGeometry args={[GLOBE_RADIUS + 0.2, 32, 32]} />
         <meshBasicMaterial
-          color="#1a0533"
+          color="#121826"
           transparent
           opacity={0.1}
           side={THREE.BackSide}
@@ -222,7 +222,7 @@ export default function GlobeCanvas({ pointsData, arcsData, onPointHover }: Glob
         >
           <ambientLight intensity={0.8} />
           <directionalLight position={[5, 3, 5]} intensity={1} />
-          <pointLight position={[-5, -3, -5]} intensity={0.3} color="#d4a843" />
+          <pointLight position={[-5, -3, -5]} intensity={0.3} color="#00ff9c" />
           <Globe pointsData={pointsData} arcsData={arcsData} onPointHover={onPointHover} />
           <OrbitControls
             enableZoom={false}

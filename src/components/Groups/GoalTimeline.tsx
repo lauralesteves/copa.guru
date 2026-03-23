@@ -28,7 +28,7 @@ export function GoalTimeline({ match }: GoalTimelineProps) {
     const allGoals = [
       ...Array.from({ length: g1 }, () => ({
         team: match.team1,
-        color: team1?.primaryColor ?? '#d4a843',
+        color: team1?.primaryColor ?? '#00ff9c',
       })),
       ...Array.from({ length: g2 }, () => ({
         team: match.team2,

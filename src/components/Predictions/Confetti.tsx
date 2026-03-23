@@ -19,9 +19,9 @@ interface ConfettiProps {
 }
 
 const COLORS = [
-  '#d4a843', '#f0d078', '#FFD700', '#FF6B6B',
-  '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
-  '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE',
+  '#00ff9c', '#7afcff', '#00c2ff', '#e6edf3',
+  '#00ff9c', '#7afcff', '#00c2ff', '#ff4d6a',
+  '#00ff9c', '#7afcff', '#8b949e', '#00c2ff',
 ];
 
 export function Confetti({ active, duration = 3000, onComplete }: ConfettiProps) {

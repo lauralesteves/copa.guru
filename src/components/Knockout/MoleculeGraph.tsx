@@ -182,7 +182,7 @@ export function MoleculeGraph({ allGroupStandings }: MoleculeGraphProps) {
       .data(links)
       .enter()
       .append('line')
-      .attr('stroke', 'rgba(212, 168, 67, 0.15)')
+      .attr('stroke', 'rgba(0, 255, 156, 0.15)')
       .attr('stroke-width', 1);
 
     // Nodes
@@ -200,12 +200,12 @@ export function MoleculeGraph({ allGroupStandings }: MoleculeGraphProps) {
       .append('circle')
       .attr('r', (d) => radiusScale(d.size))
       .attr('fill', (d) => {
-        if (d.stage === 'champion') return 'rgba(212, 168, 67, 0.15)';
-        if (d.stage === 'final') return 'rgba(212, 168, 67, 0.08)';
+        if (d.stage === 'champion') return 'rgba(0, 255, 156, 0.15)';
+        if (d.stage === 'final') return 'rgba(0, 255, 156, 0.08)';
         return 'rgba(255, 255, 255, 0.04)';
       })
       .attr('stroke', (d) => {
-        if (d.stage === 'champion') return 'rgba(212, 168, 67, 0.5)';
+        if (d.stage === 'champion') return 'rgba(0, 255, 156, 0.5)';
         if (d.teamCode) {
           const team = getTeamByCode(d.teamCode);
           return team?.primaryColor ?? 'rgba(255,255,255,0.1)';
@@ -233,7 +233,7 @@ export function MoleculeGraph({ allGroupStandings }: MoleculeGraphProps) {
       .append('text')
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'central')
-      .attr('fill', (d) => (d.stage === 'champion' ? '#d4a843' : 'rgba(255,255,255,0.25)'))
+      .attr('fill', (d) => (d.stage === 'champion' ? '#00ff9c' : 'rgba(255,255,255,0.25)'))
       .attr('font-size', (d) => Math.max(6, radiusScale(d.size) * 0.4))
       .attr('font-weight', '600')
       .text((d) => d.label);
@@ -244,7 +244,7 @@ export function MoleculeGraph({ allGroupStandings }: MoleculeGraphProps) {
         select(this).select('circle')
           .transition().duration(150)
           .attr('stroke-width', 3)
-          .attr('stroke', '#d4a843');
+          .attr('stroke', '#00ff9c');
 
         const name = d.teamCode ? (getTeamByCode(d.teamCode)?.name ?? d.teamCode) : d.label;
         const rect = svgEl.getBoundingClientRect();
@@ -256,7 +256,7 @@ export function MoleculeGraph({ allGroupStandings }: MoleculeGraphProps) {
       })
       .on('mouseleave', function (_, d) {
         const defaultStroke = d.stage === 'champion'
-          ? 'rgba(212, 168, 67, 0.5)'
+          ? 'rgba(0, 255, 156, 0.5)'
           : d.teamCode
             ? (getTeamByCode(d.teamCode)?.primaryColor ?? 'rgba(255,255,255,0.1)')
             : 'rgba(255, 255, 255, 0.08)';
