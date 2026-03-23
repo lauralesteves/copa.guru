@@ -68,7 +68,7 @@ export function WorldGlobe() {
   );
 
   return (
-    <section className="py-20 px-6">
+    <section id="mapa-mundial" className="py-20 px-6">
       <div className="max-w-6xl mx-auto">
         <h2
           ref={titleRef}
@@ -76,7 +76,7 @@ export function WorldGlobe() {
         >
           MAPA MUNDIAL
         </h2>
-        <p className="text-white/50 text-center mb-8 text-sm uppercase tracking-widest">
+        <p className="text-white text-center mb-8 text-sm uppercase tracking-widest">
           Seleções classificadas ao redor do mundo
         </p>
 
@@ -106,7 +106,7 @@ export function WorldGlobe() {
               <span className="text-white text-sm font-semibold">
                 {getTeamByCode(hoveredTeam)?.name ?? hoveredTeam}
               </span>
-              <span className="text-white/40 text-xs">
+              <span className="text-white/60 text-xs">
                 Grupo {getTeamByCode(hoveredTeam)?.group}
               </span>
             </div>
