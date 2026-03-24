@@ -3,7 +3,11 @@ import { MobileMenu } from './MobileMenu';
 import { NavLinks } from './NavLinks';
 import { SocialIcons } from './SocialIcons';
 
-export function Navbar() {
+interface NavbarProps {
+  onLogoTap?: () => void;
+}
+
+export function Navbar({ onLogoTap }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -24,13 +28,23 @@ export function Navbar() {
       }`}
     >
       <div className="flex items-center px-6">
-        <a
-          href="#"
-          className="flex items-center gap-2 font-display text-copa-gold text-3xl md:text-4xl tracking-wider hover:text-copa-gold-light transition-colors"
-        >
-          <img src="/images/logo.webp" alt="" className="w-8 h-8 md:w-10 md:h-10" />
-          COPA.GURU
-        </a>
+        <div className="flex items-center gap-2">
+          <img
+            src="/images/logo.webp"
+            alt=""
+            className="w-8 h-8 md:w-10 md:h-10 cursor-pointer"
+            onClick={(e) => {
+              e.preventDefault();
+              onLogoTap?.();
+            }}
+          />
+          <a
+            href="#"
+            className="font-display text-copa-gold text-3xl md:text-4xl tracking-wider hover:text-copa-gold-light transition-colors"
+          >
+            COPA.GURU
+          </a>
+        </div>
 
         <div className="hidden md:flex items-center ml-auto gap-6">
           <NavLinks />
