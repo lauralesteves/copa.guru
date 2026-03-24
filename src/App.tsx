@@ -63,12 +63,12 @@ function App() {
     useWorldCupData();
   const { predictions, champion, setChampion, stats, clearAll } =
     usePredictions(matches);
-  const { activated: konamiActive, dismiss: dismissKonami } = useKonamiCode();
+  const { activated: konamiActive, dismiss: dismissKonami, registerTap } = useKonamiCode();
 
   return (
     <div className="min-h-dvh bg-copa-dark">
       <ScrollProgress />
-      <Navbar />
+      <Navbar onLogoTap={registerTap} />
       <main>
         <Hero />
         <Suspense fallback={<SectionSkeleton lines={12} />}>
