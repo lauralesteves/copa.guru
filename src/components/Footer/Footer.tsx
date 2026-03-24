@@ -3,6 +3,15 @@ const currentYear = new Date().getFullYear();
 export function Footer() {
   return (
     <footer className="bg-copa-dark border-t border-white/10 text-white text-center py-6 text-sm font-body">
+      <p className="text-white/60 mb-2">
+        Se eu fosse você, eu tentaria{' '}
+        <span className="hidden md:inline">
+          digitar o Konami Code (↑↑↓↓←→←→BA)
+        </span>
+        <span className="md:hidden">
+          clicar 5x rápido no logo do menu
+        </span>
+      </p>
       <p className="font-semibold uppercase tracking-wide text-copa-gold">
         Copa do Mundo 2026 - EUA, Canadá e México
       </p>
