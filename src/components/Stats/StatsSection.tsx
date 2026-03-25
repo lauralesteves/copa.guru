@@ -29,15 +29,15 @@ const teamStats: Record<string, number[]> = {
 
 const STAT_LABELS = ['Ataque', 'Defesa', 'Posse', 'Passes', 'Finalizações', 'Faltas'];
 
-const selectableTeams = getTeams().filter((t) => teamStats[t.code]);
-
 export function StatsSection() {
   const [team1Code, setTeam1Code] = useState('BRA');
   const [team2Code, setTeam2Code] = useState('ARG');
   const titleRef = useScrollReveal<HTMLHeadingElement>({ y: 30 });
 
-  const t1 = getTeams().find((t) => t.code === team1Code);
-  const t2 = getTeams().find((t) => t.code === team2Code);
+  const allTeams = getTeams();
+  const selectableTeams = allTeams.filter((t) => teamStats[t.code]);
+  const t1 = allTeams.find((t) => t.code === team1Code);
+  const t2 = allTeams.find((t) => t.code === team2Code);
 
   const datasets = [
     {
@@ -89,7 +89,7 @@ export function StatsSection() {
         <div className="grid grid-cols-3 gap-4 mt-10">
           <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
             <AnimatedCounter
-              value={getTeams().length}
+              value={allTeams.length}
               className="text-3xl font-bold text-copa-gold"
             />
             <p className="text-white/60 text-xs mt-1 uppercase">Seleções</p>
