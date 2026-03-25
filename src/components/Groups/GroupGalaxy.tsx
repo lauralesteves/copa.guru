@@ -1,4 +1,4 @@
-import { useRef, useMemo } from 'react';
+import { useEffect, useRef, useMemo, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Text, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
@@ -126,16 +126,32 @@ function GalaxyScene({ teamCodes, standings, groupName }: GroupGalaxyProps) {
 }
 
 export function GroupGalaxy({ teamCodes, standings, groupName }: GroupGalaxyProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setVisible(entry.isIntersecting),
+      { threshold: 0.1 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className="w-full h-[200px]">
-      <Canvas
-        camera={{ position: [0, 1.2, 2.2], fov: 45 }}
-        dpr={[1, 1.5]}
-        gl={{ alpha: true, antialias: true }}
-        style={{ background: 'transparent' }}
-      >
-        <GalaxyScene teamCodes={teamCodes} standings={standings} groupName={groupName} />
-      </Canvas>
+    <div ref={containerRef} className="w-full h-[200px]">
+      {visible && (
+        <Canvas
+          camera={{ position: [0, 1.2, 2.2], fov: 45 }}
+          dpr={[1, 1.5]}
+          gl={{ alpha: true, antialias: true, powerPreference: 'low-power' }}
+          style={{ background: 'transparent' }}
+        >
+          <GalaxyScene teamCodes={teamCodes} standings={standings} groupName={groupName} />
+        </Canvas>
+      )}
     </div>
   );
 }

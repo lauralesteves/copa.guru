@@ -1,4 +1,4 @@
-import { useRef, useMemo } from 'react';
+import { useEffect, useRef, useMemo, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Float, Text, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
@@ -198,16 +198,32 @@ function Scene({ allGroupStandings }: Bracket3DProps) {
 }
 
 export function Bracket3D({ allGroupStandings }: Bracket3DProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setVisible(entry.isIntersecting),
+      { threshold: 0.1 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className="w-full h-[500px] rounded-xl overflow-hidden border border-white/5">
-      <Canvas
-        camera={{ position: [0, 0, 12], fov: 50 }}
-        dpr={[1, 1.5]}
-        gl={{ alpha: true, antialias: true }}
-        style={{ background: 'transparent' }}
-      >
-        <Scene allGroupStandings={allGroupStandings} />
-      </Canvas>
+    <div ref={containerRef} className="w-full h-[500px] rounded-xl overflow-hidden border border-white/5">
+      {visible && (
+        <Canvas
+          camera={{ position: [0, 0, 12], fov: 50 }}
+          dpr={[1, 1.5]}
+          gl={{ alpha: true, antialias: true, powerPreference: 'low-power' }}
+          style={{ background: 'transparent' }}
+        >
+          <Scene allGroupStandings={allGroupStandings} />
+        </Canvas>
+      )}
     </div>
   );
 }

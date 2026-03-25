@@ -35,7 +35,7 @@ export function KnockoutStage({ allGroupStandings }: KnockoutStageProps) {
           ref={subtitleRef}
           className="text-white text-center mb-8 text-sm uppercase tracking-widest"
         >
-          Dos 32 avos até a grande final
+          Dos 16 avos até a grande final
         </p>
 
         {/* View toggle */}
