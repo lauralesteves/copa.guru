@@ -28,7 +28,7 @@ export function Navbar({ onLogoTap }: NavbarProps) {
           : 'bg-transparent py-4'
       }`}
     >
-      <div className="flex items-center px-6 pr-[100px]">
+      <div className="flex items-center px-6 pr-[80px]">
         <div className="flex items-center gap-2">
           <img
             src="/images/logo.webp"
