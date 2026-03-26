@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { getTeams } from '../../data/teams';
 import { useScrollReveal } from '../../hooks/useScrollReveal';
+import { useLocale } from '../../i18n/LocaleContext';
 import { AnimatedCounter } from '../ui/AnimatedCounter';
 import { Flag } from '../ui/Flag';
 import { RadarChart } from './RadarChart';
@@ -27,12 +28,13 @@ const teamStats: Record<string, number[]> = {
   SEN: [72, 70, 68, 70, 70, 42],
 };
 
-const STAT_LABELS = ['Ataque', 'Defesa', 'Posse', 'Passes', 'Finalizações', 'Faltas'];
-
 export function StatsSection() {
+  const { t } = useLocale();
   const [team1Code, setTeam1Code] = useState('BRA');
   const [team2Code, setTeam2Code] = useState('ARG');
   const titleRef = useScrollReveal<HTMLHeadingElement>({ y: 30 });
+
+  const STAT_LABELS = t.compare.stats;
 
   const allTeams = getTeams();
   const selectableTeams = allTeams.filter((t) => teamStats[t.code]);
@@ -59,10 +61,10 @@ export function StatsSection() {
           ref={titleRef}
           className="font-display text-4xl sm:text-5xl md:text-6xl text-copa-gold text-center tracking-wider mb-4"
         >
-          COMPARAR SELEÇÕES
+          {t.compare.title}
         </h2>
         <p className="text-white text-center mb-10 text-sm uppercase tracking-widest">
-          Radar de atributos lado a lado
+          {t.compare.subtitle}
         </p>
 
         {/* Team selectors */}
@@ -73,7 +75,7 @@ export function StatsSection() {
             teams={selectableTeams}
             color={t1?.primaryColor}
           />
-          <span className="text-copa-gold font-display text-2xl">VS</span>
+          <span className="text-copa-gold font-display text-2xl">{t.compare.vs}</span>
           <TeamSelector
             value={team2Code}
             onChange={setTeam2Code}
@@ -92,21 +94,21 @@ export function StatsSection() {
               value={allTeams.length}
               className="text-3xl font-bold text-copa-gold"
             />
-            <p className="text-white/60 text-xs mt-1 uppercase">Seleções</p>
+            <p className="text-white/60 text-xs mt-1 uppercase">{t.compare.teams}</p>
           </div>
           <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
             <AnimatedCounter
               value={12}
               className="text-3xl font-bold text-white"
             />
-            <p className="text-white/60 text-xs mt-1 uppercase">Grupos</p>
+            <p className="text-white/60 text-xs mt-1 uppercase">{t.compare.groups}</p>
           </div>
           <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
             <AnimatedCounter
               value={104}
               className="text-3xl font-bold text-copa-gold"
             />
-            <p className="text-white/60 text-xs mt-1 uppercase">Jogos</p>
+            <p className="text-white/60 text-xs mt-1 uppercase">{t.compare.matches}</p>
           </div>
         </div>
       </div>
