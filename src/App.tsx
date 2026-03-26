@@ -124,12 +124,8 @@ function App() {
         <Route path="/termos" element={<Suspense fallback={<SectionSkeleton lines={3} />}><Terms /></Suspense>} />
         {/* English */}
         <Route path="/en" element={<HomePage />} />
-        <Route path="/en/privacy" element={<Suspense fallback={<SectionSkeleton lines={3} />}><PrivacyPolicy /></Suspense>} />
-        <Route path="/en/terms" element={<Suspense fallback={<SectionSkeleton lines={3} />}><Terms /></Suspense>} />
         {/* Spanish */}
         <Route path="/es" element={<HomePage />} />
-        <Route path="/es/privacidad" element={<Suspense fallback={<SectionSkeleton lines={3} />}><PrivacyPolicy /></Suspense>} />
-        <Route path="/es/terminos" element={<Suspense fallback={<SectionSkeleton lines={3} />}><Terms /></Suspense>} />
         {/* Fallback */}
         <Route path="*" element={<HomePage />} />
       </Route>

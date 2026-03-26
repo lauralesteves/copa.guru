@@ -4,7 +4,7 @@ import { useLocale } from '../../i18n/LocaleContext';
 const currentYear = new Date().getFullYear();
 
 export function Footer() {
-  const { t, basePath } = useLocale();
+  const { locale, t } = useLocale();
 
   return (
     <footer className="bg-copa-dark border-t border-white/10 text-white text-center py-6 text-sm font-body">
@@ -13,21 +13,23 @@ export function Footer() {
         <span className="hidden md:inline">{t.footer.hintDesktop}</span>
         <span className="md:hidden">{t.footer.hintMobile}</span>
       </p>
-      <p className="mb-3">
-        <Link
-          to={`${basePath}/privacidade`}
-          className="text-white/60 hover:text-copa-gold text-xs transition-colors"
-        >
-          {t.footer.privacy}
-        </Link>
-        <span className="text-white/30 mx-2">·</span>
-        <Link
-          to={`${basePath}/termos`}
-          className="text-white/60 hover:text-copa-gold text-xs transition-colors"
-        >
-          {t.footer.terms}
-        </Link>
-      </p>
+      {locale === 'pt' && (
+        <p className="mb-3">
+          <Link
+            to="/privacidade"
+            className="text-white/60 hover:text-copa-gold text-xs transition-colors"
+          >
+            {t.footer.privacy}
+          </Link>
+          <span className="text-white/30 mx-2">·</span>
+          <Link
+            to="/termos"
+            className="text-white/60 hover:text-copa-gold text-xs transition-colors"
+          >
+            {t.footer.terms}
+          </Link>
+        </p>
+      )}
       <p className="font-semibold uppercase tracking-wide text-copa-gold">
         {t.footer.tagline}
       </p>
