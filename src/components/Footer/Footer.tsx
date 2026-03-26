@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 const currentYear = new Date().getFullYear();
 
 export function Footer() {
@@ -11,6 +13,21 @@ export function Footer() {
         <span className="md:hidden">
           clicar 5x rápido no logo do menu
         </span>
+      </p>
+      <p className="mb-3">
+        <Link
+          to="/privacidade"
+          className="text-white/60 hover:text-copa-gold text-xs transition-colors"
+        >
+          Política de Privacidade
+        </Link>
+        <span className="text-white/30 mx-2">·</span>
+        <Link
+          to="/termos"
+          className="text-white/60 hover:text-copa-gold text-xs transition-colors"
+        >
+          Termos
+        </Link>
       </p>
       <p className="font-semibold uppercase tracking-wide text-copa-gold">
         Copa do Mundo 2026 - EUA, Canadá e México
