@@ -1,36 +1,37 @@
 import { Link } from 'react-router-dom';
+import { useLocale } from '../../i18n/LocaleContext';
 
 const currentYear = new Date().getFullYear();
 
 export function Footer() {
+  const { locale, t } = useLocale();
+
   return (
     <footer className="bg-copa-dark border-t border-white/10 text-white text-center py-6 text-sm font-body">
       <p className="text-white/60 mb-2">
-        Se eu fosse você, eu tentaria{' '}
-        <span className="hidden md:inline">
-          digitar o Konami Code (↑↑↓↓←→←→BA)
-        </span>
-        <span className="md:hidden">
-          clicar 5x rápido no logo do menu
-        </span>
+        {t.footer.hintPrefix}{' '}
+        <span className="hidden md:inline">{t.footer.hintDesktop}</span>
+        <span className="md:hidden">{t.footer.hintMobile}</span>
       </p>
-      <p className="mb-3">
-        <Link
-          to="/privacidade"
-          className="text-white/60 hover:text-copa-gold text-xs transition-colors"
-        >
-          Política de Privacidade
-        </Link>
-        <span className="text-white/30 mx-2">·</span>
-        <Link
-          to="/termos"
-          className="text-white/60 hover:text-copa-gold text-xs transition-colors"
-        >
-          Termos
-        </Link>
-      </p>
+      {locale === 'pt' && (
+        <p className="mb-3">
+          <Link
+            to="/privacidade"
+            className="text-white/60 hover:text-copa-gold text-xs transition-colors"
+          >
+            {t.footer.privacy}
+          </Link>
+          <span className="text-white/30 mx-2">·</span>
+          <Link
+            to="/termos"
+            className="text-white/60 hover:text-copa-gold text-xs transition-colors"
+          >
+            {t.footer.terms}
+          </Link>
+        </p>
+      )}
       <p className="font-semibold uppercase tracking-wide text-copa-gold">
-        Copa do Mundo 2026 - EUA, Canadá e México
+        {t.footer.tagline}
       </p>
       <p className="mt-1 text-white">
         &copy; 2014 - {currentYear} |{' '}

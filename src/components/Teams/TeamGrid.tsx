@@ -2,26 +2,28 @@ import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { getTeams } from '../../data/teams';
+import { useLocale } from '../../i18n/LocaleContext';
 import type { Confederation } from '../../types/worldcup';
 import { useScrollReveal } from '../../hooks/useScrollReveal';
 import { TeamCard } from './TeamCard';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const confederations: { label: string; value: Confederation | 'ALL' }[] = [
-  { label: 'Todas', value: 'ALL' },
-  { label: 'UEFA', value: 'UEFA' },
-  { label: 'CONMEBOL', value: 'CONMEBOL' },
-  { label: 'CAF', value: 'CAF' },
-  { label: 'AFC', value: 'AFC' },
-  { label: 'CONCACAF', value: 'CONCACAF' },
-  { label: 'OFC', value: 'OFC' },
-];
-
 export function TeamGrid() {
+  const { t } = useLocale();
   const [filter, setFilter] = useState<Confederation | 'ALL'>('ALL');
   const gridRef = useRef<HTMLDivElement>(null);
   const titleRef = useScrollReveal<HTMLHeadingElement>({ y: 30 });
+
+  const confederations: { label: string; value: Confederation | 'ALL' }[] = [
+    { label: t.teams.filterAll, value: 'ALL' },
+    { label: 'UEFA', value: 'UEFA' },
+    { label: 'CONMEBOL', value: 'CONMEBOL' },
+    { label: 'CAF', value: 'CAF' },
+    { label: 'AFC', value: 'AFC' },
+    { label: 'CONCACAF', value: 'CONCACAF' },
+    { label: 'OFC', value: 'OFC' },
+  ];
   const subtitleRef = useScrollReveal<HTMLParagraphElement>({
     y: 20,
     delay: 0.15,
@@ -54,13 +56,13 @@ export function TeamGrid() {
           ref={titleRef}
           className="font-display text-4xl sm:text-5xl md:text-6xl text-copa-gold text-center tracking-wider mb-4"
         >
-          SELEÇÕES
+          {t.teams.title}
         </h2>
         <p
           ref={subtitleRef}
           className="text-white text-center mb-8 text-sm uppercase tracking-widest"
         >
-          {getTeams().length} seleções classificadas
+          {getTeams().length} {t.teams.subtitle}
         </p>
 
         {/* Filter pills */}

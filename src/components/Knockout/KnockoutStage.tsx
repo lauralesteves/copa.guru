@@ -1,5 +1,6 @@
 import { Suspense, lazy, useState } from 'react';
 import { useScrollReveal } from '../../hooks/useScrollReveal';
+import { useLocale } from '../../i18n/LocaleContext';
 import type { GroupName, GroupStanding } from '../../types/worldcup';
 import { Bracket } from './Bracket';
 import { MoleculeGraph } from './MoleculeGraph';
@@ -15,6 +16,7 @@ interface KnockoutStageProps {
 type View = 'bracket' | 'molecule' | '3d';
 
 export function KnockoutStage({ allGroupStandings }: KnockoutStageProps) {
+  const { t } = useLocale();
   const [view, setView] = useState<View>('molecule');
   const titleRef = useScrollReveal<HTMLHeadingElement>({ y: 30 });
   const subtitleRef = useScrollReveal<HTMLParagraphElement>({
@@ -29,13 +31,13 @@ export function KnockoutStage({ allGroupStandings }: KnockoutStageProps) {
           ref={titleRef}
           className="font-display text-4xl sm:text-5xl md:text-6xl text-copa-gold text-center tracking-wider mb-4"
         >
-          MATA-MATA
+          {t.knockout.title}
         </h2>
         <p
           ref={subtitleRef}
           className="text-white text-center mb-8 text-sm uppercase tracking-widest"
         >
-          Dos 16 avos até a grande final
+          {t.knockout.subtitle}
         </p>
 
         {/* View toggle */}
@@ -49,7 +51,7 @@ export function KnockoutStage({ allGroupStandings }: KnockoutStageProps) {
                 : 'bg-white/5 text-white/60 border border-white/10 hover:border-copa-gold/30'
             }`}
           >
-            Chave
+            {t.knockout.bracket}
           </button>
           <button
             type="button"
@@ -60,7 +62,7 @@ export function KnockoutStage({ allGroupStandings }: KnockoutStageProps) {
                 : 'bg-white/5 text-white/60 border border-white/10 hover:border-copa-gold/30'
             }`}
           >
-            Grafo
+            {t.knockout.graph}
           </button>
           <button
             type="button"
@@ -71,7 +73,7 @@ export function KnockoutStage({ allGroupStandings }: KnockoutStageProps) {
                 : 'bg-white/5 text-white/60 border border-white/10 hover:border-copa-gold/30'
             }`}
           >
-            3D
+            {t.knockout.threeD}
           </button>
         </div>
 

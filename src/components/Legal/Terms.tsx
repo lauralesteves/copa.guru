@@ -1,7 +1,9 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useLocale } from '../../i18n/LocaleContext';
 
 export function Terms() {
+  const { t } = useLocale();
   useEffect(() => {
     window.scrollTo(0, 0);
     document.title = 'Termos & Condições — Copa.Guru';
@@ -14,7 +16,7 @@ export function Terms() {
           to="/"
           className="text-copa-gold hover:text-copa-gold-light text-sm transition-colors mb-8 inline-block"
         >
-          ← Voltar para Copa.Guru
+          {t.legal.back}
         </Link>
 
         <h1 className="font-display text-4xl sm:text-5xl text-copa-gold tracking-wider mb-8">
