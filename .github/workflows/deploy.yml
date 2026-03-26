@@ -1,9 +1,14 @@
-name: Deploy
+name: Frontend Deploy
 
 on:
   push:
     branches: [main]
+    paths: ['frontend/**']
   workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: frontend
 
 jobs:
   deploy:
