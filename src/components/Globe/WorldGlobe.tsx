@@ -4,6 +4,7 @@ import { teamCoordinates } from '../../data/coordinates';
 import { getGroups } from '../../data/groups';
 import { getTeamByCode } from '../../data/teams';
 import { useScrollReveal } from '../../hooks/useScrollReveal';
+import { useLocale } from '../../i18n/LocaleContext';
 
 const GlobeComponent = lazy(() => import('./GlobeCanvas'));
 
@@ -16,6 +17,7 @@ interface ArcData {
 }
 
 export function WorldGlobe() {
+  const { t } = useLocale();
   const titleRef = useScrollReveal<HTMLHeadingElement>({ y: 30 });
   const [hoveredTeam, setHoveredTeam] = useState<string | null>(null);
 
@@ -74,10 +76,10 @@ export function WorldGlobe() {
           ref={titleRef}
           className="font-display text-4xl sm:text-5xl md:text-6xl text-copa-gold text-center tracking-wider mb-4"
         >
-          MAPA MUNDIAL
+          {t.globe.title}
         </h2>
         <p className="text-white text-center mb-8 text-sm uppercase tracking-widest">
-          Seleções classificadas ao redor do mundo
+          {t.globe.subtitle}
         </p>
 
         <div className="relative w-full aspect-square max-w-[600px] mx-auto">
@@ -107,7 +109,7 @@ export function WorldGlobe() {
                 {getTeamByCode(hoveredTeam)?.name ?? hoveredTeam}
               </span>
               <span className="text-white/60 text-xs">
-                Grupo {getTeamByCode(hoveredTeam)?.group}
+                {t.globe.group} {getTeamByCode(hoveredTeam)?.group}
               </span>
             </div>
           )}
