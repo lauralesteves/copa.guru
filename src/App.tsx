@@ -1,4 +1,5 @@
 import { Suspense, lazy, useEffect, useState } from 'react';
+import { Route, Routes } from 'react-router-dom';
 import { EasterEgg } from './components/EasterEgg';
 import { Footer } from './components/Footer/Footer';
 import { Hero } from './components/Hero/Hero';
@@ -38,6 +39,16 @@ const PredictionSection = lazy(() =>
     default: m.PredictionSection,
   })),
 );
+const PrivacyPolicy = lazy(() =>
+  import('./components/Legal/PrivacyPolicy').then((m) => ({
+    default: m.PrivacyPolicy,
+  })),
+);
+const Terms = lazy(() =>
+  import('./components/Legal/Terms').then((m) => ({
+    default: m.Terms,
+  })),
+);
 
 function ScrollProgress() {
   const [width, setWidth] = useState(0);
@@ -58,17 +69,14 @@ function ScrollProgress() {
   return <div className="scroll-progress" style={{ width: `${width}%` }} />;
 }
 
-function App() {
+function HomePage() {
   const { matches, updateScore, getGroupMatches, allGroupStandings } =
     useWorldCupData();
   const { predictions, champion, setChampion, stats, clearAll } =
     usePredictions(matches);
-  const { activated: konamiActive, dismiss: dismissKonami, registerTap } = useKonamiCode();
 
   return (
-    <div className="min-h-dvh bg-copa-dark">
-      <ScrollProgress />
-      <Navbar onLogoTap={registerTap} />
+    <>
       <main>
         <Hero />
         <Suspense fallback={<SectionSkeleton lines={12} />}>
@@ -109,6 +117,37 @@ function App() {
           <img src="/images/logo.webp" alt="Voltar ao topo" className="w-20 h-20 opacity-40 hover:opacity-70 transition-opacity" />
         </button>
       </div>
+    </>
+  );
+}
+
+function App() {
+  const { activated: konamiActive, dismiss: dismissKonami, registerTap } = useKonamiCode();
+
+  return (
+    <div className="min-h-dvh bg-copa-dark">
+      <ScrollProgress />
+      <Navbar onLogoTap={registerTap} />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route
+          path="/privacidade"
+          element={
+            <Suspense fallback={<SectionSkeleton lines={3} />}>
+              <PrivacyPolicy />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/termos"
+          element={
+            <Suspense fallback={<SectionSkeleton lines={3} />}>
+              <Terms />
+            </Suspense>
+          }
+        />
+        <Route path="*" element={<HomePage />} />
+      </Routes>
       <Footer />
       <EasterEgg active={konamiActive} onDismiss={dismissKonami} />
     </div>
