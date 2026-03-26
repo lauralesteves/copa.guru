@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { Flip } from 'gsap/dist/Flip';
 import { getTeamByCode } from '../../data/teams';
+import { useLocale } from '../../i18n/LocaleContext';
 import type { GroupStanding } from '../../types/worldcup';
 import { Flag } from '../ui/Flag';
 
@@ -12,6 +13,7 @@ interface StandingsTableProps {
 }
 
 export function StandingsTable({ standings }: StandingsTableProps) {
+  const { t } = useLocale();
   const tbodyRef = useRef<HTMLTableSectionElement>(null);
   const prevOrderRef = useRef<string[]>([]);
 
@@ -52,13 +54,13 @@ export function StandingsTable({ standings }: StandingsTableProps) {
         <thead>
           <tr className="text-white/70 uppercase tracking-wider">
             <th className="text-left pb-2 font-medium w-5">#</th>
-            <th className="text-left pb-2 font-medium">Seleção</th>
-            <th className="text-center pb-2 font-medium w-7">PG</th>
-            <th className="text-center pb-2 font-medium w-5">J</th>
-            <th className="text-center pb-2 font-medium w-5">V</th>
-            <th className="text-center pb-2 font-medium w-5">E</th>
-            <th className="text-center pb-2 font-medium w-5">D</th>
-            <th className="text-center pb-2 font-medium w-7">SG</th>
+            <th className="text-left pb-2 font-medium">{t.standings.team}</th>
+            <th className="text-center pb-2 font-medium w-7">{t.standings.pts}</th>
+            <th className="text-center pb-2 font-medium w-5">{t.standings.played}</th>
+            <th className="text-center pb-2 font-medium w-5">{t.standings.won}</th>
+            <th className="text-center pb-2 font-medium w-5">{t.standings.drawn}</th>
+            <th className="text-center pb-2 font-medium w-5">{t.standings.lost}</th>
+            <th className="text-center pb-2 font-medium w-7">{t.standings.gd}</th>
           </tr>
         </thead>
         <tbody ref={tbodyRef}>
