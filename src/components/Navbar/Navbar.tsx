@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useLocale } from '../../i18n/LocaleContext';
+import { LanguageFlag } from './LanguageFlag';
 import { MobileMenu } from './MobileMenu';
 import { NavLinks } from './NavLinks';
 import { SocialIcons } from './SocialIcons';
@@ -10,12 +12,12 @@ interface NavbarProps {
 
 export function Navbar({ onLogoTap }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
+  const { basePath } = useLocale();
 
   useEffect(() => {
     function handleScroll() {
       setScrolled(window.scrollY > 50);
     }
-
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -40,7 +42,7 @@ export function Navbar({ onLogoTap }: NavbarProps) {
             }}
           />
           <Link
-            to="/"
+            to={basePath || '/'}
             className="font-display text-copa-gold text-3xl md:text-4xl tracking-wider hover:text-copa-gold-light transition-colors"
           >
             COPA.GURU
@@ -49,10 +51,10 @@ export function Navbar({ onLogoTap }: NavbarProps) {
 
         <div className="hidden md:flex items-center ml-auto gap-6">
           <NavLinks />
-
           <div className="border-l border-white/20 h-5" />
-
           <SocialIcons />
+          <div className="border-l border-white/20 h-5" />
+          <LanguageFlag />
         </div>
 
         <div className="ml-auto md:hidden">
