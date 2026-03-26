@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { getTeams } from '../../data/teams';
+import { useLocale } from '../../i18n/LocaleContext';
 import type { Prediction } from '../../hooks/usePredictions';
 import { Flag } from '../ui/Flag';
 
@@ -16,6 +17,7 @@ export function ShareCard({
   stats,
   onClose,
 }: ShareCardProps) {
+  const { t } = useLocale();
   const cardRef = useRef<HTMLDivElement>(null);
 
   const teams = getTeams();
@@ -33,15 +35,16 @@ export function ShareCard({
   );
 
   function handleCopyText() {
+    const sl = t.shareCard.shareLines;
     const lines = [
-      'Meus palpites Copa 2026 - Copa.Guru',
+      sl.header,
       '',
-      champion ? `Campeão: ${championTeam?.name ?? champion}` : '',
-      `Jogos preenchidos: ${stats.filled}/${stats.total}`,
-      `Total de gols: ${totalGoals}`,
-      `Vitórias mandante: ${homeWins} | Empates: ${draws} | Vitórias visitante: ${awayWins}`,
+      champion ? `${sl.champion}: ${championTeam?.name ?? champion}` : '',
+      `${sl.filled}: ${stats.filled}/${stats.total}`,
+      `${sl.goals}: ${totalGoals}`,
+      sl.results.replace('%h', String(homeWins)).replace('%d', String(draws)).replace('%a', String(awayWins)),
       '',
-      'Faça seus palpites em https://copa.guru',
+      sl.cta,
     ]
       .filter(Boolean)
       .join('\n');
@@ -71,7 +74,7 @@ export function ShareCard({
             COPA.GURU
           </h3>
           <p className="text-white/60 text-xs uppercase tracking-widest mt-1">
-            Meus Palpites 2026
+            {t.shareCard.title}
           </p>
         </div>
 
@@ -81,7 +84,7 @@ export function ShareCard({
             <Flag code={championTeam.code} size={96} className="rounded" />
             <div>
               <p className="text-[10px] text-white/60 uppercase tracking-widest">
-                Campeão
+                {t.shareCard.champion}
               </p>
               <p className="text-copa-gold font-bold text-xl">
                 {championTeam.name}
@@ -94,26 +97,26 @@ export function ShareCard({
         <div className="grid grid-cols-2 gap-3 mb-6">
           <div className="bg-white/5 rounded-lg p-3 text-center">
             <p className="text-2xl font-bold text-white">{stats.filled}</p>
-            <p className="text-[10px] text-white/60 uppercase">Jogos</p>
+            <p className="text-[10px] text-white/60 uppercase">{t.shareCard.games}</p>
           </div>
           <div className="bg-white/5 rounded-lg p-3 text-center">
             <p className="text-2xl font-bold text-copa-gold">{totalGoals}</p>
-            <p className="text-[10px] text-white/60 uppercase">Gols totais</p>
+            <p className="text-[10px] text-white/60 uppercase">{t.shareCard.totalGoals}</p>
           </div>
           <div className="bg-white/5 rounded-lg p-3 text-center">
             <p className="text-2xl font-bold text-green-400">{homeWins}</p>
-            <p className="text-[10px] text-white/60 uppercase">Vit. Mandante</p>
+            <p className="text-[10px] text-white/60 uppercase">{t.shareCard.homeWins}</p>
           </div>
           <div className="bg-white/5 rounded-lg p-3 text-center">
             <p className="text-2xl font-bold text-blue-400">{draws}</p>
-            <p className="text-[10px] text-white/60 uppercase">Empates</p>
+            <p className="text-[10px] text-white/60 uppercase">{t.shareCard.draws}</p>
           </div>
         </div>
 
         {/* Progress bar */}
         <div className="mb-6">
           <div className="flex justify-between text-xs text-white/60 mb-1">
-            <span>Progresso</span>
+            <span>{t.shareCard.progress}</span>
             <span>{stats.percentage}%</span>
           </div>
           <div className="w-full h-1.5 bg-white/5 rounded-full">
@@ -131,20 +134,20 @@ export function ShareCard({
             onClick={handleCopyText}
             className="flex-1 bg-copa-gold text-copa-dark font-semibold py-2.5 rounded-lg hover:bg-copa-gold-light transition-colors text-sm"
           >
-            Copiar texto
+            {t.shareCard.copyText}
           </button>
           <button
             type="button"
             onClick={onClose}
             className="px-4 py-2.5 border border-white/10 text-white/60 rounded-lg hover:text-white transition-colors text-sm"
           >
-            Fechar
+            {t.shareCard.close}
           </button>
         </div>
 
         {/* Footer */}
         <p className="text-center text-[10px] text-white/20 mt-4">
-          copa.guru - Copa do Mundo 2026
+          {t.footer.tagline}
         </p>
       </div>
     </div>

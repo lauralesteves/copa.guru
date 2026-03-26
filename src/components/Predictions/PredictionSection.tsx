@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { getTeams } from '../../data/teams';
 import { useScrollReveal } from '../../hooks/useScrollReveal';
+import { useLocale } from '../../i18n/LocaleContext';
 import type { Prediction } from '../../hooks/usePredictions';
 import { Flag } from '../ui/Flag';
 import { Confetti } from './Confetti';
@@ -21,6 +22,7 @@ export function PredictionSection({
   stats,
   clearAll,
 }: PredictionSectionProps) {
+  const { t } = useLocale();
   const [showConfetti, setShowConfetti] = useState(false);
   const [showShareCard, setShowShareCard] = useState(false);
   const [confirmClear, setConfirmClear] = useState(false);
@@ -40,17 +42,17 @@ export function PredictionSection({
           ref={titleRef}
           className="font-display text-4xl sm:text-5xl md:text-6xl text-copa-gold text-center tracking-wider mb-4"
         >
-          PALPITES
+          {t.predictions.title}
         </h2>
         <p className="text-white text-center mb-12 text-sm uppercase tracking-widest">
-          Faça seus palpites e compartilhe
+          {t.predictions.subtitle}
         </p>
 
         <div ref={contentRef} className="space-y-8">
           {/* Progress */}
           <div className="bg-white/5 border border-white/10 rounded-xl p-6">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-sm text-white/60">Progresso dos palpites</span>
+              <span className="text-sm text-white/60">{t.predictions.progress}</span>
               <span className="text-sm font-bold text-copa-gold">
                 {stats.filled}/{stats.total} jogos
               </span>
@@ -62,14 +64,14 @@ export function PredictionSection({
               />
             </div>
             <p className="text-xs text-white mt-2">
-              <a href="#grupos" className="text-copa-gold hover:text-copa-gold-light transition-colors underline underline-offset-2">Ir para Fase de Grupos</a> e inserir placares na aba "Jogos" de cada grupo
+              <a href="#grupos" className="text-copa-gold hover:text-copa-gold-light transition-colors underline underline-offset-2">{t.predictions.goToGroups}</a> {t.predictions.instruction}
             </p>
           </div>
 
           {/* Champion pick */}
           <div className="bg-white/5 border border-white/10 rounded-xl p-6">
             <h3 className="font-display text-xl text-copa-gold tracking-wider mb-4">
-              QUEM SERÁ O CAMPEÃO?
+              {t.predictions.whoWins}
             </h3>
 
             {champion ? (
@@ -81,7 +83,7 @@ export function PredictionSection({
                       {getTeams().find((t) => t.code === champion)?.name ?? champion}
                     </p>
                     <p className="text-white/60 text-xs uppercase">
-                      Seu palpite de campeão
+                      {t.predictions.yourPick}
                     </p>
                   </div>
                 </div>
@@ -90,7 +92,7 @@ export function PredictionSection({
                   onClick={() => setChampion(null)}
                   className="text-white/30 hover:text-white/60 text-xs transition-colors"
                 >
-                  Trocar
+                  {t.predictions.change}
                 </button>
               </div>
             ) : (
@@ -124,7 +126,7 @@ export function PredictionSection({
               disabled={!champion && stats.filled === 0}
               className="flex-1 bg-copa-gold text-copa-dark font-semibold py-3 rounded-lg hover:bg-copa-gold-light transition-colors text-sm uppercase tracking-wider disabled:opacity-30 disabled:cursor-not-allowed"
             >
-              Compartilhar Palpites
+              {t.predictions.share}
             </button>
             <button
               type="button"
@@ -139,7 +141,7 @@ export function PredictionSection({
               }}
               className="px-6 py-3 border border-white/10 text-white/60 rounded-lg hover:border-red-500/30 hover:text-red-400 transition-colors text-sm uppercase tracking-wider"
             >
-              {confirmClear ? 'Confirmar reset?' : 'Limpar tudo'}
+              {confirmClear ? t.predictions.confirmClear : t.predictions.clearAll}
             </button>
           </div>
         </div>
