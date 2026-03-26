@@ -18,11 +18,7 @@ const routes: Route[] = [
   { path: 'privacidade/index.html', locale: 'pt' },
   { path: 'termos/index.html', locale: 'pt' },
   { path: 'en/index.html', locale: 'en' },
-  { path: 'en/privacy/index.html', locale: 'en' },
-  { path: 'en/terms/index.html', locale: 'en' },
   { path: 'es/index.html', locale: 'es' },
-  { path: 'es/privacidad/index.html', locale: 'es' },
-  { path: 'es/terminos/index.html', locale: 'es' },
 ];
 
 for (const route of routes) {
