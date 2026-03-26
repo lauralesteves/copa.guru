@@ -9,7 +9,7 @@
     "check": "biome check . --write",
     "preview": "vite preview",
     "test": "vitest",
-    "prepare": "cp scripts/pre-push .git/hooks/pre-push && chmod +x .git/hooks/pre-push"
+    "prepare": "cp ../scripts/pre-push ../.git/hooks/pre-push && chmod +x ../.git/hooks/pre-push"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",

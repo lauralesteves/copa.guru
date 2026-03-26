@@ -1,9 +1,14 @@
-name: Build
+name: Frontend Build
 
 on:
   pull_request:
     branches: ['*']
+    paths: ['frontend/**']
   workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: frontend
 
 jobs:
   build:

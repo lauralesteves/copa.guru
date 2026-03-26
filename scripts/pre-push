@@ -1,4 +1,11 @@
 #!/bin/sh
-echo "Running build before push..."
-bun run build || exit 1
-echo "Build successful, pushing..."
+ROOT="$(git rev-parse --show-toplevel)"
+
+echo "Running frontend build..."
+cd "$ROOT/frontend" && bun run build || exit 1
+
+# Uncomment when backend is ready:
+# echo "Running backend build..."
+# cd "$ROOT/backend" && sam build || exit 1
+
+echo "All builds successful, pushing..."
