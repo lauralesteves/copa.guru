@@ -1,5 +1,6 @@
 import { Suspense, lazy, useState } from 'react';
 import { getTeamByCode } from '../../data/teams';
+import { useLocale } from '../../i18n/LocaleContext';
 import type { Group, GroupStanding, Match } from '../../types/worldcup';
 import { Flag } from '../ui/Flag';
 import { ChordDiagram } from './ChordDiagram';
@@ -29,6 +30,7 @@ export function GroupCard({
   standings,
   onScoreChange,
 }: GroupCardProps) {
+  const { t } = useLocale();
   const [tab, setTab] = useState<Tab>('table');
 
   return (
@@ -83,7 +85,7 @@ export function GroupCard({
                   <>
                     <div className="w-7 h-5 bg-white/10 rounded-sm" />
                     <span className="text-white/60 text-xs">
-                      A definir
+                      {t.groups.tbd}
                     </span>
                   </>
                 ) : (
@@ -94,12 +96,12 @@ export function GroupCard({
                     </span>
                     {team?.isHost && (
                       <span className="text-[8px] bg-copa-gold/20 text-copa-gold px-1.5 py-0.5 rounded-full">
-                        SEDE
+                        {t.groups.host}
                       </span>
                     )}
                     {team?.isDebutant && (
                       <span className="text-[8px] bg-green-500/20 text-green-400 px-1.5 py-0.5 rounded-full">
-                        NOVO
+                        {t.groups.debutant}
                       </span>
                     )}
                   </>
@@ -113,10 +115,10 @@ export function GroupCard({
       {/* Tab selector */}
       <div className="flex border-t border-white/5 mx-4 mt-2">
         {([
-          { key: 'table', label: 'Tabela' },
-          { key: 'matches', label: 'Jogos' },
-          { key: 'chord', label: 'Gráfico' },
-          { key: 'galaxy', label: '3D' },
+          { key: 'table', label: t.groups.tabTable },
+          { key: 'matches', label: t.groups.tabMatches },
+          { key: 'chord', label: t.groups.tabChart },
+          { key: 'galaxy', label: t.groups.tab3D },
         ] as { key: Tab; label: string }[]).map(({ key, label }) => (
           <button
             key={key}
@@ -149,7 +151,7 @@ export function GroupCard({
               ))
             ) : (
               <p className="text-white text-xs text-center py-4">
-                Nenhum jogo disponível
+                {t.groups.noMatches}
               </p>
             )}
           </div>

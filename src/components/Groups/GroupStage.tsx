@@ -1,5 +1,6 @@
 import { getGroups } from '../../data/groups';
 import { useScrollReveal, useStaggerReveal } from '../../hooks/useScrollReveal';
+import { useLocale } from '../../i18n/LocaleContext';
 import type { GroupStanding, Match } from '../../types/worldcup';
 import type { GroupName } from '../../types/worldcup';
 import { GroupCard } from './GroupCard';
@@ -19,6 +20,7 @@ export function GroupStage({
   allGroupStandings,
   onScoreChange,
 }: GroupStageProps) {
+  const { t } = useLocale();
   const titleRef = useScrollReveal<HTMLHeadingElement>({ y: 30 });
   const subtitleRef = useScrollReveal<HTMLParagraphElement>({
     y: 20,
@@ -37,19 +39,19 @@ export function GroupStage({
           ref={titleRef}
           className="font-display text-4xl sm:text-5xl md:text-6xl text-copa-gold text-center tracking-wider mb-4"
         >
-          FASE DE GRUPOS
+          {t.groups.title}
         </h2>
         <p
           ref={subtitleRef}
           className="text-white text-center mb-4 text-sm uppercase tracking-widest"
         >
-          12 grupos · 48 seleções · Insira seus palpites
+          {t.groups.subtitle}
         </p>
         <div className="flex flex-wrap justify-center gap-x-6 gap-y-1 mb-12 text-xs text-white/60">
-          <span><strong className="text-white/60">Tabela</strong> — classificação ao vivo</span>
-          <span><strong className="text-white/60">Jogos</strong> — insira seus placares</span>
-          <span><strong className="text-white/60">Gráfico</strong> — diagrama de confrontos</span>
-          <span><strong className="text-white/60">3D</strong> — visualização orbital</span>
+          <span><strong className="text-white/60">{t.groups.tabTable}</strong> — {t.groups.hintTable}</span>
+          <span><strong className="text-white/60">{t.groups.tabMatches}</strong> — {t.groups.hintMatches}</span>
+          <span><strong className="text-white/60">{t.groups.tabChart}</strong> — {t.groups.hintChart}</span>
+          <span><strong className="text-white/60">{t.groups.tab3D}</strong> — {t.groups.hint3D}</span>
         </div>
 
         <div
