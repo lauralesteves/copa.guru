@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { MobileMenu } from './MobileMenu';
 import { NavLinks } from './NavLinks';
 import { SocialIcons } from './SocialIcons';
@@ -38,12 +39,12 @@ export function Navbar({ onLogoTap }: NavbarProps) {
               onLogoTap?.();
             }}
           />
-          <a
-            href="#"
+          <Link
+            to="/"
             className="font-display text-copa-gold text-3xl md:text-4xl tracking-wider hover:text-copa-gold-light transition-colors"
           >
             COPA.GURU
-          </a>
+          </Link>
         </div>
 
         <div className="hidden md:flex items-center ml-auto gap-6">
