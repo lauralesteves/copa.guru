@@ -2,6 +2,7 @@ import { Suspense, lazy, useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { EasterEgg } from './components/EasterEgg';
 import { Footer } from './components/Footer/Footer';
+import { GithubCorner } from './components/GithubCorner/GithubCorner';
 import { Hero } from './components/Hero/Hero';
 import { Navbar } from './components/Navbar/Navbar';
 import { SectionSkeleton } from './components/ui/SectionSkeleton';
@@ -127,6 +128,7 @@ function App() {
   return (
     <div className="min-h-dvh bg-copa-dark">
       <ScrollProgress />
+      <GithubCorner />
       <Navbar onLogoTap={registerTap} />
       <Routes>
         <Route path="/" element={<HomePage />} />
