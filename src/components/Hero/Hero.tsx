@@ -1,4 +1,5 @@
 import { Suspense, lazy, useEffect, useRef } from 'react';
+import { useLocale } from '../../i18n/LocaleContext';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ParticleField } from '../3d/ParticleField';
@@ -100,9 +101,7 @@ export function Hero() {
           </h1>
         </div>
 
-        <p className="font-heading text-lg sm:text-xl md:text-2xl text-white/70 mt-4 tracking-widest uppercase">
-          Copa do Mundo 2026
-        </p>
+        <HeroText />
 
         <div className="flex items-center justify-center gap-3 mt-8">
           {['USA', 'CAN', 'MEX'].map((code) => (
@@ -120,20 +119,7 @@ export function Hero() {
           ))}
         </div>
 
-        <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
-          <a
-            href="#grupos"
-            className="bg-copa-gold text-copa-dark font-semibold px-8 py-3 rounded-lg hover:bg-copa-gold-light transition-colors text-sm uppercase tracking-wider"
-          >
-            Ver Grupos
-          </a>
-          <a
-            href="#palpites"
-            className="border border-white/20 text-white/80 font-semibold px-8 py-3 rounded-lg hover:border-copa-gold hover:text-copa-gold transition-colors text-sm uppercase tracking-wider"
-          >
-            Fazer Palpites!
-          </a>
-        </div>
+        <HeroButtons />
       </div>
 
       {/* Scroll indicator */}
@@ -154,5 +140,28 @@ export function Hero() {
         </svg>
       </div>
     </section>
+  );
+}
+
+function HeroText() {
+  const { t } = useLocale();
+  return (
+    <p className="font-heading text-lg sm:text-xl md:text-2xl text-white/70 mt-4 tracking-widest uppercase">
+      {t.hero.subtitle}
+    </p>
+  );
+}
+
+function HeroButtons() {
+  const { t } = useLocale();
+  return (
+    <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="#grupos" className="bg-copa-gold text-copa-dark font-semibold px-8 py-3 rounded-lg hover:bg-copa-gold-light transition-colors text-sm uppercase tracking-wider">
+        {t.hero.viewGroups}
+      </a>
+      <a href="#palpites" className="border border-white/20 text-white/80 font-semibold px-8 py-3 rounded-lg hover:border-copa-gold hover:text-copa-gold transition-colors text-sm uppercase tracking-wider">
+        {t.hero.makePredictions}
+      </a>
+    </div>
   );
 }
