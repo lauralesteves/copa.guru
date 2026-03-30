@@ -4,6 +4,7 @@ go 1.25.0
 
 require (
 	github.com/aws/aws-lambda-go v1.54.0
+	github.com/golang-jwt/jwt/v5 v5.3.1
 	go.mongodb.org/mongo-driver/v2 v2.5.0
 )
 
