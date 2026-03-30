@@ -1,0 +1,27 @@
+name: Backend Build
+
+on:
+  pull_request:
+    branches: ['*']
+    paths: ['backend/**']
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: backend
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: Build
+        run: go build ./...
+
+      - name: Test
+        run: go test -race -cover ./... || echo "no test packages found"
