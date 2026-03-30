@@ -9,6 +9,34 @@ Globals:
       - x86_64
     MemorySize: 256
     Timeout: 10
+  Api:
+    Auth:
+      DefaultAuthorizer: BearerTokenAuthorizer
+      Authorizers:
+        BearerTokenAuthorizer:
+          FunctionPayloadType: REQUEST
+          FunctionArn: !GetAtt BearerAuthorizerFunction.Arn
+          Identity:
+            Headers:
+              - Authorization
+            ReauthorizeEvery: 0
+    Cors:
+      AllowMethods: "'GET,POST,PUT,PATCH,DELETE,OPTIONS'"
+      AllowHeaders: "'Content-Type,Authorization'"
+      AllowOrigin: "'*'"
+    GatewayResponses:
+      DEFAULT_4XX:
+        ResponseParameters:
+          Headers:
+            Access-Control-Allow-Origin: "'*'"
+            Access-Control-Allow-Headers: "'Content-Type,Authorization'"
+            Access-Control-Allow-Methods: "'GET,POST,PUT,PATCH,DELETE,OPTIONS'"
+      DEFAULT_5XX:
+        ResponseParameters:
+          Headers:
+            Access-Control-Allow-Origin: "'*'"
+            Access-Control-Allow-Headers: "'Content-Type,Authorization'"
+            Access-Control-Allow-Methods: "'GET,POST,PUT,PATCH,DELETE,OPTIONS'"
 
 Parameters:
   MongoDBDSN:
@@ -34,24 +62,25 @@ Parameters:
     Default: ""
 
 Resources:
-  CopaGuruHttpApi:
-    Type: AWS::Serverless::HttpApi
+  CopaGuruApi:
+    Type: AWS::Serverless::Api
     Properties:
-      StageName: $default
-      CorsConfiguration:
-        AllowMethods:
-          - GET
-          - POST
-          - PUT
-          - PATCH
-          - DELETE
-          - OPTIONS
-        AllowHeaders:
-          - Content-Type
-          - Authorization
-        AllowOrigins:
-          - https://copa.guru
-          - http://localhost:5173
+      Name: CopaGuruApi
+      StageName: Prod
+
+  BearerAuthorizerFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
+    Properties:
+      FunctionName: copa-guru-bearer-authorizer
+      Handler: bootstrap
+      CodeUri: lambdas/auth/bearer_authorizer
+      MemorySize: 128
+      Timeout: 5
+      Environment:
+        Variables:
+          AUTH_JWT_SECRET: !Ref JWTSecret
 
   HealthFunction:
     Type: AWS::Serverless::Function
@@ -63,13 +92,15 @@ Resources:
       CodeUri: lambdas/api/health
       Events:
         Api:
-          Type: HttpApi
+          Type: Api
           Properties:
             Path: /health
             Method: get
-            ApiId: !Ref CopaGuruHttpApi
+            RestApiId: !Ref CopaGuruApi
+            Auth:
+              Authorizer: NONE
 
 Outputs:
   ApiUrl:
     Description: API Gateway URL
-    Value: !Sub "https://${CopaGuruHttpApi}.execute-api.${AWS::Region}.amazonaws.com"
+    Value: !Sub "https://${CopaGuruApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
