@@ -14,13 +14,12 @@ else
   echo "No frontend changes, skipping build."
 fi
 
-# Uncomment when backend is ready:
-# if has_changes_in backend; then
-#   echo "Backend changes detected, running build..."
-#   cd "$ROOT/backend" && sam build || exit 1
-#   echo "Backend build successful."
-# else
-#   echo "No backend changes, skipping build."
-# fi
+if has_changes_in backend; then
+  echo "Backend changes detected, running build..."
+  cd "$ROOT/backend" && go build ./... || exit 1
+  echo "Backend build successful."
+else
+  echo "No backend changes, skipping build."
+fi
 
 echo "Pushing..."

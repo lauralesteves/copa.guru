@@ -41,6 +41,8 @@ Plataforma interativa de palpites para a Copa do Mundo FIFA 2026. Faça previsõ
 
 ## Tech Stack
 
+### Frontend
+
 | Camada         | Tecnologia                                       |
 |----------------|--------------------------------------------------|
 | Framework      | React 19 + TypeScript 5.7                        |
@@ -52,6 +54,18 @@ Plataforma interativa de palpites para a Copa do Mundo FIFA 2026. Faça previsõ
 | Rotas          | React Router DOM 7                               |
 | Linting        | Biome                                            |
 | Testes         | Vitest                                           |
+
+### Backend
+
+| Camada         | Tecnologia                                       |
+|----------------|--------------------------------------------------|
+| Linguagem      | Go 1.24                                          |
+| Runtime        | AWS Lambda (`provided.al2`)                      |
+| API            | AWS API Gateway (HttpApi)                        |
+| IaC            | AWS SAM                                          |
+| Banco de Dados | MongoDB 7                                        |
+| Autenticação   | JWT + Google OAuth2                              |
+| Testes         | go test + gomock                                 |
 
 ## Internacionalização
 
@@ -69,44 +83,62 @@ As traduções ficam em `frontend/src/i18n/translations.ts`. Arquivos HTML por i
 
 ### Pré-requisitos
 
+#### Frontend
+
 - [Bun](https://bun.sh/) >= 1.x
 
-### Instalar dependências
+#### Backend
+
+- [Go](https://go.dev/) >= 1.24
+- [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html)
+- [Docker](https://www.docker.com/) (para MongoDB local e `sam local`)
+
+### Frontend
 
 ```bash
-cd frontend
-bun install
-```
+# Instalar dependências
+cd frontend && bun install
 
-### Servidor de desenvolvimento
-
-```bash
+# Servidor de desenvolvimento
 make frontend-server
 # ou
 cd frontend && bun run dev --port 5006
+
+# Build
+make frontend-build
+
+# Lint & Formatação
+cd frontend && bun run check
+
+# Testes
+cd frontend && bun run test
 ```
 
 Acesse [http://localhost:5006](http://localhost:5006).
 
-### Build
+### Backend
 
 ```bash
-make frontend-build
-# ou
-cd frontend && bun run build
+# Subir MongoDB local
+make backend-up
+
+# Build (SAM)
+make backend-build
+
+# Rodar API localmente
+make backend-run
+
+# Testes
+make backend-test
+
+# Gerar mocks
+make backend-mocks
+
+# Parar MongoDB
+make backend-down
 ```
 
-### Lint & Formatação
-
-```bash
-cd frontend && bun run check
-```
-
-### Testes
-
-```bash
-cd frontend && bun run test
-```
+Acesse [http://localhost:3000](http://localhost:3000). Health check: `GET /health`.
 
 ## Estrutura do Projeto
 
@@ -129,11 +161,21 @@ copa.guru/
 │   ├── package.json
 │   ├── tsconfig.json
 │   └── vite.config.ts
-├── backend/                # (em breve)
+├── backend/
+│   ├── lambdas/            # Lambda handlers (api, auth, workers)
+│   ├── internal/           # Módulos de domínio e shared
+│   ├── scripts/            # Scripts de inicialização (MongoDB)
+│   ├── template.yml        # SAM template
+│   ├── samconfig.toml      # SAM config (dev/prod)
+│   ├── docker-compose.yml  # MongoDB local
+│   ├── Makefile
+│   └── go.mod
 └── Makefile
 ```
 
 ## Deploy
+
+### Frontend
 
 Hospedado em **AWS S3 + CloudFront**.
 
@@ -142,5 +184,13 @@ make frontend-deploy
 ```
 
 Faz o build, sincroniza com o S3 com headers de cache apropriados (1 ano para assets imutáveis, 1 hora para HTML/metadados) e invalida a distribuição do CloudFront.
+
+### Backend
+
+Hospedado em **AWS Lambda + API Gateway**.
+
+```bash
+make backend-deploy
+```
 
 CI/CD via GitHub Actions: PRs disparam build de verificação, merges na `main` disparam deploy automático.
