@@ -1,11 +1,26 @@
 #!/bin/sh
 ROOT="$(git rev-parse --show-toplevel)"
+REMOTE_SHA=$(git rev-parse @{u} 2>/dev/null || git rev-parse HEAD~1)
 
-echo "Running frontend build..."
-cd "$ROOT/frontend" && bun run build || exit 1
+has_changes_in() {
+  git diff --name-only "$REMOTE_SHA"..HEAD -- "$1/" | grep -q .
+}
+
+if has_changes_in frontend; then
+  echo "Frontend changes detected, running build..."
+  cd "$ROOT/frontend" && bun run build || exit 1
+  echo "Frontend build successful."
+else
+  echo "No frontend changes, skipping build."
+fi
 
 # Uncomment when backend is ready:
-# echo "Running backend build..."
-# cd "$ROOT/backend" && sam build || exit 1
+# if has_changes_in backend; then
+#   echo "Backend changes detected, running build..."
+#   cd "$ROOT/backend" && sam build || exit 1
+#   echo "Backend build successful."
+# else
+#   echo "No backend changes, skipping build."
+# fi
 
-echo "All builds successful, pushing..."
+echo "Pushing..."
