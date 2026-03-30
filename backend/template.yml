@@ -103,4 +103,4 @@ Resources:
 Outputs:
   ApiUrl:
     Description: API Gateway URL
-    Value: !Sub "https://${CopaGuruApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
+    Value: "https://api.copa.guru"
