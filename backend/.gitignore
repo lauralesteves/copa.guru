@@ -1,2 +1,28 @@
+*.env*
+!.env.example
+.DS_Store
+
+# Log
+*.log
+.debug
+tmp
+
+# IDE
+.vscode
+.idea
+
+# Notes
+data
+NOTE.md
+
+# Coverage
+coverage.txt
+
+# Binaries
+bin
+
+# AWS SAM
 .aws-sam
+
+# Go vendor
 vendor
