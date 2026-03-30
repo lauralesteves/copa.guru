@@ -1,6 +1,13 @@
-.PHONY: frontend-server frontend-build frontend-deploy \
+.PHONY: init \
+       frontend-server frontend-build frontend-deploy \
        backend-up backend-down backend-run backend-build backend-test backend-test-ci \
        backend-mocks backend-clean backend-seed backend-deploy
+
+## Setup
+init:
+	cp scripts/pre-push .git/hooks/pre-push
+	chmod +x .git/hooks/pre-push
+	@echo "Git hooks instalados."
 
 ## Frontend
 frontend-server:
