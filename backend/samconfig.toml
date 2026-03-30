@@ -1,0 +1,29 @@
+version = 0.1
+
+[default]
+[default.global]
+stack_name = "copa-guru"
+region = "us-east-1"
+
+[default.build]
+use_container = false
+
+[default.deploy.parameters]
+stack_name = "copa-guru"
+resolve_s3 = true
+s3_prefix = "copa-guru"
+region = "us-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+
+[default.local_start_api]
+parameter_overrides = ["MongoDBDSN=mongodb://localhost:27017", "MongoDBDatabaseName=copa-guru"]
+
+[prod]
+[prod.deploy.parameters]
+stack_name = "copa-guru-prod"
+resolve_s3 = true
+s3_prefix = "copa-guru-prod"
+region = "us-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
