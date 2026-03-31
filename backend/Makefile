@@ -1,4 +1,4 @@
-.PHONY: up down run build test test-ci mocks clean seed
+.PHONY: up down run build test test-ci mocks clean seed local-user
 
 up:
 	docker compose up -d
@@ -26,3 +26,7 @@ clean:
 
 seed:
 	@echo "TODO: seed de matches — implementar quando modelos estiverem prontos"
+
+local-user:
+	@test -n "$(CREDS)" || (echo "usage: make local-user CREDS=email:password" && exit 1)
+	go run scripts/create-local-user/main.go "$(CREDS)"

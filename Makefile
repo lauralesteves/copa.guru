@@ -1,7 +1,7 @@
 .PHONY: init \
        frontend-server frontend-build frontend-deploy \
        backend-up backend-down backend-run backend-build backend-test backend-test-ci \
-       backend-mocks backend-clean backend-seed backend-deploy
+       backend-mocks backend-clean backend-seed backend-local-user backend-deploy
 
 ## Setup
 init:
@@ -46,6 +46,9 @@ backend-clean:
 
 backend-seed:
 	$(MAKE) -C backend seed
+
+backend-local-user:
+	$(MAKE) -C backend local-user CREDS="$(CREDS)"
 
 backend-deploy:
 	$(MAKE) -C backend deploy
