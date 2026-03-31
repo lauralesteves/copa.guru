@@ -13,6 +13,7 @@ import (
 //go:generate mockgen -source=user_repository.go -destination=user_repository_mock.go -package=repositories
 
 type UserRepository interface {
+	FindByEmail(email string) (*models.User, error)
 	FindByGoogleID(googleID string) (*models.User, error)
 	FindByID(id bson.ObjectID) (*models.User, error)
 	Upsert(user *models.User) (*models.User, error)
@@ -26,6 +27,21 @@ type userRepository struct {
 
 func NewUserRepository(collection *mongo.Collection) UserRepository {
 	return &userRepository{collection: collection}
+}
+
+func (r *userRepository) FindByEmail(email string) (*models.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var user models.User
+	err := r.collection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &user, nil
 }
 
 func (r *userRepository) FindByGoogleID(googleID string) (*models.User, error) {
@@ -65,7 +81,7 @@ func (r *userRepository) Upsert(user *models.User) (*models.User, error) {
 	now := time.Now()
 	user.UpdatedAt = now
 
-	filter := bson.M{"googleId": user.GoogleID}
+	filter := bson.M{"email": user.Email}
 	update := bson.M{
 		"$set": bson.M{
 			"email":       user.Email,
@@ -75,7 +91,9 @@ func (r *userRepository) Upsert(user *models.User) (*models.User, error) {
 			"updatedAt":   now,
 		},
 		"$setOnInsert": bson.M{
+			"strategy":  user.Strategy,
 			"googleId":  user.GoogleID,
+			"password":  user.Password,
 			"createdAt": now,
 		},
 	}
@@ -90,7 +108,7 @@ func (r *userRepository) Upsert(user *models.User) (*models.User, error) {
 		user.ID = result.UpsertedID.(bson.ObjectID)
 		user.CreatedAt = now
 	} else {
-		existing, err := r.FindByGoogleID(user.GoogleID)
+		existing, err := r.FindByEmail(user.Email)
 		if err != nil {
 			return nil, err
 		}

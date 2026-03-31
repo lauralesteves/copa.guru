@@ -42,6 +42,21 @@ func (m *MockUserRepository) EXPECT() *MockUserRepositoryMockRecorder {
 	return m.recorder
 }
 
+// FindByEmail mocks base method.
+func (m *MockUserRepository) FindByEmail(email string) (*models.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindByEmail", email)
+	ret0, _ := ret[0].(*models.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByEmail indicates an expected call of FindByEmail.
+func (mr *MockUserRepositoryMockRecorder) FindByEmail(email any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByEmail", reflect.TypeOf((*MockUserRepository)(nil).FindByEmail), email)
+}
+
 // FindByGoogleID mocks base method.
 func (m *MockUserRepository) FindByGoogleID(googleID string) (*models.User, error) {
 	m.ctrl.T.Helper()

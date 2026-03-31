@@ -45,6 +45,7 @@ func TestUpsert_CreateNew(t *testing.T) {
 	now := time.Now()
 
 	user := &models.User{
+		Strategy:    models.StrategyGoogle,
 		GoogleID:    "google-123",
 		Email:       "test@copa.guru",
 		Name:        "Test User",
@@ -72,6 +73,7 @@ func TestUpsert_UpdateExisting(t *testing.T) {
 	now := time.Now()
 
 	user := &models.User{
+		Strategy:    models.StrategyGoogle,
 		GoogleID:    "google-456",
 		Email:       "first@copa.guru",
 		Name:        "First Name",
@@ -81,7 +83,6 @@ func TestUpsert_UpdateExisting(t *testing.T) {
 	first, _ := repo.Upsert(user)
 
 	user.Name = "Updated Name"
-	user.Email = "updated@copa.guru"
 	second, err := repo.Upsert(user)
 	if err != nil {
 		t.Fatalf("Upsert() error: %v", err)
@@ -91,6 +92,51 @@ func TestUpsert_UpdateExisting(t *testing.T) {
 	}
 	if second.Name != "Updated Name" {
 		t.Errorf("Name = %q, want %q", second.Name, "Updated Name")
+	}
+}
+
+func TestFindByEmail(t *testing.T) {
+	col, cleanup := setupTestDB(t)
+	defer cleanup()
+
+	repo := NewUserRepository(col)
+	now := time.Now()
+
+	user := &models.User{
+		Strategy:    models.StrategyEmail,
+		Email:       "email@copa.guru",
+		Name:        "Email User",
+		Password:    "$2a$10$fakehash",
+		LastLoginAt: &now,
+	}
+	repo.Upsert(user)
+
+	found, err := repo.FindByEmail("email@copa.guru")
+	if err != nil {
+		t.Fatalf("FindByEmail() error: %v", err)
+	}
+	if found == nil {
+		t.Fatal("expected user, got nil")
+	}
+	if found.Strategy != models.StrategyEmail {
+		t.Errorf("Strategy = %q, want %q", found.Strategy, models.StrategyEmail)
+	}
+	if found.Password != "$2a$10$fakehash" {
+		t.Errorf("Password = %q, want %q", found.Password, "$2a$10$fakehash")
+	}
+}
+
+func TestFindByEmail_NotFound(t *testing.T) {
+	col, cleanup := setupTestDB(t)
+	defer cleanup()
+
+	repo := NewUserRepository(col)
+	found, err := repo.FindByEmail("nonexistent@copa.guru")
+	if err != nil {
+		t.Fatalf("FindByEmail() error: %v", err)
+	}
+	if found != nil {
+		t.Error("expected nil for nonexistent email")
 	}
 }
 

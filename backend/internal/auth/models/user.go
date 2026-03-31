@@ -6,12 +6,21 @@ import (
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
+type AuthStrategy string
+
+const (
+	StrategyGoogle AuthStrategy = "google"
+	StrategyEmail  AuthStrategy = "email"
+)
+
 type User struct {
 	ID                    bson.ObjectID `json:"id" bson:"_id,omitempty"`
-	GoogleID              string        `json:"-" bson:"googleId"`
+	Strategy              AuthStrategy  `json:"strategy" bson:"strategy"`
+	GoogleID              string        `json:"-" bson:"googleId,omitempty"`
 	Email                 string        `json:"email" bson:"email"`
 	Name                  string        `json:"name" bson:"name"`
-	Picture               string        `json:"picture" bson:"picture"`
+	Password              string        `json:"-" bson:"password,omitempty"`
+	Picture               string        `json:"picture" bson:"picture,omitempty"`
 	RefreshToken          string        `json:"-" bson:"refreshToken,omitempty"`
 	RefreshTokenExpiresAt *time.Time    `json:"-" bson:"refreshTokenExpiresAt,omitempty"`
 	LastLoginAt           *time.Time    `json:"lastLoginAt" bson:"lastLoginAt"`
