@@ -6,10 +6,10 @@ up:
 down:
 	docker compose down
 
-run:
+run: build
 	sam local start-api
 
-build:
+build: clean
 	sam build
 
 test:
