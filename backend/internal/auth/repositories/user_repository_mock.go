@@ -87,6 +87,21 @@ func (mr *MockUserRepositoryMockRecorder) FindByID(id any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByID", reflect.TypeOf((*MockUserRepository)(nil).FindByID), id)
 }
 
+// FindByRefreshToken mocks base method.
+func (m *MockUserRepository) FindByRefreshToken(token string) (*models.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindByRefreshToken", token)
+	ret0, _ := ret[0].(*models.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByRefreshToken indicates an expected call of FindByRefreshToken.
+func (mr *MockUserRepositoryMockRecorder) FindByRefreshToken(token any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByRefreshToken", reflect.TypeOf((*MockUserRepository)(nil).FindByRefreshToken), token)
+}
+
 // InvalidateRefreshToken mocks base method.
 func (m *MockUserRepository) InvalidateRefreshToken(userID bson.ObjectID) error {
 	m.ctrl.T.Helper()
