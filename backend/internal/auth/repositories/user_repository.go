@@ -16,6 +16,7 @@ type UserRepository interface {
 	FindByEmail(email string) (*models.User, error)
 	FindByGoogleID(googleID string) (*models.User, error)
 	FindByID(id bson.ObjectID) (*models.User, error)
+	FindByRefreshToken(token string) (*models.User, error)
 	Upsert(user *models.User) (*models.User, error)
 	UpdateRefreshToken(userID bson.ObjectID, token string, expiresAt time.Time) error
 	InvalidateRefreshToken(userID bson.ObjectID) error
@@ -65,6 +66,21 @@ func (r *userRepository) FindByID(id bson.ObjectID) (*models.User, error) {
 
 	var user models.User
 	err := r.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&user)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (r *userRepository) FindByRefreshToken(token string) (*models.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var user models.User
+	err := r.collection.FindOne(ctx, bson.M{"refreshToken": token}).Decode(&user)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, nil
