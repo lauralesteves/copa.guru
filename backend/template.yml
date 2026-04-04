@@ -100,6 +100,103 @@ Resources:
             Auth:
               Authorizer: NONE
 
+  GoogleLoginFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
+    Properties:
+      FunctionName: copa-guru-auth-google-login
+      Handler: bootstrap
+      CodeUri: lambdas/api/auth/google_login
+      Timeout: 30
+      Environment:
+        Variables:
+          MONGODB_DSN: !Ref MongoDBDSN
+          MONGODB_DATABASE_NAME: !Ref MongoDBDatabaseName
+          AUTH_JWT_SECRET: !Ref JWTSecret
+          GOOGLE_CLIENT_ID: !Ref GoogleClientID
+          GOOGLE_CLIENT_SECRET: !Ref GoogleClientSecret
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /auth/google
+            Method: post
+            RestApiId: !Ref CopaGuruApi
+            Auth:
+              Authorizer: NONE
+
+  RefreshFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
+    Properties:
+      FunctionName: copa-guru-auth-refresh
+      Handler: bootstrap
+      CodeUri: lambdas/api/auth/refresh
+      Environment:
+        Variables:
+          MONGODB_DSN: !Ref MongoDBDSN
+          MONGODB_DATABASE_NAME: !Ref MongoDBDatabaseName
+          AUTH_JWT_SECRET: !Ref JWTSecret
+          GOOGLE_CLIENT_ID: !Ref GoogleClientID
+          GOOGLE_CLIENT_SECRET: !Ref GoogleClientSecret
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /auth/refresh
+            Method: post
+            RestApiId: !Ref CopaGuruApi
+            Auth:
+              Authorizer: NONE
+
+  LogoutFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
+    Properties:
+      FunctionName: copa-guru-auth-logout
+      Handler: bootstrap
+      CodeUri: lambdas/api/auth/logout
+      Environment:
+        Variables:
+          MONGODB_DSN: !Ref MongoDBDSN
+          MONGODB_DATABASE_NAME: !Ref MongoDBDatabaseName
+          AUTH_JWT_SECRET: !Ref JWTSecret
+          GOOGLE_CLIENT_ID: !Ref GoogleClientID
+          GOOGLE_CLIENT_SECRET: !Ref GoogleClientSecret
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /auth/logout
+            Method: post
+            RestApiId: !Ref CopaGuruApi
+
+  MeFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
+    Properties:
+      FunctionName: copa-guru-auth-me
+      Handler: bootstrap
+      CodeUri: lambdas/api/auth/me
+      Environment:
+        Variables:
+          MONGODB_DSN: !Ref MongoDBDSN
+          MONGODB_DATABASE_NAME: !Ref MongoDBDatabaseName
+          AUTH_JWT_SECRET: !Ref JWTSecret
+          GOOGLE_CLIENT_ID: !Ref GoogleClientID
+          GOOGLE_CLIENT_SECRET: !Ref GoogleClientSecret
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /auth/me
+            Method: get
+            RestApiId: !Ref CopaGuruApi
+
 Outputs:
   ApiUrl:
     Description: API Gateway URL
