@@ -1,4 +1,4 @@
-.PHONY: up down run build test test-ci mocks clean seed local-user
+.PHONY: up down run build test test-ci mocks clean indexes seed local-user
 
 up:
 	docker compose up -d
@@ -24,8 +24,11 @@ mocks:
 clean:
 	rm -rf .aws-sam
 
+indexes:
+	@set -a && . ./.env && set +a && mongosh "$$MONGODB_DSN/$$MONGODB_DATABASE_NAME" < docs/mongodb/indexes.mongodb.js
+
 seed:
-	@echo "TODO: seed de matches — implementar quando modelos estiverem prontos"
+	@set -a && . ./.env && set +a && mongosh "$$MONGODB_DSN/$$MONGODB_DATABASE_NAME" < docs/mongodb/seeds.mongodb.js
 
 local-user:
 	@test -n "$(CREDS)" || (echo "usage: make local-user CREDS=email:password" && exit 1)
