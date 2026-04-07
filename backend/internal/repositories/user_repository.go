@@ -7,6 +7,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/lauralesteves/copa-guru-backend/internal/config"
 	"github.com/lauralesteves/copa-guru-backend/internal/models"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -27,7 +28,8 @@ type userRepository struct {
 	collection *mongo.Collection
 }
 
-func NewUserRepository(collection *mongo.Collection) UserRepository {
+func NewUserRepository(db *config.MongoContext) UserRepository {
+	collection := db.Client.Database(db.Database.Name()).Collection(config.UserCollection)
 	return &userRepository{collection: collection}
 }
 

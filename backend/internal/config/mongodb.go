@@ -15,6 +15,10 @@ const (
 	defaultDSN          = "mongodb://localhost:27017"
 )
 
+const (
+	UserCollection = "users"
+)
+
 func GetDatabaseName() string {
 	if v := os.Getenv("MONGODB_DATABASE_NAME"); v != "" {
 		return v
