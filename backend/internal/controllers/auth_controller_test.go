@@ -35,7 +35,7 @@ func TestGoogleLogin_Success(t *testing.T) {
 	defer ctrl.Finish()
 
 	now := time.Now()
-	mockAuth.EXPECT().LoginWithGoogle(gomock.Any(), "auth-code", "http://localhost:5173").Return(&models.LoginResponse{
+	mockAuth.EXPECT().LoginWithGoogle(gomock.Any()).Return(&models.LoginResponse{
 		AccessToken:  "access-token",
 		RefreshToken: "refresh-token",
 		User:         &models.UserDTO{ID: "user-1", Email: "a@b.com", CreatedAt: now},
@@ -85,7 +85,7 @@ func TestGoogleLogin_ServiceError(t *testing.T) {
 	ctrl, mockAuth, controller := setupController(t)
 	defer ctrl.Finish()
 
-	mockAuth.EXPECT().LoginWithGoogle(gomock.Any(), "bad", "http://x").Return(nil, svcerr.NewInternalError("failed", nil))
+	mockAuth.EXPECT().LoginWithGoogle(gomock.Any()).Return(nil, svcerr.NewInternalError("failed", nil))
 
 	req := events.APIGatewayProxyRequest{Body: `{"code":"bad","redirectUri":"http://x"}`}
 	resp, _ := controller.GoogleLogin(req)
@@ -184,7 +184,7 @@ func TestMe_Success(t *testing.T) {
 	ctrl, mockAuth, controller := setupController(t)
 	defer ctrl.Finish()
 
-	mockAuth.EXPECT().GetMe("user-42").Return(&models.MeResponse{
+	mockAuth.EXPECT().GetMe("user-42").Return(&models.MeDTO{
 		User: &models.UserDTO{ID: "user-42", Email: "me@copa.guru"},
 	}, nil)
 
@@ -193,7 +193,7 @@ func TestMe_Success(t *testing.T) {
 		t.Errorf("StatusCode = %d, want 200", resp.StatusCode)
 	}
 
-	var body models.MeResponse
+	var body models.MeDTO
 	json.Unmarshal([]byte(resp.Body), &body)
 	if body.User.Email != "me@copa.guru" {
 		t.Errorf("Email = %q, want %q", body.User.Email, "me@copa.guru")

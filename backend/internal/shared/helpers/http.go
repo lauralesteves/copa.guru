@@ -16,6 +16,24 @@ var CorsHeaders = map[string]string{
 	"Access-Control-Allow-Methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
 }
 
+func GetId(request events.APIGatewayProxyRequest) string {
+	var id string
+
+	// Get from path
+	id = request.PathParameters["id"]
+	if id != "" {
+		return id
+	}
+
+	// Get from authorizer
+	if auth, ok := request.RequestContext.Authorizer["userId"]; ok {
+		if id, ok = auth.(string); ok {
+			return id
+		}
+	}
+	return id
+}
+
 func SuccessResponse(data interface{}, statusCode int) events.APIGatewayProxyResponse {
 	resp := events.APIGatewayProxyResponse{
 		StatusCode: statusCode,
@@ -28,12 +46,12 @@ func SuccessResponse(data interface{}, statusCode int) events.APIGatewayProxyRes
 	return resp
 }
 
-func BadRequestResponse(message string) events.APIGatewayProxyResponse {
-	body, _ := json.Marshal(map[string]string{"error": message})
+func BadRequestResponse(errs []string) events.APIGatewayProxyResponse {
+	body, _ := json.Marshal(map[string]interface{}{"errors": errs})
 	return events.APIGatewayProxyResponse{
 		StatusCode: http.StatusBadRequest,
-		Body:       string(body),
 		Headers:    CorsHeaders,
+		Body:       string(body),
 	}
 }
 

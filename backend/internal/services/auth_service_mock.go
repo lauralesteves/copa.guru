@@ -10,7 +10,6 @@
 package services
 
 import (
-	context "context"
 	reflect "reflect"
 
 	models "github.com/lauralesteves/copa-guru-backend/internal/models"
@@ -57,18 +56,18 @@ func (mr *MockAuthServiceMockRecorder) GetMe(userID any) *gomock.Call {
 }
 
 // LoginWithGoogle mocks base method.
-func (m *MockAuthService) LoginWithGoogle(ctx context.Context, code, redirectURI string) (*models.LoginResponse, error) {
+func (m *MockAuthService) LoginWithGoogle(dto *models.GoogleLoginRequest) (*models.LoginResponse, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "LoginWithGoogle", ctx, code, redirectURI)
+	ret := m.ctrl.Call(m, "LoginWithGoogle", dto)
 	ret0, _ := ret[0].(*models.LoginResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // LoginWithGoogle indicates an expected call of LoginWithGoogle.
-func (mr *MockAuthServiceMockRecorder) LoginWithGoogle(ctx, code, redirectURI any) *gomock.Call {
+func (mr *MockAuthServiceMockRecorder) LoginWithGoogle(dto any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LoginWithGoogle", reflect.TypeOf((*MockAuthService)(nil).LoginWithGoogle), ctx, code, redirectURI)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LoginWithGoogle", reflect.TypeOf((*MockAuthService)(nil).LoginWithGoogle), dto)
 }
 
 // Logout mocks base method.

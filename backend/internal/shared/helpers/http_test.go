@@ -41,14 +41,15 @@ func TestSuccessResponse_NilData(t *testing.T) {
 }
 
 func TestBadRequestResponse(t *testing.T) {
-	resp := BadRequestResponse("invalid email")
+	resp := BadRequestResponse([]string{"invalid email"})
 	if resp.StatusCode != 400 {
 		t.Errorf("StatusCode = %d, want 400", resp.StatusCode)
 	}
-	var body map[string]string
+	var body map[string]interface{}
 	json.Unmarshal([]byte(resp.Body), &body)
-	if body["error"] != "invalid email" {
-		t.Errorf("error = %q, want %q", body["error"], "invalid email")
+	errs, ok := body["errors"].([]interface{})
+	if !ok || len(errs) != 1 || errs[0] != "invalid email" {
+		t.Errorf("errors = %v, want [\"invalid email\"]", body["errors"])
 	}
 }
 
@@ -127,7 +128,7 @@ func TestAllResponses_HaveCorsHeaders(t *testing.T) {
 		resp func() map[string]string
 	}{
 		{"Success", func() map[string]string { return SuccessResponse(nil, 200).Headers }},
-		{"BadRequest", func() map[string]string { return BadRequestResponse("err").Headers }},
+		{"BadRequest", func() map[string]string { return BadRequestResponse([]string{"err"}).Headers }},
 		{"NotFound", func() map[string]string { return NotFoundResponse("x").Headers }},
 		{"Unauthorized", func() map[string]string { return UnauthorizedResponse().Headers }},
 		{"Forbidden", func() map[string]string { return ForbiddenResponse("x").Headers }},
