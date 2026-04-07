@@ -13,7 +13,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	models "github.com/lauralesteves/copa-guru-backend/internal/auth/models"
+	models "github.com/lauralesteves/copa-guru-backend/internal/models"
 	gomock "go.uber.org/mock/gomock"
 )
 

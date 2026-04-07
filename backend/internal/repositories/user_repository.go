@@ -1,16 +1,16 @@
+//go:generate mockgen -source=user_repository.go -destination=user_repository_mock.go -package=repositories
+
 package repositories
 
 import (
 	"context"
 	"time"
 
-	"github.com/lauralesteves/copa-guru-backend/internal/auth/models"
+	"github.com/lauralesteves/copa-guru-backend/internal/models"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
-
-//go:generate mockgen -source=user_repository.go -destination=user_repository_mock.go -package=repositories
 
 type UserRepository interface {
 	FindByEmail(email string) (*models.User, error)

@@ -1,3 +1,5 @@
+//go:generate mockgen -source=jwt_service.go -destination=jwt_service_mock.go -package=services
+
 package services
 
 import (
@@ -13,8 +15,6 @@ const (
 	AccessTokenTTL  = 1 * time.Hour
 	RefreshTokenTTL = 30 * 24 * time.Hour
 )
-
-//go:generate mockgen -source=jwt_service.go -destination=jwt_service_mock.go -package=services
 
 type JWTService interface {
 	GenerateAccessToken(userID string) (string, error)

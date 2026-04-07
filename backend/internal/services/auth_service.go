@@ -1,3 +1,5 @@
+//go:generate mockgen -source=auth_service.go -destination=auth_service_mock.go -package=services
+
 package services
 
 import (
@@ -5,13 +7,11 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/lauralesteves/copa-guru-backend/internal/auth/models"
-	"github.com/lauralesteves/copa-guru-backend/internal/auth/repositories"
+	"github.com/lauralesteves/copa-guru-backend/internal/models"
+	"github.com/lauralesteves/copa-guru-backend/internal/repositories"
 	svcerr "github.com/lauralesteves/copa-guru-backend/internal/shared/services"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
-
-//go:generate mockgen -source=auth_service.go -destination=auth_service_mock.go -package=services
 
 type AuthService interface {
 	LoginWithGoogle(ctx context.Context, code, redirectURI string) (*models.LoginResponse, error)

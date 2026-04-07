@@ -13,7 +13,7 @@ import (
 	reflect "reflect"
 	time "time"
 
-	models "github.com/lauralesteves/copa-guru-backend/internal/auth/models"
+	models "github.com/lauralesteves/copa-guru-backend/internal/models"
 	bson "go.mongodb.org/mongo-driver/v2/bson"
 	gomock "go.uber.org/mock/gomock"
 )

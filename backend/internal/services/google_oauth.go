@@ -1,3 +1,5 @@
+//go:generate mockgen -source=google_oauth.go -destination=google_oauth_mock.go -package=services
+
 package services
 
 import (
@@ -9,8 +11,6 @@ import (
 	"net/url"
 	"strings"
 )
-
-//go:generate mockgen -source=google_oauth.go -destination=google_oauth_mock.go -package=services
 
 type GoogleUserInfo struct {
 	GoogleID string

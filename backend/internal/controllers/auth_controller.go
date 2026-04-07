@@ -7,8 +7,8 @@ import (
 	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/lauralesteves/copa-guru-backend/internal/auth/models"
-	"github.com/lauralesteves/copa-guru-backend/internal/auth/services"
+	"github.com/lauralesteves/copa-guru-backend/internal/models"
+	"github.com/lauralesteves/copa-guru-backend/internal/services"
 	"github.com/lauralesteves/copa-guru-backend/internal/shared/helpers"
 	svcerr "github.com/lauralesteves/copa-guru-backend/internal/shared/services"
 )

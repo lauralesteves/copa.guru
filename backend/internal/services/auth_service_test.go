@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lauralesteves/copa-guru-backend/internal/auth/models"
-	"github.com/lauralesteves/copa-guru-backend/internal/auth/repositories"
+	"github.com/lauralesteves/copa-guru-backend/internal/models"
+	"github.com/lauralesteves/copa-guru-backend/internal/repositories"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.uber.org/mock/gomock"
 )
