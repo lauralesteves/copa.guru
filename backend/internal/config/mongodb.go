@@ -16,7 +16,8 @@ const (
 )
 
 const (
-	UserCollection = "users"
+	UserCollection        = "users"
+	LeaderboardCollection = "leaderboard"
 )
 
 func GetDatabaseName() string {
