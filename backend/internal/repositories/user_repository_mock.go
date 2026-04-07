@@ -43,9 +43,9 @@ func (m *MockUserRepository) EXPECT() *MockUserRepositoryMockRecorder {
 }
 
 // FindByEmail mocks base method.
-func (m *MockUserRepository) FindByEmail(email string) (*models.User, error) {
+func (m *MockUserRepository) GetByEmail(email string) (*models.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindByEmail", email)
+	ret := m.ctrl.Call(m, "GetByEmail", email)
 	ret0, _ := ret[0].(*models.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
@@ -54,13 +54,13 @@ func (m *MockUserRepository) FindByEmail(email string) (*models.User, error) {
 // FindByEmail indicates an expected call of FindByEmail.
 func (mr *MockUserRepositoryMockRecorder) FindByEmail(email any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByEmail", reflect.TypeOf((*MockUserRepository)(nil).FindByEmail), email)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByEmail", reflect.TypeOf((*MockUserRepository)(nil).GetByEmail), email)
 }
 
 // FindByGoogleID mocks base method.
-func (m *MockUserRepository) FindByGoogleID(googleID string) (*models.User, error) {
+func (m *MockUserRepository) GetByGoogleID(googleID string) (*models.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindByGoogleID", googleID)
+	ret := m.ctrl.Call(m, "GetByGoogleID", googleID)
 	ret0, _ := ret[0].(*models.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
@@ -69,13 +69,13 @@ func (m *MockUserRepository) FindByGoogleID(googleID string) (*models.User, erro
 // FindByGoogleID indicates an expected call of FindByGoogleID.
 func (mr *MockUserRepositoryMockRecorder) FindByGoogleID(googleID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByGoogleID", reflect.TypeOf((*MockUserRepository)(nil).FindByGoogleID), googleID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByGoogleID", reflect.TypeOf((*MockUserRepository)(nil).GetByGoogleID), googleID)
 }
 
 // FindByID mocks base method.
-func (m *MockUserRepository) FindByID(id bson.ObjectID) (*models.User, error) {
+func (m *MockUserRepository) Get(id bson.ObjectID) (*models.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindByID", id)
+	ret := m.ctrl.Call(m, "Get", id)
 	ret0, _ := ret[0].(*models.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
@@ -84,13 +84,13 @@ func (m *MockUserRepository) FindByID(id bson.ObjectID) (*models.User, error) {
 // FindByID indicates an expected call of FindByID.
 func (mr *MockUserRepositoryMockRecorder) FindByID(id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByID", reflect.TypeOf((*MockUserRepository)(nil).FindByID), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockUserRepository)(nil).Get), id)
 }
 
 // FindByRefreshToken mocks base method.
-func (m *MockUserRepository) FindByRefreshToken(token string) (*models.User, error) {
+func (m *MockUserRepository) GetByRefreshToken(token string) (*models.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindByRefreshToken", token)
+	ret := m.ctrl.Call(m, "GetByRefreshToken", token)
 	ret0, _ := ret[0].(*models.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
@@ -99,7 +99,7 @@ func (m *MockUserRepository) FindByRefreshToken(token string) (*models.User, err
 // FindByRefreshToken indicates an expected call of FindByRefreshToken.
 func (mr *MockUserRepositoryMockRecorder) FindByRefreshToken(token any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByRefreshToken", reflect.TypeOf((*MockUserRepository)(nil).FindByRefreshToken), token)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByRefreshToken", reflect.TypeOf((*MockUserRepository)(nil).GetByRefreshToken), token)
 }
 
 // InvalidateRefreshToken mocks base method.

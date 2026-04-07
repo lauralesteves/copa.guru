@@ -4,6 +4,7 @@ package repositories
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/lauralesteves/copa-guru-backend/internal/models"
@@ -13,10 +14,10 @@ import (
 )
 
 type UserRepository interface {
-	FindByEmail(email string) (*models.User, error)
-	FindByGoogleID(googleID string) (*models.User, error)
-	FindByID(id bson.ObjectID) (*models.User, error)
-	FindByRefreshToken(token string) (*models.User, error)
+	Get(id bson.ObjectID) (*models.User, error)
+	GetByEmail(email string) (*models.User, error)
+	GetByGoogleID(googleID string) (*models.User, error)
+	GetByRefreshToken(token string) (*models.User, error)
 	Upsert(user *models.User) (*models.User, error)
 	UpdateRefreshToken(userID bson.ObjectID, token string, expiresAt time.Time) error
 	InvalidateRefreshToken(userID bson.ObjectID) error
@@ -30,44 +31,14 @@ func NewUserRepository(collection *mongo.Collection) UserRepository {
 	return &userRepository{collection: collection}
 }
 
-func (r *userRepository) FindByEmail(email string) (*models.User, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	var user models.User
-	err := r.collection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return nil, nil
-		}
-		return nil, err
-	}
-	return &user, nil
-}
-
-func (r *userRepository) FindByGoogleID(googleID string) (*models.User, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	var user models.User
-	err := r.collection.FindOne(ctx, bson.M{"googleId": googleID}).Decode(&user)
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return nil, nil
-		}
-		return nil, err
-	}
-	return &user, nil
-}
-
-func (r *userRepository) FindByID(id bson.ObjectID) (*models.User, error) {
+func (r *userRepository) Get(id bson.ObjectID) (*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	var user models.User
 	err := r.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&user)
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
+		if errors.Is(err, mongo.ErrNoDocuments) {
 			return nil, nil
 		}
 		return nil, err
@@ -75,14 +46,44 @@ func (r *userRepository) FindByID(id bson.ObjectID) (*models.User, error) {
 	return &user, nil
 }
 
-func (r *userRepository) FindByRefreshToken(token string) (*models.User, error) {
+func (r *userRepository) GetByEmail(email string) (*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	var user models.User
-	err := r.collection.FindOne(ctx, bson.M{"refreshToken": token}).Decode(&user)
+	err := r.collection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (r *userRepository) GetByGoogleID(googleID string) (*models.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var user models.User
+	err := r.collection.FindOne(ctx, bson.M{"auth.googleId": googleID}).Decode(&user)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (r *userRepository) GetByRefreshToken(token string) (*models.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var user models.User
+	err := r.collection.FindOne(ctx, bson.M{"auth.refreshToken": token}).Decode(&user)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
 			return nil, nil
 		}
 		return nil, err
@@ -100,17 +101,17 @@ func (r *userRepository) Upsert(user *models.User) (*models.User, error) {
 	filter := bson.M{"email": user.Email}
 	update := bson.M{
 		"$set": bson.M{
-			"email":       user.Email,
-			"name":        user.Name,
-			"picture":     user.Picture,
-			"lastLoginAt": user.LastLoginAt,
-			"updatedAt":   now,
+			"email":            user.Email,
+			"name":             user.Name,
+			"picture":          user.Picture,
+			"auth.lastLoginAt": user.Auth.LastLoginAt,
+			"updatedAt":        now,
 		},
 		"$setOnInsert": bson.M{
-			"strategy":  user.Strategy,
-			"googleId":  user.GoogleID,
-			"password":  user.Password,
-			"createdAt": now,
+			"strategy":      user.Strategy,
+			"auth.googleId": user.Auth.GoogleID,
+			"auth.password": user.Auth.Password,
+			"createdAt":     now,
 		},
 	}
 
@@ -124,7 +125,7 @@ func (r *userRepository) Upsert(user *models.User) (*models.User, error) {
 		user.ID = result.UpsertedID.(bson.ObjectID)
 		user.CreatedAt = now
 	} else {
-		existing, err := r.FindByEmail(user.Email)
+		existing, err := r.GetByEmail(user.Email)
 		if err != nil {
 			return nil, err
 		}
@@ -142,9 +143,9 @@ func (r *userRepository) UpdateRefreshToken(userID bson.ObjectID, token string, 
 	_, err := r.collection.UpdateOne(ctx,
 		bson.M{"_id": userID},
 		bson.M{"$set": bson.M{
-			"refreshToken":          token,
-			"refreshTokenExpiresAt": expiresAt,
-			"updatedAt":             time.Now(),
+			"auth.refreshToken":          token,
+			"auth.refreshTokenExpiresAt": expiresAt,
+			"updatedAt":                  time.Now(),
 		}},
 	)
 	return err
@@ -158,8 +159,8 @@ func (r *userRepository) InvalidateRefreshToken(userID bson.ObjectID) error {
 		bson.M{"_id": userID},
 		bson.M{
 			"$unset": bson.M{
-				"refreshToken":          "",
-				"refreshTokenExpiresAt": "",
+				"auth.refreshToken":          "",
+				"auth.refreshTokenExpiresAt": "",
 			},
 			"$set": bson.M{
 				"updatedAt": time.Now(),

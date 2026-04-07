@@ -37,6 +37,151 @@ func setupTestDB(t *testing.T) (*mongo.Collection, func()) {
 	return collection, cleanup
 }
 
+// --- Get ---
+
+func TestGet(t *testing.T) {
+	col, cleanup := setupTestDB(t)
+	defer cleanup()
+
+	repo := NewUserRepository(col)
+	now := time.Now()
+
+	user := &models.User{
+		Email: "byid@copa.guru",
+		Name:  "By ID",
+		Auth: models.Auth{
+			GoogleID:    "google-byid",
+			LastLoginAt: &now,
+		},
+	}
+	created, _ := repo.Upsert(user)
+
+	found, err := repo.Get(created.ID)
+	if err != nil {
+		t.Fatalf("Get() error: %v", err)
+	}
+	if found == nil {
+		t.Fatal("expected user, got nil")
+	}
+	if found.Auth.GoogleID != "google-byid" {
+		t.Errorf("GoogleID = %q, want %q", found.Auth.GoogleID, "google-byid")
+	}
+}
+
+func TestGet_NotFound(t *testing.T) {
+	col, cleanup := setupTestDB(t)
+	defer cleanup()
+
+	repo := NewUserRepository(col)
+	found, err := repo.Get(bson.NewObjectID())
+	if err != nil {
+		t.Fatalf("Get() error: %v", err)
+	}
+	if found != nil {
+		t.Error("expected nil for nonexistent ID")
+	}
+}
+
+// --- GetByEmail ---
+
+func TestGetByEmail(t *testing.T) {
+	col, cleanup := setupTestDB(t)
+	defer cleanup()
+
+	repo := NewUserRepository(col)
+	now := time.Now()
+
+	user := &models.User{
+		Strategy: models.StrategyEmail,
+		Email:    "email@copa.guru",
+		Name:     "Email User",
+		Auth: models.Auth{
+			Password:    "$2a$10$fakehash",
+			LastLoginAt: &now,
+		},
+	}
+	repo.Upsert(user)
+
+	found, err := repo.GetByEmail("email@copa.guru")
+	if err != nil {
+		t.Fatalf("GetByEmail() error: %v", err)
+	}
+	if found == nil {
+		t.Fatal("expected user, got nil")
+	}
+	if found.Strategy != models.StrategyEmail {
+		t.Errorf("Strategy = %q, want %q", found.Strategy, models.StrategyEmail)
+	}
+	if found.Auth.Password != "$2a$10$fakehash" {
+		t.Errorf("Password = %q, want %q", found.Auth.Password, "$2a$10$fakehash")
+	}
+}
+
+func TestGetByEmail_NotFound(t *testing.T) {
+	col, cleanup := setupTestDB(t)
+	defer cleanup()
+
+	repo := NewUserRepository(col)
+	found, err := repo.GetByEmail("nonexistent@copa.guru")
+	if err != nil {
+		t.Fatalf("GetByEmail() error: %v", err)
+	}
+	if found != nil {
+		t.Error("expected nil for nonexistent email")
+	}
+}
+
+// --- GetByGoogleID ---
+
+func TestGetByGoogleID(t *testing.T) {
+	col, cleanup := setupTestDB(t)
+	defer cleanup()
+
+	repo := NewUserRepository(col)
+	now := time.Now()
+
+	user := &models.User{
+		Email: "find@copa.guru",
+		Name:  "Find Me",
+		Auth: models.Auth{
+			GoogleID:    "google-find",
+			LastLoginAt: &now,
+		},
+	}
+	repo.Upsert(user)
+
+	found, err := repo.GetByGoogleID("google-find")
+	if err != nil {
+		t.Fatalf("GetByGoogleID() error: %v", err)
+	}
+	if found == nil {
+		t.Fatal("expected user, got nil")
+	}
+	if found.Name != "Find Me" {
+		t.Errorf("Name = %q, want %q", found.Name, "Find Me")
+	}
+}
+
+func TestGetByGoogleID_NotFound(t *testing.T) {
+	col, cleanup := setupTestDB(t)
+	defer cleanup()
+
+	repo := NewUserRepository(col)
+	found, err := repo.GetByGoogleID("nonexistent")
+	if err != nil {
+		t.Fatalf("GetByGoogleID() error: %v", err)
+	}
+	if found != nil {
+		t.Error("expected nil for nonexistent user")
+	}
+}
+
+// --- GetByRefreshToken ---
+
+// (covered indirectly by UpdateRefreshToken + InvalidateRefreshToken tests)
+
+// --- Upsert ---
+
 func TestUpsert_CreateNew(t *testing.T) {
 	col, cleanup := setupTestDB(t)
 	defer cleanup()
@@ -45,12 +190,14 @@ func TestUpsert_CreateNew(t *testing.T) {
 	now := time.Now()
 
 	user := &models.User{
-		Strategy:    models.StrategyGoogle,
-		GoogleID:    "google-123",
-		Email:       "test@copa.guru",
-		Name:        "Test User",
-		Picture:     "https://example.com/pic.jpg",
-		LastLoginAt: &now,
+		Strategy: models.StrategyGoogle,
+		Email:    "test@copa.guru",
+		Name:     "Test User",
+		Picture:  "https://example.com/pic.jpg",
+		Auth: models.Auth{
+			GoogleID:    "google-123",
+			LastLoginAt: &now,
+		},
 	}
 
 	result, err := repo.Upsert(user)
@@ -73,12 +220,14 @@ func TestUpsert_UpdateExisting(t *testing.T) {
 	now := time.Now()
 
 	user := &models.User{
-		Strategy:    models.StrategyGoogle,
-		GoogleID:    "google-456",
-		Email:       "first@copa.guru",
-		Name:        "First Name",
-		Picture:     "https://example.com/first.jpg",
-		LastLoginAt: &now,
+		Strategy: models.StrategyGoogle,
+		Email:    "first@copa.guru",
+		Name:     "First Name",
+		Picture:  "https://example.com/first.jpg",
+		Auth: models.Auth{
+			GoogleID:    "google-456",
+			LastLoginAt: &now,
+		},
 	}
 	first, _ := repo.Upsert(user)
 
@@ -95,132 +244,7 @@ func TestUpsert_UpdateExisting(t *testing.T) {
 	}
 }
 
-func TestFindByEmail(t *testing.T) {
-	col, cleanup := setupTestDB(t)
-	defer cleanup()
-
-	repo := NewUserRepository(col)
-	now := time.Now()
-
-	user := &models.User{
-		Strategy:    models.StrategyEmail,
-		Email:       "email@copa.guru",
-		Name:        "Email User",
-		Password:    "$2a$10$fakehash",
-		LastLoginAt: &now,
-	}
-	repo.Upsert(user)
-
-	found, err := repo.FindByEmail("email@copa.guru")
-	if err != nil {
-		t.Fatalf("FindByEmail() error: %v", err)
-	}
-	if found == nil {
-		t.Fatal("expected user, got nil")
-	}
-	if found.Strategy != models.StrategyEmail {
-		t.Errorf("Strategy = %q, want %q", found.Strategy, models.StrategyEmail)
-	}
-	if found.Password != "$2a$10$fakehash" {
-		t.Errorf("Password = %q, want %q", found.Password, "$2a$10$fakehash")
-	}
-}
-
-func TestFindByEmail_NotFound(t *testing.T) {
-	col, cleanup := setupTestDB(t)
-	defer cleanup()
-
-	repo := NewUserRepository(col)
-	found, err := repo.FindByEmail("nonexistent@copa.guru")
-	if err != nil {
-		t.Fatalf("FindByEmail() error: %v", err)
-	}
-	if found != nil {
-		t.Error("expected nil for nonexistent email")
-	}
-}
-
-func TestFindByGoogleID(t *testing.T) {
-	col, cleanup := setupTestDB(t)
-	defer cleanup()
-
-	repo := NewUserRepository(col)
-	now := time.Now()
-
-	user := &models.User{
-		GoogleID:    "google-find",
-		Email:       "find@copa.guru",
-		Name:        "Find Me",
-		LastLoginAt: &now,
-	}
-	repo.Upsert(user)
-
-	found, err := repo.FindByGoogleID("google-find")
-	if err != nil {
-		t.Fatalf("FindByGoogleID() error: %v", err)
-	}
-	if found == nil {
-		t.Fatal("expected user, got nil")
-	}
-	if found.Name != "Find Me" {
-		t.Errorf("Name = %q, want %q", found.Name, "Find Me")
-	}
-}
-
-func TestFindByGoogleID_NotFound(t *testing.T) {
-	col, cleanup := setupTestDB(t)
-	defer cleanup()
-
-	repo := NewUserRepository(col)
-	found, err := repo.FindByGoogleID("nonexistent")
-	if err != nil {
-		t.Fatalf("FindByGoogleID() error: %v", err)
-	}
-	if found != nil {
-		t.Error("expected nil for nonexistent user")
-	}
-}
-
-func TestFindByID(t *testing.T) {
-	col, cleanup := setupTestDB(t)
-	defer cleanup()
-
-	repo := NewUserRepository(col)
-	now := time.Now()
-
-	user := &models.User{
-		GoogleID:    "google-byid",
-		Email:       "byid@copa.guru",
-		Name:        "By ID",
-		LastLoginAt: &now,
-	}
-	created, _ := repo.Upsert(user)
-
-	found, err := repo.FindByID(created.ID)
-	if err != nil {
-		t.Fatalf("FindByID() error: %v", err)
-	}
-	if found == nil {
-		t.Fatal("expected user, got nil")
-	}
-	if found.GoogleID != "google-byid" {
-		t.Errorf("GoogleID = %q, want %q", found.GoogleID, "google-byid")
-	}
-}
-
-func TestFindByID_NotFound(t *testing.T) {
-	col, cleanup := setupTestDB(t)
-	defer cleanup()
-
-	repo := NewUserRepository(col)
-	found, err := repo.FindByID(bson.NewObjectID())
-	if err != nil {
-		t.Fatalf("FindByID() error: %v", err)
-	}
-	if found != nil {
-		t.Error("expected nil for nonexistent ID")
-	}
-}
+// --- UpdateRefreshToken ---
 
 func TestUpdateRefreshToken(t *testing.T) {
 	col, cleanup := setupTestDB(t)
@@ -230,10 +254,12 @@ func TestUpdateRefreshToken(t *testing.T) {
 	now := time.Now()
 
 	user := &models.User{
-		GoogleID:    "google-refresh",
-		Email:       "refresh@copa.guru",
-		Name:        "Refresh",
-		LastLoginAt: &now,
+		Email: "refresh@copa.guru",
+		Name:  "Refresh",
+		Auth: models.Auth{
+			GoogleID:    "google-refresh",
+			LastLoginAt: &now,
+		},
 	}
 	created, _ := repo.Upsert(user)
 
@@ -243,11 +269,13 @@ func TestUpdateRefreshToken(t *testing.T) {
 		t.Fatalf("UpdateRefreshToken() error: %v", err)
 	}
 
-	found, _ := repo.FindByID(created.ID)
-	if found.RefreshToken != "refresh-token-abc" {
-		t.Errorf("RefreshToken = %q, want %q", found.RefreshToken, "refresh-token-abc")
+	found, _ := repo.Get(created.ID)
+	if found.Auth.RefreshToken != "refresh-token-abc" {
+		t.Errorf("RefreshToken = %q, want %q", found.Auth.RefreshToken, "refresh-token-abc")
 	}
 }
+
+// --- InvalidateRefreshToken ---
 
 func TestInvalidateRefreshToken(t *testing.T) {
 	col, cleanup := setupTestDB(t)
@@ -257,10 +285,12 @@ func TestInvalidateRefreshToken(t *testing.T) {
 	now := time.Now()
 
 	user := &models.User{
-		GoogleID:    "google-invalidate",
-		Email:       "invalidate@copa.guru",
-		Name:        "Invalidate",
-		LastLoginAt: &now,
+		Email: "invalidate@copa.guru",
+		Name:  "Invalidate",
+		Auth: models.Auth{
+			GoogleID:    "google-invalidate",
+			LastLoginAt: &now,
+		},
 	}
 	created, _ := repo.Upsert(user)
 
@@ -272,11 +302,11 @@ func TestInvalidateRefreshToken(t *testing.T) {
 		t.Fatalf("InvalidateRefreshToken() error: %v", err)
 	}
 
-	found, _ := repo.FindByID(created.ID)
-	if found.RefreshToken != "" {
-		t.Errorf("RefreshToken = %q, want empty", found.RefreshToken)
+	found, _ := repo.Get(created.ID)
+	if found.Auth.RefreshToken != "" {
+		t.Errorf("RefreshToken = %q, want empty", found.Auth.RefreshToken)
 	}
-	if found.RefreshTokenExpiresAt != nil {
+	if found.Auth.RefreshTokenExpiresAt != nil {
 		t.Error("RefreshTokenExpiresAt should be nil")
 	}
 }
