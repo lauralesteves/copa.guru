@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/lauralesteves/copa-guru-backend/internal/models"
 	"github.com/lauralesteves/copa-guru-backend/internal/repositories"
 	"github.com/lauralesteves/copa-guru-backend/internal/services/external/google_oauth"
@@ -13,17 +14,18 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-func setupAuthService(t *testing.T) (*gomock.Controller, *repositories.MockUserRepository, *MockJWTService, *google_oauth.MockService, AuthService) {
+const testSecret = "test-jwt-secret"
+
+func setupAuthService(t *testing.T) (*gomock.Controller, *repositories.MockUserRepository, *google_oauth.MockService, AuthService) {
 	ctrl := gomock.NewController(t)
 	mockRepo := repositories.NewMockUserRepository(ctrl)
-	mockJWT := NewMockJWTService(ctrl)
 	mockGoogle := google_oauth.NewMockService(ctrl)
-	svc := NewAuthService(mockRepo, mockJWT, mockGoogle)
-	return ctrl, mockRepo, mockJWT, mockGoogle, svc
+	svc := NewAuthService(mockRepo, testSecret, mockGoogle)
+	return ctrl, mockRepo, mockGoogle, svc
 }
 
 func TestLoginWithGoogle_Success(t *testing.T) {
-	ctrl, mockRepo, mockJWT, mockGoogle, svc := setupAuthService(t)
+	ctrl, mockRepo, mockGoogle, svc := setupAuthService(t)
 	defer ctrl.Finish()
 
 	userID := bson.NewObjectID()
@@ -42,19 +44,17 @@ func TestLoginWithGoogle_Success(t *testing.T) {
 		return user, nil
 	})
 
-	mockJWT.EXPECT().GenerateAccessToken(userID.Hex()).Return("access-token", nil)
-	mockJWT.EXPECT().GenerateRefreshToken().Return("refresh-token", nil)
-	mockRepo.EXPECT().UpdateRefreshToken(userID, "refresh-token", gomock.Any()).Return(nil)
+	mockRepo.EXPECT().UpdateRefreshToken(userID, gomock.Any(), gomock.Any()).Return(nil)
 
 	resp, err := svc.LoginWithGoogle(context.Background(), "auth-code", "http://localhost:5173")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if resp.AccessToken != "access-token" {
-		t.Errorf("AccessToken = %q, want %q", resp.AccessToken, "access-token")
+	if resp.AccessToken == "" {
+		t.Error("expected non-empty access token")
 	}
-	if resp.RefreshToken != "refresh-token" {
-		t.Errorf("RefreshToken = %q, want %q", resp.RefreshToken, "refresh-token")
+	if resp.RefreshToken == "" {
+		t.Error("expected non-empty refresh token")
 	}
 	if resp.User.Email != "test@gmail.com" {
 		t.Errorf("User.Email = %q, want %q", resp.User.Email, "test@gmail.com")
@@ -62,7 +62,7 @@ func TestLoginWithGoogle_Success(t *testing.T) {
 }
 
 func TestLoginWithGoogle_ExchangeFails(t *testing.T) {
-	ctrl, _, _, mockGoogle, svc := setupAuthService(t)
+	ctrl, _, mockGoogle, svc := setupAuthService(t)
 	defer ctrl.Finish()
 
 	mockGoogle.EXPECT().Exchange(gomock.Any(), "bad-code", "http://localhost").Return(nil, errors.New("invalid code"))
@@ -74,7 +74,7 @@ func TestLoginWithGoogle_ExchangeFails(t *testing.T) {
 }
 
 func TestLoginWithGoogle_UpsertFails(t *testing.T) {
-	ctrl, mockRepo, _, mockGoogle, svc := setupAuthService(t)
+	ctrl, mockRepo, mockGoogle, svc := setupAuthService(t)
 	defer ctrl.Finish()
 
 	mockGoogle.EXPECT().Exchange(gomock.Any(), "code", "http://localhost").Return(&google_oauth.GoogleUserInfo{
@@ -89,7 +89,7 @@ func TestLoginWithGoogle_UpsertFails(t *testing.T) {
 }
 
 func TestRefreshTokens_Success(t *testing.T) {
-	ctrl, mockRepo, mockJWT, _, svc := setupAuthService(t)
+	ctrl, mockRepo, _, svc := setupAuthService(t)
 	defer ctrl.Finish()
 
 	userID := bson.NewObjectID()
@@ -99,24 +99,22 @@ func TestRefreshTokens_Success(t *testing.T) {
 		ID:                    userID,
 		RefreshTokenExpiresAt: &expires,
 	}, nil)
-	mockJWT.EXPECT().GenerateAccessToken(userID.Hex()).Return("new-access", nil)
-	mockJWT.EXPECT().GenerateRefreshToken().Return("new-refresh", nil)
-	mockRepo.EXPECT().UpdateRefreshToken(userID, "new-refresh", gomock.Any()).Return(nil)
+	mockRepo.EXPECT().UpdateRefreshToken(userID, gomock.Any(), gomock.Any()).Return(nil)
 
 	resp, err := svc.RefreshTokens("old-refresh")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if resp.AccessToken != "new-access" {
-		t.Errorf("AccessToken = %q, want %q", resp.AccessToken, "new-access")
+	if resp.AccessToken == "" {
+		t.Error("expected non-empty access token")
 	}
-	if resp.RefreshToken != "new-refresh" {
-		t.Errorf("RefreshToken = %q, want %q", resp.RefreshToken, "new-refresh")
+	if resp.RefreshToken == "" {
+		t.Error("expected non-empty refresh token")
 	}
 }
 
 func TestRefreshTokens_InvalidToken(t *testing.T) {
-	ctrl, mockRepo, _, _, svc := setupAuthService(t)
+	ctrl, mockRepo, _, svc := setupAuthService(t)
 	defer ctrl.Finish()
 
 	mockRepo.EXPECT().FindByRefreshToken("nonexistent").Return(nil, nil)
@@ -128,7 +126,7 @@ func TestRefreshTokens_InvalidToken(t *testing.T) {
 }
 
 func TestRefreshTokens_Expired(t *testing.T) {
-	ctrl, mockRepo, _, _, svc := setupAuthService(t)
+	ctrl, mockRepo, _, svc := setupAuthService(t)
 	defer ctrl.Finish()
 
 	userID := bson.NewObjectID()
@@ -147,7 +145,7 @@ func TestRefreshTokens_Expired(t *testing.T) {
 }
 
 func TestLogout_Success(t *testing.T) {
-	ctrl, mockRepo, _, _, svc := setupAuthService(t)
+	ctrl, mockRepo, _, svc := setupAuthService(t)
 	defer ctrl.Finish()
 
 	userID := bson.NewObjectID()
@@ -160,7 +158,7 @@ func TestLogout_Success(t *testing.T) {
 }
 
 func TestLogout_InvalidID(t *testing.T) {
-	ctrl, _, _, _, svc := setupAuthService(t)
+	ctrl, _, _, svc := setupAuthService(t)
 	defer ctrl.Finish()
 
 	err := svc.Logout("not-an-objectid")
@@ -170,7 +168,7 @@ func TestLogout_InvalidID(t *testing.T) {
 }
 
 func TestGetMe_Success(t *testing.T) {
-	ctrl, mockRepo, _, _, svc := setupAuthService(t)
+	ctrl, mockRepo, _, svc := setupAuthService(t)
 	defer ctrl.Finish()
 
 	userID := bson.NewObjectID()
@@ -193,7 +191,7 @@ func TestGetMe_Success(t *testing.T) {
 }
 
 func TestGetMe_NotFound(t *testing.T) {
-	ctrl, mockRepo, _, _, svc := setupAuthService(t)
+	ctrl, mockRepo, _, svc := setupAuthService(t)
 	defer ctrl.Finish()
 
 	userID := bson.NewObjectID()
@@ -206,11 +204,91 @@ func TestGetMe_NotFound(t *testing.T) {
 }
 
 func TestGetMe_InvalidID(t *testing.T) {
-	ctrl, _, _, _, svc := setupAuthService(t)
+	ctrl, _, _, svc := setupAuthService(t)
 	defer ctrl.Finish()
 
 	_, err := svc.GetMe("bad-id")
 	if err == nil {
 		t.Error("expected error for invalid user ID")
+	}
+}
+
+// JWT tests
+
+func TestGenerateAccessToken(t *testing.T) {
+	svc := &authService{jwtSecret: testSecret}
+	token, err := svc.generateAccessToken("user-123")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if token == "" {
+		t.Error("expected non-empty token")
+	}
+}
+
+func TestValidateAccessToken_Valid(t *testing.T) {
+	svc := &authService{jwtSecret: testSecret}
+	token, _ := svc.generateAccessToken("user-123")
+
+	userID, err := svc.validateAccessToken(token)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if userID != "user-123" {
+		t.Errorf("userID = %q, want %q", userID, "user-123")
+	}
+}
+
+func TestValidateAccessToken_Expired(t *testing.T) {
+	svc := &authService{jwtSecret: testSecret}
+
+	claims := Claims{
+		UserID: "user-123",
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(-1 * time.Hour)),
+			IssuedAt:  jwt.NewNumericDate(time.Now().Add(-2 * time.Hour)),
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	signed, _ := token.SignedString([]byte(testSecret))
+
+	_, err := svc.validateAccessToken(signed)
+	if err == nil {
+		t.Error("expected error for expired token")
+	}
+}
+
+func TestValidateAccessToken_WrongSecret(t *testing.T) {
+	svc := &authService{jwtSecret: testSecret}
+	other := &authService{jwtSecret: "wrong-secret"}
+
+	token, _ := other.generateAccessToken("user-123")
+	_, err := svc.validateAccessToken(token)
+	if err == nil {
+		t.Error("expected error for wrong secret")
+	}
+}
+
+func TestValidateAccessToken_Malformed(t *testing.T) {
+	svc := &authService{jwtSecret: testSecret}
+	_, err := svc.validateAccessToken("not-a-token")
+	if err == nil {
+		t.Error("expected error for malformed token")
+	}
+}
+
+func TestGenerateRefreshToken(t *testing.T) {
+	svc := &authService{jwtSecret: testSecret}
+	token1, err := svc.generateRefreshToken()
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(token1) != 64 {
+		t.Errorf("token length = %d, want 64 hex chars", len(token1))
+	}
+
+	token2, _ := svc.generateRefreshToken()
+	if token1 == token2 {
+		t.Error("expected unique tokens")
 	}
 }

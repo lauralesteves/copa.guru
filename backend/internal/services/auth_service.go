@@ -4,15 +4,29 @@ package services
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/hex"
+	"fmt"
 	"log/slog"
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/lauralesteves/copa-guru-backend/internal/models"
 	"github.com/lauralesteves/copa-guru-backend/internal/repositories"
 	"github.com/lauralesteves/copa-guru-backend/internal/services/external/google_oauth"
 	svcerr "github.com/lauralesteves/copa-guru-backend/internal/shared/services"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
+
+const (
+	AccessTokenTTL  = 1 * time.Hour
+	RefreshTokenTTL = 30 * 24 * time.Hour
+)
+
+type Claims struct {
+	UserID string `json:"userId"`
+	jwt.RegisteredClaims
+}
 
 type AuthService interface {
 	LoginWithGoogle(ctx context.Context, code, redirectURI string) (*models.LoginResponse, error)
@@ -23,16 +37,55 @@ type AuthService interface {
 
 type authService struct {
 	userRepo    repositories.UserRepository
-	jwtService  JWTService
+	jwtSecret   string
 	googleOAuth google_oauth.Service
 }
 
-func NewAuthService(userRepo repositories.UserRepository, jwtService JWTService, googleOAuth google_oauth.Service) AuthService {
+func NewAuthService(userRepo repositories.UserRepository, jwtSecret string, googleOAuth google_oauth.Service) AuthService {
 	return &authService{
 		userRepo:    userRepo,
-		jwtService:  jwtService,
+		jwtSecret:   jwtSecret,
 		googleOAuth: googleOAuth,
 	}
+}
+
+func (s *authService) generateAccessToken(userID string) (string, error) {
+	claims := Claims{
+		UserID: userID,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(AccessTokenTTL)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString([]byte(s.jwtSecret))
+}
+
+func (s *authService) generateRefreshToken() (string, error) {
+	bytes := make([]byte, 32)
+	if _, err := rand.Read(bytes); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(bytes), nil
+}
+
+func (s *authService) validateAccessToken(tokenString string) (string, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(s.jwtSecret), nil
+	})
+	if err != nil {
+		return "", err
+	}
+
+	claims, ok := token.Claims.(*Claims)
+	if !ok || !token.Valid {
+		return "", fmt.Errorf("invalid token claims")
+	}
+
+	return claims.UserID, nil
 }
 
 func (s *authService) LoginWithGoogle(ctx context.Context, code, redirectURI string) (*models.LoginResponse, error) {
@@ -58,13 +111,13 @@ func (s *authService) LoginWithGoogle(ctx context.Context, code, redirectURI str
 		return nil, svcerr.NewInternalError("failed to save user", err)
 	}
 
-	accessToken, err := s.jwtService.GenerateAccessToken(user.ID.Hex())
+	accessToken, err := s.generateAccessToken(user.ID.Hex())
 	if err != nil {
 		slog.Error("failed to generate access token", "userId", user.ID.Hex(), "error", err)
 		return nil, svcerr.NewInternalError("failed to generate access token", err)
 	}
 
-	refreshToken, err := s.jwtService.GenerateRefreshToken()
+	refreshToken, err := s.generateRefreshToken()
 	if err != nil {
 		slog.Error("failed to generate refresh token", "userId", user.ID.Hex(), "error", err)
 		return nil, svcerr.NewInternalError("failed to generate refresh token", err)
@@ -97,13 +150,13 @@ func (s *authService) RefreshTokens(refreshToken string) (*models.TokenResponse,
 		return nil, svcerr.NewUnauthorizedError("refresh token expired")
 	}
 
-	accessToken, err := s.jwtService.GenerateAccessToken(user.ID.Hex())
+	accessToken, err := s.generateAccessToken(user.ID.Hex())
 	if err != nil {
 		slog.Error("failed to generate access token on refresh", "userId", user.ID.Hex(), "error", err)
 		return nil, svcerr.NewInternalError("failed to generate access token", err)
 	}
 
-	newRefreshToken, err := s.jwtService.GenerateRefreshToken()
+	newRefreshToken, err := s.generateRefreshToken()
 	if err != nil {
 		slog.Error("failed to generate new refresh token", "userId", user.ID.Hex(), "error", err)
 		return nil, svcerr.NewInternalError("failed to generate refresh token", err)

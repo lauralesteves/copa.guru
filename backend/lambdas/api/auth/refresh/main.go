@@ -14,9 +14,8 @@ func main() {
 	collection := mongo.Database.Collection("users")
 
 	userRepo := repositories.NewUserRepository(collection)
-	jwtSvc := services.NewJWTService(config.GetJWTSecret())
 	googleOAuth := google_oauth.NewService(google_oauth.NewAdapter(), config.GetGoogleClientID(), config.GetGoogleClientSecret())
-	authSvc := services.NewAuthService(userRepo, jwtSvc, googleOAuth)
+	authSvc := services.NewAuthService(userRepo, config.GetJWTSecret(), googleOAuth)
 
 	ctrl := controllers.NewAuthController(authSvc)
 	lambda.Start(ctrl.Refresh)
