@@ -5,12 +5,11 @@ import (
 	"github.com/lauralesteves/copa-guru-backend/internal/auth/controllers"
 	"github.com/lauralesteves/copa-guru-backend/internal/auth/repositories"
 	"github.com/lauralesteves/copa-guru-backend/internal/auth/services"
-	"github.com/lauralesteves/copa-guru-backend/internal/shared/bootstrap"
 	"github.com/lauralesteves/copa-guru-backend/internal/shared/config"
 )
 
 func main() {
-	mongo := bootstrap.SetupMongo()
+	mongo := config.SetupMongo()
 	collection := mongo.Database.Collection("users")
 
 	userRepo := repositories.NewUserRepository(collection)
