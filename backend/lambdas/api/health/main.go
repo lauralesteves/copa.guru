@@ -8,7 +8,7 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
-func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func getHealthResponse() events.APIGatewayProxyResponse {
 	body, _ := json.Marshal(map[string]string{"status": "ok"})
 
 	return events.APIGatewayProxyResponse{
@@ -17,7 +17,11 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 			"Content-Type": "application/json",
 		},
 		Body: string(body),
-	}, nil
+	}
+}
+
+func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	return getHealthResponse(), nil
 }
 
 func main() {
