@@ -1,3 +1,5 @@
+//go:generate mockgen -source=scoring_service.go -destination=scoring_service_mock.go -package=services
+
 package services
 
 import (
@@ -8,8 +10,6 @@ import (
 	svcerr "github.com/lauralesteves/copa-guru-backend/internal/shared/services"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
-
-//go:generate mockgen -source=scoring_service.go -destination=scoring_service_mock.go -package=services
 
 type ScoringService interface {
 	ScoreMatch(matchID string) (*models.ScoreResult, error)
