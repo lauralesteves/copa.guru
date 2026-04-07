@@ -10,9 +10,9 @@
 package google_oauth
 
 import (
-	context "context"
 	reflect "reflect"
 
+	models "github.com/lauralesteves/copa-guru-backend/internal/models"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -41,16 +41,16 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 }
 
 // Exchange mocks base method.
-func (m *MockService) Exchange(ctx context.Context, code, redirectURI string) (*GoogleUserInfo, error) {
+func (m *MockService) Exchange(dto *models.LoginRequestDTO) (*GoogleUserInfo, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Exchange", ctx, code, redirectURI)
+	ret := m.ctrl.Call(m, "Exchange", dto)
 	ret0, _ := ret[0].(*GoogleUserInfo)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Exchange indicates an expected call of Exchange.
-func (mr *MockServiceMockRecorder) Exchange(ctx, code, redirectURI any) *gomock.Call {
+func (mr *MockServiceMockRecorder) Exchange(dto any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Exchange", reflect.TypeOf((*MockService)(nil).Exchange), ctx, code, redirectURI)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Exchange", reflect.TypeOf((*MockService)(nil).Exchange), dto)
 }
