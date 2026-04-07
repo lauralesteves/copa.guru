@@ -29,4 +29,4 @@ seed:
 
 local-user:
 	@test -n "$(CREDS)" || (echo "usage: make local-user CREDS=email:password" && exit 1)
-	go run scripts/create-local-user/main.go "$(CREDS)"
+	@set -a && . ./.env && set +a && go run scripts/create-local-user/main.go "$(CREDS)"
