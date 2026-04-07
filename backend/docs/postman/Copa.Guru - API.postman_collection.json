@@ -117,6 +117,51 @@
 					}
 				}
 			]
+		},
+		{
+			"name": "Leaderboard",
+			"item": [
+				{
+					"name": "Get Leaderboard",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/leaderboard?limit=20&offset=0",
+							"host": ["{{baseUrl}}"],
+							"path": ["leaderboard"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "20"
+								},
+								{
+									"key": "offset",
+									"value": "0"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get User Position",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/leaderboard/{{userId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["leaderboard", "{{userId}}"]
+						}
+					}
+				}
+			]
 		}
 	]
 }
