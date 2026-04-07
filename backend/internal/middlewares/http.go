@@ -1,4 +1,4 @@
-package helpers
+package middlewares
 
 import (
 	"encoding/json"
@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/lauralesteves/copa-guru-backend/internal/shared/services"
 )
 
 var CorsHeaders = map[string]string{
@@ -82,7 +81,7 @@ func ForbiddenResponse(message string) events.APIGatewayProxyResponse {
 	}
 }
 
-func ServiceErrorResponse(svcErr *services.ServiceError) events.APIGatewayProxyResponse {
+func ServiceErrorResponse(svcErr *ServiceError) events.APIGatewayProxyResponse {
 	body, _ := json.Marshal(map[string]string{"error": svcErr.Message})
 	return events.APIGatewayProxyResponse{
 		StatusCode: int(svcErr.Code),
@@ -92,7 +91,7 @@ func ServiceErrorResponse(svcErr *services.ServiceError) events.APIGatewayProxyR
 }
 
 func HandleServiceError(err error) events.APIGatewayProxyResponse {
-	var svcErr *services.ServiceError
+	var svcErr *ServiceError
 	if errors.As(err, &svcErr) {
 		return ServiceErrorResponse(svcErr)
 	}

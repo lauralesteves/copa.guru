@@ -1,12 +1,10 @@
-package helpers
+package middlewares
 
 import (
 	"encoding/json"
 	"errors"
 	"net/http"
 	"testing"
-
-	"github.com/lauralesteves/copa-guru-backend/internal/shared/services"
 )
 
 func TestSuccessResponse_WithData(t *testing.T) {
@@ -90,7 +88,7 @@ func TestForbiddenResponse(t *testing.T) {
 }
 
 func TestServiceErrorResponse(t *testing.T) {
-	svcErr := services.NewConflictError("duplicate entry")
+	svcErr := NewConflictError("duplicate entry")
 	resp := ServiceErrorResponse(svcErr)
 	if resp.StatusCode != 409 {
 		t.Errorf("StatusCode = %d, want 409", resp.StatusCode)
@@ -103,7 +101,7 @@ func TestServiceErrorResponse(t *testing.T) {
 }
 
 func TestHandleServiceError_WithServiceError(t *testing.T) {
-	err := services.NewNotFoundError("match not found")
+	err := NewNotFoundError("match not found")
 	resp := HandleServiceError(err)
 	if resp.StatusCode != 404 {
 		t.Errorf("StatusCode = %d, want 404", resp.StatusCode)
