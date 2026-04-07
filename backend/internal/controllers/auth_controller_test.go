@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/aws/aws-lambda-go/events"
+	svcerr "github.com/lauralesteves/copa-guru-backend/internal/middlewares"
 	"github.com/lauralesteves/copa-guru-backend/internal/models"
 	"github.com/lauralesteves/copa-guru-backend/internal/services"
-	svcerr "github.com/lauralesteves/copa-guru-backend/internal/shared/services"
 	"go.uber.org/mock/gomock"
 )
 

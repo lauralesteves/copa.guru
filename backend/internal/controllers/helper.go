@@ -6,7 +6,7 @@ import (
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/go-playground/validator/v10"
-	"github.com/lauralesteves/copa-guru-backend/internal/shared/helpers"
+	"github.com/lauralesteves/copa-guru-backend/internal/middlewares"
 )
 
 var validate = validator.New()
@@ -15,7 +15,7 @@ func parseAndValidate[T any](request events.APIGatewayProxyRequest) (*T, events.
 	var dto T
 	if err := json.Unmarshal([]byte(request.Body), &dto); err != nil {
 		slog.Warn("invalid request body", "error", err)
-		return nil, helpers.BadRequestResponse([]string{err.Error()})
+		return nil, middlewares.BadRequestResponse([]string{err.Error()})
 	}
 
 	if err := validate.Struct(dto); err != nil {
@@ -24,7 +24,7 @@ func parseAndValidate[T any](request events.APIGatewayProxyRequest) (*T, events.
 			errs = append(errs, formatValidationError(e))
 		}
 		slog.Warn("validation failed", "errors", errs)
-		return nil, helpers.BadRequestResponse(errs)
+		return nil, middlewares.BadRequestResponse(errs)
 	}
 
 	return &dto, events.APIGatewayProxyResponse{}

@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
+	"github.com/lauralesteves/copa-guru-backend/internal/middlewares"
 	"github.com/lauralesteves/copa-guru-backend/internal/services"
-	"github.com/lauralesteves/copa-guru-backend/internal/shared/helpers"
 )
 
 type AuthController struct {
@@ -24,10 +24,10 @@ func (c *AuthController) GoogleLogin(request events.APIGatewayProxyRequest) (eve
 
 	user, err := c.authService.LoginWithGoogle(dto)
 	if err != nil {
-		return helpers.HandleServiceError(err), nil
+		return middlewares.HandleServiceError(err), nil
 	}
 
-	return helpers.SuccessResponse(user.ToLoginResponseDTO(), http.StatusOK), nil
+	return middlewares.SuccessResponse(user.ToLoginResponseDTO(), http.StatusOK), nil
 }
 
 func (c *AuthController) Refresh(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -38,35 +38,35 @@ func (c *AuthController) Refresh(request events.APIGatewayProxyRequest) (events.
 
 	auth, err := c.authService.RefreshTokens(dto.RefreshToken)
 	if err != nil {
-		return helpers.HandleServiceError(err), nil
+		return middlewares.HandleServiceError(err), nil
 	}
 
-	return helpers.SuccessResponse(auth.ToRefreshResponseDTO(), http.StatusOK), nil
+	return middlewares.SuccessResponse(auth.ToRefreshResponseDTO(), http.StatusOK), nil
 }
 
 func (c *AuthController) Logout(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	id := helpers.GetId(request)
+	id := middlewares.GetId(request)
 	if id == "" {
-		return helpers.UnauthorizedResponse(), nil
+		return middlewares.UnauthorizedResponse(), nil
 	}
 
 	if err := c.authService.Logout(id); err != nil {
-		return helpers.HandleServiceError(err), nil
+		return middlewares.HandleServiceError(err), nil
 	}
 
-	return helpers.SuccessResponse(map[string]string{"message": "logged out"}, http.StatusOK), nil
+	return middlewares.SuccessResponse(map[string]string{"message": "logged out"}, http.StatusOK), nil
 }
 
 func (c *AuthController) Me(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	id := helpers.GetId(request)
+	id := middlewares.GetId(request)
 	if id == "" {
-		return helpers.UnauthorizedResponse(), nil
+		return middlewares.UnauthorizedResponse(), nil
 	}
 
 	user, err := c.authService.GetMe(id)
 	if err != nil {
-		return helpers.HandleServiceError(err), nil
+		return middlewares.HandleServiceError(err), nil
 	}
 
-	return helpers.SuccessResponse(user.ToDTO(), http.StatusOK), nil
+	return middlewares.SuccessResponse(user.ToDTO(), http.StatusOK), nil
 }

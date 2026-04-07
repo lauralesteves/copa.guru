@@ -10,10 +10,10 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	svcerr "github.com/lauralesteves/copa-guru-backend/internal/middlewares"
 	"github.com/lauralesteves/copa-guru-backend/internal/models"
 	"github.com/lauralesteves/copa-guru-backend/internal/repositories"
 	"github.com/lauralesteves/copa-guru-backend/internal/services/external/google_oauth"
-	svcerr "github.com/lauralesteves/copa-guru-backend/internal/shared/services"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 

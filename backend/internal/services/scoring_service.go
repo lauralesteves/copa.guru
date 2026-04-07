@@ -5,9 +5,9 @@ package services
 import (
 	"log/slog"
 
+	svcerr "github.com/lauralesteves/copa-guru-backend/internal/middlewares"
 	"github.com/lauralesteves/copa-guru-backend/internal/models"
 	"github.com/lauralesteves/copa-guru-backend/internal/repositories"
-	svcerr "github.com/lauralesteves/copa-guru-backend/internal/shared/services"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
