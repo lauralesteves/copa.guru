@@ -41,7 +41,7 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 }
 
 // Exchange mocks base method.
-func (m *MockService) Exchange(dto *models.LoginRequestDTO) (*GoogleUserInfo, error) {
+func (m *MockService) Exchange(dto *models.GoogleLoginRequestDTO) (*GoogleUserInfo, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Exchange", dto)
 	ret0, _ := ret[0].(*GoogleUserInfo)

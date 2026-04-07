@@ -17,7 +17,7 @@ type GoogleUserInfo struct {
 }
 
 type Service interface {
-	Exchange(dto *models.LoginRequestDTO) (*GoogleUserInfo, error)
+	Exchange(dto *models.GoogleLoginRequestDTO) (*GoogleUserInfo, error)
 }
 
 type service struct {
@@ -34,7 +34,7 @@ func NewService(adapter Adapter, clientID, clientSecret string) Service {
 	}
 }
 
-func (s *service) Exchange(dto *models.LoginRequestDTO) (*GoogleUserInfo, error) {
+func (s *service) Exchange(dto *models.GoogleLoginRequestDTO) (*GoogleUserInfo, error) {
 	ctx := context.Background()
 
 	tokenResp, err := s.adapter.ExchangeToken(ctx, dto.Code, s.clientID, s.clientSecret, dto.RedirectURI)

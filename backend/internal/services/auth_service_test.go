@@ -1,7 +1,6 @@
 package services
 
 import (
-	"context"
 	"errors"
 	"testing"
 	"time"
@@ -30,8 +29,9 @@ func TestLoginWithGoogle_Success(t *testing.T) {
 
 	userID := bson.NewObjectID()
 	now := time.Now()
+	dto := &models.GoogleLoginRequestDTO{Code: "auth-code", RedirectURI: "http://localhost:5173"}
 
-	mockGoogle.EXPECT().Exchange(gomock.Any(), "auth-code", "http://localhost:5173").Return(&google_oauth.GoogleUserInfo{
+	mockGoogle.EXPECT().Exchange(dto).Return(&google_oauth.GoogleUserInfo{
 		GoogleID: "google-123",
 		Email:    "test@gmail.com",
 		Name:     "Test User",
@@ -46,7 +46,7 @@ func TestLoginWithGoogle_Success(t *testing.T) {
 
 	mockRepo.EXPECT().UpdateRefreshToken(userID, gomock.Any(), gomock.Any()).Return(nil)
 
-	resp, err := svc.LoginWithGoogle(context.Background(), "auth-code", "http://localhost:5173")
+	resp, err := svc.LoginWithGoogle(dto)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -65,9 +65,10 @@ func TestLoginWithGoogle_ExchangeFails(t *testing.T) {
 	ctrl, _, mockGoogle, svc := setupAuthService(t)
 	defer ctrl.Finish()
 
-	mockGoogle.EXPECT().Exchange(gomock.Any(), "bad-code", "http://localhost").Return(nil, errors.New("invalid code"))
+	dto := &models.GoogleLoginRequestDTO{Code: "bad-code", RedirectURI: "http://localhost"}
+	mockGoogle.EXPECT().Exchange(dto).Return(nil, errors.New("invalid code"))
 
-	_, err := svc.LoginWithGoogle(context.Background(), "bad-code", "http://localhost")
+	_, err := svc.LoginWithGoogle(dto)
 	if err == nil {
 		t.Error("expected error for failed exchange")
 	}
@@ -77,12 +78,13 @@ func TestLoginWithGoogle_UpsertFails(t *testing.T) {
 	ctrl, mockRepo, mockGoogle, svc := setupAuthService(t)
 	defer ctrl.Finish()
 
-	mockGoogle.EXPECT().Exchange(gomock.Any(), "code", "http://localhost").Return(&google_oauth.GoogleUserInfo{
+	dto := &models.GoogleLoginRequestDTO{Code: "code", RedirectURI: "http://localhost"}
+	mockGoogle.EXPECT().Exchange(dto).Return(&google_oauth.GoogleUserInfo{
 		GoogleID: "g-1", Email: "a@b.com", Name: "A",
 	}, nil)
 	mockRepo.EXPECT().Upsert(gomock.Any()).Return(nil, errors.New("db error"))
 
-	_, err := svc.LoginWithGoogle(context.Background(), "code", "http://localhost")
+	_, err := svc.LoginWithGoogle(dto)
 	if err == nil {
 		t.Error("expected error for failed upsert")
 	}
@@ -96,8 +98,10 @@ func TestRefreshTokens_Success(t *testing.T) {
 	expires := time.Now().Add(24 * time.Hour)
 
 	mockRepo.EXPECT().FindByRefreshToken("old-refresh").Return(&models.User{
-		ID:                    userID,
-		RefreshTokenExpiresAt: &expires,
+		ID: userID,
+		Auth: models.Auth{
+			RefreshTokenExpiresAt: &expires,
+		},
 	}, nil)
 	mockRepo.EXPECT().UpdateRefreshToken(userID, gomock.Any(), gomock.Any()).Return(nil)
 
@@ -133,8 +137,10 @@ func TestRefreshTokens_Expired(t *testing.T) {
 	expired := time.Now().Add(-1 * time.Hour)
 
 	mockRepo.EXPECT().FindByRefreshToken("expired-token").Return(&models.User{
-		ID:                    userID,
-		RefreshTokenExpiresAt: &expired,
+		ID: userID,
+		Auth: models.Auth{
+			RefreshTokenExpiresAt: &expired,
+		},
 	}, nil)
 	mockRepo.EXPECT().InvalidateRefreshToken(userID).Return(nil)
 
@@ -181,12 +187,12 @@ func TestGetMe_Success(t *testing.T) {
 		CreatedAt: now,
 	}, nil)
 
-	resp, err := svc.GetMe(userID.Hex())
+	user, err := svc.GetMe(userID.Hex())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if resp.User.Email != "me@copa.guru" {
-		t.Errorf("Email = %q, want %q", resp.User.Email, "me@copa.guru")
+	if user.Email != "me@copa.guru" {
+		t.Errorf("Email = %q, want %q", user.Email, "me@copa.guru")
 	}
 }
 
