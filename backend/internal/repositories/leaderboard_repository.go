@@ -95,6 +95,7 @@ func (r *leaderboardRepository) ReplaceAll(entries []*models.LeaderboardEntry) e
 	now := time.Now()
 	docs := make([]interface{}, len(entries))
 	for i, e := range entries {
+		e.CreatedAt = now
 		e.UpdatedAt = now
 		docs[i] = e
 	}

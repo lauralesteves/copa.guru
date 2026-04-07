@@ -8,5 +8,5 @@ import (
 )
 
 type MatchRepository interface {
-	FindByID(id bson.ObjectID) (*models.Match, error)
+	Get(id bson.ObjectID) (*models.Match, error)
 }
