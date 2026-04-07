@@ -6,7 +6,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/lauralesteves/copa-guru-backend/internal/shared/config"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
@@ -39,7 +38,7 @@ func ConnectOnMongo() *mongo.Client {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	client, err := mongo.Connect(options.Client().ApplyURI(config.GetDatabaseDSN()))
+	client, err := mongo.Connect(options.Client().ApplyURI(GetDatabaseDSN()))
 	if err != nil {
 		log.Panicf("failed to connect to MongoDB: %v", err)
 	}
@@ -53,7 +52,7 @@ func ConnectOnMongo() *mongo.Client {
 
 func SetupMongo() *MongoContext {
 	client := ConnectOnMongo()
-	db := client.Database(config.GetDatabaseName())
+	db := client.Database(GetDatabaseName())
 	return &MongoContext{Client: client, Database: db}
 }
 
