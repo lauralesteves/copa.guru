@@ -35,7 +35,7 @@ func TestGoogleLogin_Success(t *testing.T) {
 	defer ctrl.Finish()
 
 	now := time.Now()
-	mockAuth.EXPECT().LoginWithGoogle(gomock.Any()).Return(&models.LoginResponse{
+	mockAuth.EXPECT().LoginWithGoogle(gomock.Any()).Return(&models.LoginResponseDTO{
 		AccessToken:  "access-token",
 		RefreshToken: "refresh-token",
 		User:         &models.UserDTO{ID: "user-1", Email: "a@b.com", CreatedAt: now},
@@ -52,7 +52,7 @@ func TestGoogleLogin_Success(t *testing.T) {
 		t.Errorf("StatusCode = %d, want 200", resp.StatusCode)
 	}
 
-	var body models.LoginResponse
+	var body models.LoginResponseDTO
 	json.Unmarshal([]byte(resp.Body), &body)
 	if body.AccessToken != "access-token" {
 		t.Errorf("AccessToken = %q, want %q", body.AccessToken, "access-token")
@@ -100,7 +100,7 @@ func TestRefresh_Success(t *testing.T) {
 	ctrl, mockAuth, controller := setupController(t)
 	defer ctrl.Finish()
 
-	mockAuth.EXPECT().RefreshTokens("old-token").Return(&models.TokenResponse{
+	mockAuth.EXPECT().RefreshTokens("old-token").Return(&models.RefreshResponseDTO{
 		AccessToken:  "new-access",
 		RefreshToken: "new-refresh",
 	}, nil)
@@ -111,7 +111,7 @@ func TestRefresh_Success(t *testing.T) {
 		t.Errorf("StatusCode = %d, want 200", resp.StatusCode)
 	}
 
-	var body models.TokenResponse
+	var body models.RefreshResponseDTO
 	json.Unmarshal([]byte(resp.Body), &body)
 	if body.AccessToken != "new-access" {
 		t.Errorf("AccessToken = %q, want %q", body.AccessToken, "new-access")
@@ -184,8 +184,9 @@ func TestMe_Success(t *testing.T) {
 	ctrl, mockAuth, controller := setupController(t)
 	defer ctrl.Finish()
 
-	mockAuth.EXPECT().GetMe("user-42").Return(&models.MeDTO{
-		User: &models.UserDTO{ID: "user-42", Email: "me@copa.guru"},
+	mockAuth.EXPECT().GetMe("user-42").Return(&models.User{
+		Email: "me@copa.guru",
+		Name:  "Me",
 	}, nil)
 
 	resp, _ := controller.Me(authedRequest("user-42", ""))
@@ -193,10 +194,10 @@ func TestMe_Success(t *testing.T) {
 		t.Errorf("StatusCode = %d, want 200", resp.StatusCode)
 	}
 
-	var body models.MeDTO
+	var body models.User
 	json.Unmarshal([]byte(resp.Body), &body)
-	if body.User.Email != "me@copa.guru" {
-		t.Errorf("Email = %q, want %q", body.User.Email, "me@copa.guru")
+	if body.Email != "me@copa.guru" {
+		t.Errorf("Email = %q, want %q", body.Email, "me@copa.guru")
 	}
 }
 

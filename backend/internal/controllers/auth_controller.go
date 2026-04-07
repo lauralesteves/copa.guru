@@ -22,12 +22,12 @@ func (c *AuthController) GoogleLogin(request events.APIGatewayProxyRequest) (eve
 		return validationResponse, nil
 	}
 
-	resp, err := c.authService.LoginWithGoogle(dto)
+	user, err := c.authService.LoginWithGoogle(dto)
 	if err != nil {
 		return helpers.HandleServiceError(err), nil
 	}
 
-	return helpers.SuccessResponse(resp, http.StatusOK), nil
+	return helpers.SuccessResponse(user.ToLoginResponseDTO(), http.StatusOK), nil
 }
 
 func (c *AuthController) Refresh(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -36,12 +36,12 @@ func (c *AuthController) Refresh(request events.APIGatewayProxyRequest) (events.
 		return validationResponse, nil
 	}
 
-	resp, err := c.authService.RefreshTokens(dto.RefreshToken)
+	auth, err := c.authService.RefreshTokens(dto.RefreshToken)
 	if err != nil {
 		return helpers.HandleServiceError(err), nil
 	}
 
-	return helpers.SuccessResponse(resp, http.StatusOK), nil
+	return helpers.SuccessResponse(auth.ToRefreshResponseDTO(), http.StatusOK), nil
 }
 
 func (c *AuthController) Logout(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -63,10 +63,10 @@ func (c *AuthController) Me(request events.APIGatewayProxyRequest) (events.APIGa
 		return helpers.UnauthorizedResponse(), nil
 	}
 
-	resp, err := c.authService.GetMe(id)
+	user, err := c.authService.GetMe(id)
 	if err != nil {
 		return helpers.HandleServiceError(err), nil
 	}
 
-	return helpers.SuccessResponse(resp, http.StatusOK), nil
+	return helpers.SuccessResponse(user.ToDTO(), http.StatusOK), nil
 }
