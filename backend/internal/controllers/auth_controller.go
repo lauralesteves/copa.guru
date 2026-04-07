@@ -28,8 +28,8 @@ func (c *AuthController) GoogleLogin(request events.APIGatewayProxyRequest) (eve
 		return helpers.BadRequestResponse("invalid request body"), nil
 	}
 
-	if req.Code == "" || req.RedirectURI == "" {
-		return helpers.ServiceErrorResponse(svcerr.NewValidationError("code and redirectUri are required")), nil
+	if err := req.Validate(); err != nil {
+		return helpers.ServiceErrorResponse(svcerr.NewValidationError(err.Error())), nil
 	}
 
 	resp, err := c.authService.LoginWithGoogle(context.Background(), req.Code, req.RedirectURI)
@@ -47,8 +47,8 @@ func (c *AuthController) Refresh(request events.APIGatewayProxyRequest) (events.
 		return helpers.BadRequestResponse("invalid request body"), nil
 	}
 
-	if req.RefreshToken == "" {
-		return helpers.ServiceErrorResponse(svcerr.NewValidationError("refreshToken is required")), nil
+	if err := req.Validate(); err != nil {
+		return helpers.ServiceErrorResponse(svcerr.NewValidationError(err.Error())), nil
 	}
 
 	resp, err := c.authService.RefreshTokens(req.RefreshToken)
