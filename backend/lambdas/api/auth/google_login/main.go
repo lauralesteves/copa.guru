@@ -2,21 +2,19 @@ package main
 
 import (
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/lauralesteves/copa-guru-backend/internal/config"
 	"github.com/lauralesteves/copa-guru-backend/internal/controllers"
 	"github.com/lauralesteves/copa-guru-backend/internal/repositories"
 	"github.com/lauralesteves/copa-guru-backend/internal/services"
-	"github.com/lauralesteves/copa-guru-backend/internal/services/external/google_oauth"
-	"github.com/lauralesteves/copa-guru-backend/internal/shared/config"
+	gauth "github.com/lauralesteves/copa-guru-backend/internal/services/external/google_oauth"
 )
 
 func main() {
-	mongo := config.SetupMongo()
-	collection := mongo.Database.Collection("users")
-
-	userRepo := repositories.NewUserRepository(collection)
-	googleOAuth := google_oauth.NewService(google_oauth.NewAdapter(), config.GetGoogleClientID(), config.GetGoogleClientSecret())
+	db := config.SetupMongo()
+	userRepo := repositories.NewUserRepository(db)
+	googleOAuth := gauth.NewService(gauth.NewAdapter(), config.GetGoogleClientID(), config.GetGoogleClientSecret())
 	authSvc := services.NewAuthService(userRepo, config.GetJWTSecret(), googleOAuth)
-
 	ctrl := controllers.NewAuthController(authSvc)
+
 	lambda.Start(ctrl.GoogleLogin)
 }
