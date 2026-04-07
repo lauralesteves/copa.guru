@@ -9,6 +9,7 @@ import (
 
 	"github.com/lauralesteves/copa-guru-backend/internal/models"
 	"github.com/lauralesteves/copa-guru-backend/internal/repositories"
+	"github.com/lauralesteves/copa-guru-backend/internal/services/external/google_oauth"
 	svcerr "github.com/lauralesteves/copa-guru-backend/internal/shared/services"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
@@ -17,16 +18,16 @@ type AuthService interface {
 	LoginWithGoogle(ctx context.Context, code, redirectURI string) (*models.LoginResponse, error)
 	RefreshTokens(refreshToken string) (*models.TokenResponse, error)
 	Logout(userID string) error
-	GetMe(userID string) (*models.MeResponse, error)
+	GetMe(userID string) (*models.MeDTO, error)
 }
 
 type authService struct {
 	userRepo    repositories.UserRepository
 	jwtService  JWTService
-	googleOAuth GoogleOAuthClient
+	googleOAuth google_oauth.Service
 }
 
-func NewAuthService(userRepo repositories.UserRepository, jwtService JWTService, googleOAuth GoogleOAuthClient) AuthService {
+func NewAuthService(userRepo repositories.UserRepository, jwtService JWTService, googleOAuth google_oauth.Service) AuthService {
 	return &authService{
 		userRepo:    userRepo,
 		jwtService:  jwtService,
@@ -69,7 +70,7 @@ func (s *authService) LoginWithGoogle(ctx context.Context, code, redirectURI str
 		return nil, svcerr.NewInternalError("failed to generate refresh token", err)
 	}
 
-	if err := s.userRepo.UpdateRefreshToken(user.ID, refreshToken, now.Add(RefreshTokenTTL)); err != nil {
+	if err = s.userRepo.UpdateRefreshToken(user.ID, refreshToken, now.Add(RefreshTokenTTL)); err != nil {
 		slog.Error("failed to save refresh token", "userId", user.ID.Hex(), "error", err)
 		return nil, svcerr.NewInternalError("failed to save refresh token", err)
 	}
@@ -133,7 +134,7 @@ func (s *authService) Logout(userID string) error {
 	return nil
 }
 
-func (s *authService) GetMe(userID string) (*models.MeResponse, error) {
+func (s *authService) GetMe(userID string) (*models.MeDTO, error) {
 	id, err := bson.ObjectIDFromHex(userID)
 	if err != nil {
 		return nil, svcerr.NewValidationError("invalid user ID")
@@ -148,7 +149,7 @@ func (s *authService) GetMe(userID string) (*models.MeResponse, error) {
 		return nil, svcerr.NewNotFoundError("user not found")
 	}
 
-	return &models.MeResponse{
+	return &models.MeDTO{
 		User: user.ToDTO(),
 	}, nil
 }

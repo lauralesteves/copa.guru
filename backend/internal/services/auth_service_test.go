@@ -8,15 +8,16 @@ import (
 
 	"github.com/lauralesteves/copa-guru-backend/internal/models"
 	"github.com/lauralesteves/copa-guru-backend/internal/repositories"
+	"github.com/lauralesteves/copa-guru-backend/internal/services/external/google_oauth"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.uber.org/mock/gomock"
 )
 
-func setupAuthService(t *testing.T) (*gomock.Controller, *repositories.MockUserRepository, *MockJWTService, *MockGoogleOAuthClient, AuthService) {
+func setupAuthService(t *testing.T) (*gomock.Controller, *repositories.MockUserRepository, *MockJWTService, *google_oauth.MockService, AuthService) {
 	ctrl := gomock.NewController(t)
 	mockRepo := repositories.NewMockUserRepository(ctrl)
 	mockJWT := NewMockJWTService(ctrl)
-	mockGoogle := NewMockGoogleOAuthClient(ctrl)
+	mockGoogle := google_oauth.NewMockService(ctrl)
 	svc := NewAuthService(mockRepo, mockJWT, mockGoogle)
 	return ctrl, mockRepo, mockJWT, mockGoogle, svc
 }
@@ -28,7 +29,7 @@ func TestLoginWithGoogle_Success(t *testing.T) {
 	userID := bson.NewObjectID()
 	now := time.Now()
 
-	mockGoogle.EXPECT().Exchange(gomock.Any(), "auth-code", "http://localhost:5173").Return(&GoogleUserInfo{
+	mockGoogle.EXPECT().Exchange(gomock.Any(), "auth-code", "http://localhost:5173").Return(&google_oauth.GoogleUserInfo{
 		GoogleID: "google-123",
 		Email:    "test@gmail.com",
 		Name:     "Test User",
@@ -76,7 +77,7 @@ func TestLoginWithGoogle_UpsertFails(t *testing.T) {
 	ctrl, mockRepo, _, mockGoogle, svc := setupAuthService(t)
 	defer ctrl.Finish()
 
-	mockGoogle.EXPECT().Exchange(gomock.Any(), "code", "http://localhost").Return(&GoogleUserInfo{
+	mockGoogle.EXPECT().Exchange(gomock.Any(), "code", "http://localhost").Return(&google_oauth.GoogleUserInfo{
 		GoogleID: "g-1", Email: "a@b.com", Name: "A",
 	}, nil)
 	mockRepo.EXPECT().Upsert(gomock.Any()).Return(nil, errors.New("db error"))

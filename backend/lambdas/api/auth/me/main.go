@@ -5,6 +5,7 @@ import (
 	"github.com/lauralesteves/copa-guru-backend/internal/controllers"
 	"github.com/lauralesteves/copa-guru-backend/internal/repositories"
 	"github.com/lauralesteves/copa-guru-backend/internal/services"
+	"github.com/lauralesteves/copa-guru-backend/internal/services/external/google_oauth"
 	"github.com/lauralesteves/copa-guru-backend/internal/shared/config"
 )
 
@@ -14,7 +15,7 @@ func main() {
 
 	userRepo := repositories.NewUserRepository(collection)
 	jwtSvc := services.NewJWTService(config.GetJWTSecret())
-	googleOAuth := services.NewGoogleOAuthClient(config.GetGoogleClientID(), config.GetGoogleClientSecret())
+	googleOAuth := google_oauth.NewService(google_oauth.NewAdapter(), config.GetGoogleClientID(), config.GetGoogleClientSecret())
 	authSvc := services.NewAuthService(userRepo, jwtSvc, googleOAuth)
 
 	ctrl := controllers.NewAuthController(authSvc)

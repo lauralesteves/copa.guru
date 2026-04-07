@@ -42,10 +42,10 @@ func (m *MockAuthService) EXPECT() *MockAuthServiceMockRecorder {
 }
 
 // GetMe mocks base method.
-func (m *MockAuthService) GetMe(userID string) (*models.MeResponse, error) {
+func (m *MockAuthService) GetMe(userID string) (*models.MeDTO, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetMe", userID)
-	ret0, _ := ret[0].(*models.MeResponse)
+	ret0, _ := ret[0].(*models.MeDTO)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
