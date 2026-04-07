@@ -10,14 +10,16 @@ import (
 func TestUser_ToDTO(t *testing.T) {
 	now := time.Now()
 	user := &User{
-		ID:       bson.NewObjectID(),
-		GoogleID: "google-123",
-		Email:    "test@copa.guru",
-		Name:     "Test User",
-		Picture:  "https://example.com/pic.jpg",
-		RefreshToken: "secret-token",
-		LastLoginAt:  &now,
-		CreatedAt:    now,
+		ID:      bson.NewObjectID(),
+		Email:   "test@copa.guru",
+		Name:    "Test User",
+		Picture: "https://example.com/pic.jpg",
+		Auth: Auth{
+			GoogleID:     "google-123",
+			RefreshToken: "secret-token",
+			LastLoginAt:  &now,
+		},
+		CreatedAt: now,
 	}
 
 	dto := user.ToDTO()
@@ -33,5 +35,8 @@ func TestUser_ToDTO(t *testing.T) {
 	}
 	if dto.Picture != "https://example.com/pic.jpg" {
 		t.Errorf("Picture = %q, want %q", dto.Picture, "https://example.com/pic.jpg")
+	}
+	if dto.LastLoginAt == nil {
+		t.Error("expected LastLoginAt to be set")
 	}
 }

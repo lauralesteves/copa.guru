@@ -14,36 +14,56 @@ const (
 )
 
 type User struct {
-	ID                    bson.ObjectID `json:"id" bson:"_id,omitempty"`
-	Strategy              AuthStrategy  `json:"strategy" bson:"strategy"`
-	GoogleID              string        `json:"-" bson:"googleId,omitempty"`
-	Email                 string        `json:"email" bson:"email"`
-	Name                  string        `json:"name" bson:"name"`
-	Password              string        `json:"-" bson:"password,omitempty"`
-	Picture               string        `json:"picture" bson:"picture,omitempty"`
-	RefreshToken          string        `json:"-" bson:"refreshToken,omitempty"`
-	RefreshTokenExpiresAt *time.Time    `json:"-" bson:"refreshTokenExpiresAt,omitempty"`
-	LastLoginAt           *time.Time    `json:"lastLoginAt" bson:"lastLoginAt"`
-	CreatedAt             time.Time     `json:"createdAt" bson:"createdAt"`
-	UpdatedAt             time.Time     `json:"updatedAt" bson:"updatedAt"`
+	ID bson.ObjectID `json:"id" bson:"_id,omitempty"`
+
+	Name    string `json:"name" bson:"name"`
+	Email   string `json:"email" bson:"email"`
+	Picture string `json:"picture" bson:"picture,omitempty"`
+
+	Auth     Auth         `json:"auth" bson:"auth"`
+	Strategy AuthStrategy `json:"strategy" bson:"strategy"`
+
+	CreatedAt time.Time `json:"createdAt" bson:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt" bson:"updatedAt"`
 }
 
-type UserDTO struct {
-	ID          string     `json:"id"`
-	Email       string     `json:"email"`
-	Name        string     `json:"name"`
-	Picture     string     `json:"picture"`
-	LastLoginAt *time.Time `json:"lastLoginAt"`
-	CreatedAt   time.Time  `json:"createdAt"`
+type Auth struct {
+	GoogleID string `json:"-" bson:"googleId,omitempty"`
+	Password string `json:"-" bson:"password,omitempty"`
+
+	AccessToken           string     `json:"-" bson:"accessToken,omitempty"`
+	RefreshToken          string     `json:"-" bson:"refreshToken,omitempty"`
+	RefreshTokenExpiresAt *time.Time `json:"-" bson:"refreshTokenExpiresAt,omitempty"`
+	LastLoginAt           *time.Time `json:"lastLoginAt" bson:"lastLoginAt"`
 }
 
 func (u *User) ToDTO() *UserDTO {
-	return &UserDTO{
-		ID:          u.ID.Hex(),
-		Email:       u.Email,
-		Name:        u.Name,
-		Picture:     u.Picture,
-		LastLoginAt: u.LastLoginAt,
-		CreatedAt:   u.CreatedAt,
+	dto := &UserDTO{
+		ID:        u.ID.Hex(),
+		Email:     u.Email,
+		Name:      u.Name,
+		Picture:   u.Picture,
+		CreatedAt: u.CreatedAt,
+	}
+
+	if u.Auth.LastLoginAt != nil {
+		dto.LastLoginAt = u.Auth.LastLoginAt
+	}
+
+	return dto
+}
+
+func (u *User) ToLoginResponseDTO() *LoginResponseDTO {
+	return &LoginResponseDTO{
+		AccessToken:  u.Auth.AccessToken,
+		RefreshToken: u.Auth.RefreshToken,
+		User:         u.ToDTO(),
+	}
+}
+
+func (a *Auth) ToRefreshResponseDTO() *RefreshResponseDTO {
+	return &RefreshResponseDTO{
+		AccessToken:  a.AccessToken,
+		RefreshToken: a.RefreshToken,
 	}
 }
