@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/lauralesteves/copa-guru-backend/internal/config"
 	"github.com/lauralesteves/copa-guru-backend/internal/models"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -12,9 +13,8 @@ import (
 )
 
 const testDBName = "copa_guru_test"
-const testCollection = "users"
 
-func setupTestDB(t *testing.T) (*mongo.Collection, func()) {
+func setupTestDB(t *testing.T) (*config.MongoContext, func()) {
 	t.Helper()
 	client, err := mongo.Connect(options.Client().ApplyURI("mongodb://localhost:27017"))
 	if err != nil {
@@ -28,22 +28,23 @@ func setupTestDB(t *testing.T) (*mongo.Collection, func()) {
 		t.Skipf("MongoDB not reachable: %v", err)
 	}
 
-	collection := client.Database(testDBName).Collection(testCollection)
+	db := client.Database(testDBName)
+	mc := &config.MongoContext{Client: client, Database: db}
 
 	cleanup := func() {
-		_ = client.Database(testDBName).Drop(context.Background())
+		_ = db.Drop(context.Background())
 		_ = client.Disconnect(context.Background())
 	}
-	return collection, cleanup
+	return mc, cleanup
 }
 
 // --- Get ---
 
 func TestGet(t *testing.T) {
-	col, cleanup := setupTestDB(t)
+	mc, cleanup := setupTestDB(t)
 	defer cleanup()
 
-	repo := NewUserRepository(col)
+	repo := NewUserRepository(mc)
 	now := time.Now()
 
 	user := &models.User{
@@ -69,10 +70,10 @@ func TestGet(t *testing.T) {
 }
 
 func TestGet_NotFound(t *testing.T) {
-	col, cleanup := setupTestDB(t)
+	mc, cleanup := setupTestDB(t)
 	defer cleanup()
 
-	repo := NewUserRepository(col)
+	repo := NewUserRepository(mc)
 	found, err := repo.Get(bson.NewObjectID())
 	if err != nil {
 		t.Fatalf("Get() error: %v", err)
@@ -85,10 +86,10 @@ func TestGet_NotFound(t *testing.T) {
 // --- GetByEmail ---
 
 func TestGetByEmail(t *testing.T) {
-	col, cleanup := setupTestDB(t)
+	mc, cleanup := setupTestDB(t)
 	defer cleanup()
 
-	repo := NewUserRepository(col)
+	repo := NewUserRepository(mc)
 	now := time.Now()
 
 	user := &models.User{
@@ -118,10 +119,10 @@ func TestGetByEmail(t *testing.T) {
 }
 
 func TestGetByEmail_NotFound(t *testing.T) {
-	col, cleanup := setupTestDB(t)
+	mc, cleanup := setupTestDB(t)
 	defer cleanup()
 
-	repo := NewUserRepository(col)
+	repo := NewUserRepository(mc)
 	found, err := repo.GetByEmail("nonexistent@copa.guru")
 	if err != nil {
 		t.Fatalf("GetByEmail() error: %v", err)
@@ -134,10 +135,10 @@ func TestGetByEmail_NotFound(t *testing.T) {
 // --- GetByGoogleID ---
 
 func TestGetByGoogleID(t *testing.T) {
-	col, cleanup := setupTestDB(t)
+	mc, cleanup := setupTestDB(t)
 	defer cleanup()
 
-	repo := NewUserRepository(col)
+	repo := NewUserRepository(mc)
 	now := time.Now()
 
 	user := &models.User{
@@ -163,10 +164,10 @@ func TestGetByGoogleID(t *testing.T) {
 }
 
 func TestGetByGoogleID_NotFound(t *testing.T) {
-	col, cleanup := setupTestDB(t)
+	mc, cleanup := setupTestDB(t)
 	defer cleanup()
 
-	repo := NewUserRepository(col)
+	repo := NewUserRepository(mc)
 	found, err := repo.GetByGoogleID("nonexistent")
 	if err != nil {
 		t.Fatalf("GetByGoogleID() error: %v", err)
@@ -183,10 +184,10 @@ func TestGetByGoogleID_NotFound(t *testing.T) {
 // --- Upsert ---
 
 func TestUpsert_CreateNew(t *testing.T) {
-	col, cleanup := setupTestDB(t)
+	mc, cleanup := setupTestDB(t)
 	defer cleanup()
 
-	repo := NewUserRepository(col)
+	repo := NewUserRepository(mc)
 	now := time.Now()
 
 	user := &models.User{
@@ -213,10 +214,10 @@ func TestUpsert_CreateNew(t *testing.T) {
 }
 
 func TestUpsert_UpdateExisting(t *testing.T) {
-	col, cleanup := setupTestDB(t)
+	mc, cleanup := setupTestDB(t)
 	defer cleanup()
 
-	repo := NewUserRepository(col)
+	repo := NewUserRepository(mc)
 	now := time.Now()
 
 	user := &models.User{
@@ -247,10 +248,10 @@ func TestUpsert_UpdateExisting(t *testing.T) {
 // --- UpdateRefreshToken ---
 
 func TestUpdateRefreshToken(t *testing.T) {
-	col, cleanup := setupTestDB(t)
+	mc, cleanup := setupTestDB(t)
 	defer cleanup()
 
-	repo := NewUserRepository(col)
+	repo := NewUserRepository(mc)
 	now := time.Now()
 
 	user := &models.User{
@@ -278,10 +279,10 @@ func TestUpdateRefreshToken(t *testing.T) {
 // --- InvalidateRefreshToken ---
 
 func TestInvalidateRefreshToken(t *testing.T) {
-	col, cleanup := setupTestDB(t)
+	mc, cleanup := setupTestDB(t)
 	defer cleanup()
 
-	repo := NewUserRepository(col)
+	repo := NewUserRepository(mc)
 	now := time.Now()
 
 	user := &models.User{

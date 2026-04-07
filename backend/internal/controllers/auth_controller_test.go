@@ -35,10 +35,14 @@ func TestGoogleLogin_Success(t *testing.T) {
 	defer ctrl.Finish()
 
 	now := time.Now()
-	mockAuth.EXPECT().LoginWithGoogle(gomock.Any()).Return(&models.LoginResponseDTO{
-		AccessToken:  "access-token",
-		RefreshToken: "refresh-token",
-		User:         &models.UserDTO{ID: "user-1", Email: "a@b.com", CreatedAt: now},
+	mockAuth.EXPECT().LoginWithGoogle(gomock.Any()).Return(&models.User{
+		Email:     "a@b.com",
+		Name:      "Test",
+		CreatedAt: now,
+		Auth: models.Auth{
+			AccessToken:  "access-token",
+			RefreshToken: "refresh-token",
+		},
 	}, nil)
 
 	req := events.APIGatewayProxyRequest{
@@ -100,7 +104,7 @@ func TestRefresh_Success(t *testing.T) {
 	ctrl, mockAuth, controller := setupController(t)
 	defer ctrl.Finish()
 
-	mockAuth.EXPECT().RefreshTokens("old-token").Return(&models.RefreshResponseDTO{
+	mockAuth.EXPECT().RefreshTokens("old-token").Return(&models.Auth{
 		AccessToken:  "new-access",
 		RefreshToken: "new-refresh",
 	}, nil)

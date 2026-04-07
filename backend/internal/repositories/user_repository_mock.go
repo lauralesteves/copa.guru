@@ -42,37 +42,7 @@ func (m *MockUserRepository) EXPECT() *MockUserRepositoryMockRecorder {
 	return m.recorder
 }
 
-// FindByEmail mocks base method.
-func (m *MockUserRepository) GetByEmail(email string) (*models.User, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByEmail", email)
-	ret0, _ := ret[0].(*models.User)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindByEmail indicates an expected call of FindByEmail.
-func (mr *MockUserRepositoryMockRecorder) FindByEmail(email any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByEmail", reflect.TypeOf((*MockUserRepository)(nil).GetByEmail), email)
-}
-
-// FindByGoogleID mocks base method.
-func (m *MockUserRepository) GetByGoogleID(googleID string) (*models.User, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByGoogleID", googleID)
-	ret0, _ := ret[0].(*models.User)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindByGoogleID indicates an expected call of FindByGoogleID.
-func (mr *MockUserRepositoryMockRecorder) FindByGoogleID(googleID any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByGoogleID", reflect.TypeOf((*MockUserRepository)(nil).GetByGoogleID), googleID)
-}
-
-// FindByID mocks base method.
+// Get mocks base method.
 func (m *MockUserRepository) Get(id bson.ObjectID) (*models.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get", id)
@@ -81,13 +51,43 @@ func (m *MockUserRepository) Get(id bson.ObjectID) (*models.User, error) {
 	return ret0, ret1
 }
 
-// FindByID indicates an expected call of FindByID.
-func (mr *MockUserRepositoryMockRecorder) FindByID(id any) *gomock.Call {
+// Get indicates an expected call of Get.
+func (mr *MockUserRepositoryMockRecorder) Get(id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockUserRepository)(nil).Get), id)
 }
 
-// FindByRefreshToken mocks base method.
+// GetByEmail mocks base method.
+func (m *MockUserRepository) GetByEmail(email string) (*models.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByEmail", email)
+	ret0, _ := ret[0].(*models.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByEmail indicates an expected call of GetByEmail.
+func (mr *MockUserRepositoryMockRecorder) GetByEmail(email any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByEmail", reflect.TypeOf((*MockUserRepository)(nil).GetByEmail), email)
+}
+
+// GetByGoogleID mocks base method.
+func (m *MockUserRepository) GetByGoogleID(googleID string) (*models.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByGoogleID", googleID)
+	ret0, _ := ret[0].(*models.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByGoogleID indicates an expected call of GetByGoogleID.
+func (mr *MockUserRepositoryMockRecorder) GetByGoogleID(googleID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByGoogleID", reflect.TypeOf((*MockUserRepository)(nil).GetByGoogleID), googleID)
+}
+
+// GetByRefreshToken mocks base method.
 func (m *MockUserRepository) GetByRefreshToken(token string) (*models.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByRefreshToken", token)
@@ -96,8 +96,8 @@ func (m *MockUserRepository) GetByRefreshToken(token string) (*models.User, erro
 	return ret0, ret1
 }
 
-// FindByRefreshToken indicates an expected call of FindByRefreshToken.
-func (mr *MockUserRepositoryMockRecorder) FindByRefreshToken(token any) *gomock.Call {
+// GetByRefreshToken indicates an expected call of GetByRefreshToken.
+func (mr *MockUserRepositoryMockRecorder) GetByRefreshToken(token any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByRefreshToken", reflect.TypeOf((*MockUserRepository)(nil).GetByRefreshToken), token)
 }

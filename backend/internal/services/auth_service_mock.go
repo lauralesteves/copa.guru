@@ -56,10 +56,10 @@ func (mr *MockAuthServiceMockRecorder) GetMe(userID any) *gomock.Call {
 }
 
 // LoginWithGoogle mocks base method.
-func (m *MockAuthService) LoginWithGoogle(dto *models.GoogleLoginRequestDTO) (*models.LoginResponseDTO, error) {
+func (m *MockAuthService) LoginWithGoogle(dto *models.GoogleLoginRequestDTO) (*models.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "LoginWithGoogle", dto)
-	ret0, _ := ret[0].(*models.LoginResponseDTO)
+	ret0, _ := ret[0].(*models.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -85,10 +85,10 @@ func (mr *MockAuthServiceMockRecorder) Logout(userID any) *gomock.Call {
 }
 
 // RefreshTokens mocks base method.
-func (m *MockAuthService) RefreshTokens(refreshToken string) (*models.RefreshResponseDTO, error) {
+func (m *MockAuthService) RefreshTokens(refreshToken string) (*models.Auth, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "RefreshTokens", refreshToken)
-	ret0, _ := ret[0].(*models.RefreshResponseDTO)
+	ret0, _ := ret[0].(*models.Auth)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

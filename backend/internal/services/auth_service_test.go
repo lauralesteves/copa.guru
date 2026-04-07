@@ -46,18 +46,18 @@ func TestLoginWithGoogle_Success(t *testing.T) {
 
 	mockRepo.EXPECT().UpdateRefreshToken(userID, gomock.Any(), gomock.Any()).Return(nil)
 
-	resp, err := svc.LoginWithGoogle(dto)
+	user, err := svc.LoginWithGoogle(dto)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if resp.AccessToken == "" {
+	if user.Auth.AccessToken == "" {
 		t.Error("expected non-empty access token")
 	}
-	if resp.RefreshToken == "" {
+	if user.Auth.RefreshToken == "" {
 		t.Error("expected non-empty refresh token")
 	}
-	if resp.User.Email != "test@gmail.com" {
-		t.Errorf("User.Email = %q, want %q", resp.User.Email, "test@gmail.com")
+	if user.Email != "test@gmail.com" {
+		t.Errorf("Email = %q, want %q", user.Email, "test@gmail.com")
 	}
 }
 
@@ -97,7 +97,7 @@ func TestRefreshTokens_Success(t *testing.T) {
 	userID := bson.NewObjectID()
 	expires := time.Now().Add(24 * time.Hour)
 
-	mockRepo.EXPECT().FindByRefreshToken("old-refresh").Return(&models.User{
+	mockRepo.EXPECT().GetByRefreshToken("old-refresh").Return(&models.User{
 		ID: userID,
 		Auth: models.Auth{
 			RefreshTokenExpiresAt: &expires,
@@ -105,14 +105,14 @@ func TestRefreshTokens_Success(t *testing.T) {
 	}, nil)
 	mockRepo.EXPECT().UpdateRefreshToken(userID, gomock.Any(), gomock.Any()).Return(nil)
 
-	resp, err := svc.RefreshTokens("old-refresh")
+	auth, err := svc.RefreshTokens("old-refresh")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if resp.AccessToken == "" {
+	if auth.AccessToken == "" {
 		t.Error("expected non-empty access token")
 	}
-	if resp.RefreshToken == "" {
+	if auth.RefreshToken == "" {
 		t.Error("expected non-empty refresh token")
 	}
 }
@@ -121,7 +121,7 @@ func TestRefreshTokens_InvalidToken(t *testing.T) {
 	ctrl, mockRepo, _, svc := setupAuthService(t)
 	defer ctrl.Finish()
 
-	mockRepo.EXPECT().FindByRefreshToken("nonexistent").Return(nil, nil)
+	mockRepo.EXPECT().GetByRefreshToken("nonexistent").Return(nil, nil)
 
 	_, err := svc.RefreshTokens("nonexistent")
 	if err == nil {
@@ -136,7 +136,7 @@ func TestRefreshTokens_Expired(t *testing.T) {
 	userID := bson.NewObjectID()
 	expired := time.Now().Add(-1 * time.Hour)
 
-	mockRepo.EXPECT().FindByRefreshToken("expired-token").Return(&models.User{
+	mockRepo.EXPECT().GetByRefreshToken("expired-token").Return(&models.User{
 		ID: userID,
 		Auth: models.Auth{
 			RefreshTokenExpiresAt: &expired,
@@ -180,7 +180,7 @@ func TestGetMe_Success(t *testing.T) {
 	userID := bson.NewObjectID()
 	now := time.Now()
 
-	mockRepo.EXPECT().FindByID(userID).Return(&models.User{
+	mockRepo.EXPECT().Get(userID).Return(&models.User{
 		ID:        userID,
 		Email:     "me@copa.guru",
 		Name:      "Me",
@@ -201,7 +201,7 @@ func TestGetMe_NotFound(t *testing.T) {
 	defer ctrl.Finish()
 
 	userID := bson.NewObjectID()
-	mockRepo.EXPECT().FindByID(userID).Return(nil, nil)
+	mockRepo.EXPECT().Get(userID).Return(nil, nil)
 
 	_, err := svc.GetMe(userID.Hex())
 	if err == nil {
