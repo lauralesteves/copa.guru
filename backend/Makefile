@@ -1,4 +1,4 @@
-.PHONY: up down run build test test-ci mocks clean indexes seed local-user
+.PHONY: up down run build test test-ci mocks clean db\:init db\:indexes db\:seed local-user
 
 up:
 	docker compose up -d
@@ -24,10 +24,13 @@ mocks:
 clean:
 	rm -rf .aws-sam
 
-indexes:
+db\:init:
+	@set -a && . ./.env && set +a && mongosh "$$MONGODB_DSN/$$MONGODB_DATABASE_NAME" < docs/mongodb/init.mongodb.js
+
+db\:indexes:
 	@set -a && . ./.env && set +a && mongosh "$$MONGODB_DSN/$$MONGODB_DATABASE_NAME" < docs/mongodb/indexes.mongodb.js
 
-seed:
+db\:seed:
 	@set -a && . ./.env && set +a && mongosh "$$MONGODB_DSN/$$MONGODB_DATABASE_NAME" < docs/mongodb/seeds.mongodb.js
 
 local-user:
