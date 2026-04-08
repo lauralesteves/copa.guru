@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/aws/aws-lambda-go/events"
 )
@@ -24,6 +25,11 @@ func GetId(request events.APIGatewayProxyRequest) string {
 		return id
 	}
 
+	id = request.PathParameters["userId"]
+	if id != "" {
+		return id
+	}
+
 	// Get from authorizer
 	if auth, ok := request.RequestContext.Authorizer["userId"]; ok {
 		if id, ok = auth.(string); ok {
@@ -31,6 +37,22 @@ func GetId(request events.APIGatewayProxyRequest) string {
 		}
 	}
 	return id
+}
+
+func GetQueryString(request events.APIGatewayProxyRequest, param string) string {
+	return request.QueryStringParameters[param]
+}
+
+func GetQueryStringInt(request events.APIGatewayProxyRequest, param string, defaultValue int64) int64 {
+	result := defaultValue
+
+	if value := GetQueryString(request, param); value != "" {
+		if parsed, err := strconv.ParseInt(value, 10, 64); err == nil && parsed > 0 && parsed <= 100 {
+			result = parsed
+		}
+	}
+
+	return result
 }
 
 func SuccessResponse(data interface{}, statusCode int) events.APIGatewayProxyResponse {

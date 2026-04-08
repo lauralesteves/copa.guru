@@ -66,7 +66,7 @@ func TestScoreMatch(t *testing.T) {
 		predRepo := repositories.NewMockPredictionRepository(ctrl)
 		svc := NewScoringService(matchRepo, predRepo)
 
-		matchRepo.EXPECT().FindByID(matchID).Return(nil, nil)
+		matchRepo.EXPECT().Get(matchID).Return(nil, nil)
 
 		_, err := svc.ScoreMatch(matchIDHex)
 		assertServiceError(t, err, svcerr.ErrNotFound)
@@ -78,7 +78,7 @@ func TestScoreMatch(t *testing.T) {
 		predRepo := repositories.NewMockPredictionRepository(ctrl)
 		svc := NewScoringService(matchRepo, predRepo)
 
-		matchRepo.EXPECT().FindByID(matchID).Return(&models.Match{
+		matchRepo.EXPECT().Get(matchID).Return(&models.Match{
 			ID:     matchID,
 			Status: models.MatchStatusLive,
 		}, nil)
@@ -93,7 +93,7 @@ func TestScoreMatch(t *testing.T) {
 		predRepo := repositories.NewMockPredictionRepository(ctrl)
 		svc := NewScoringService(matchRepo, predRepo)
 
-		matchRepo.EXPECT().FindByID(matchID).Return(&models.Match{
+		matchRepo.EXPECT().Get(matchID).Return(&models.Match{
 			ID:     matchID,
 			Status: models.MatchStatusFinished,
 		}, nil)
@@ -108,13 +108,13 @@ func TestScoreMatch(t *testing.T) {
 		predRepo := repositories.NewMockPredictionRepository(ctrl)
 		svc := NewScoringService(matchRepo, predRepo)
 
-		matchRepo.EXPECT().FindByID(matchID).Return(&models.Match{
+		matchRepo.EXPECT().Get(matchID).Return(&models.Match{
 			ID:     matchID,
 			Status: models.MatchStatusFinished,
 			Goals1: intPtr(2),
 			Goals2: intPtr(1),
 		}, nil)
-		predRepo.EXPECT().FindByMatch(matchID).Return(nil, nil)
+		predRepo.EXPECT().ListByMatchId(matchID).Return(nil, nil)
 
 		result, err := svc.ScoreMatch(matchIDHex)
 		if err != nil {
@@ -135,14 +135,14 @@ func TestScoreMatch(t *testing.T) {
 		pred2ID := bson.NewObjectID()
 		pred3ID := bson.NewObjectID()
 
-		matchRepo.EXPECT().FindByID(matchID).Return(&models.Match{
+		matchRepo.EXPECT().Get(matchID).Return(&models.Match{
 			ID:     matchID,
 			Status: models.MatchStatusFinished,
 			Goals1: intPtr(2),
 			Goals2: intPtr(1),
 		}, nil)
 
-		predRepo.EXPECT().FindByMatch(matchID).Return([]*models.Prediction{
+		predRepo.EXPECT().ListByMatchId(matchID).Return([]*models.Prediction{
 			{ID: pred1ID, Goals1: 2, Goals2: 1}, // exact: 10
 			{ID: pred2ID, Goals1: 3, Goals2: 0}, // correct result: 5
 			{ID: pred3ID, Goals1: 0, Goals2: 2}, // wrong: 0
@@ -200,8 +200,8 @@ func TestScoreMatch(t *testing.T) {
 			{ID: predID, Goals1: 1, Goals2: 1, Points: intPtr(10)},
 		}
 
-		matchRepo.EXPECT().FindByID(matchID).Return(match, nil).Times(2)
-		predRepo.EXPECT().FindByMatch(matchID).Return(preds, nil).Times(2)
+		matchRepo.EXPECT().Get(matchID).Return(match, nil).Times(2)
+		predRepo.EXPECT().ListByMatchId(matchID).Return(preds, nil).Times(2)
 		predRepo.EXPECT().BulkUpdatePoints(gomock.Any()).Return(nil).Times(2)
 
 		result1, err := svc.ScoreMatch(matchIDHex)
@@ -225,25 +225,25 @@ func TestScoreMatch(t *testing.T) {
 		predRepo := repositories.NewMockPredictionRepository(ctrl)
 		svc := NewScoringService(matchRepo, predRepo)
 
-		matchRepo.EXPECT().FindByID(matchID).Return(nil, errors.New("db error"))
+		matchRepo.EXPECT().Get(matchID).Return(nil, errors.New("db error"))
 
 		_, err := svc.ScoreMatch(matchIDHex)
 		assertServiceError(t, err, svcerr.ErrInternal)
 	})
 
-	t.Run("prediction repo FindByMatch error", func(t *testing.T) {
+	t.Run("prediction repo ListByMatchId error", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		matchRepo := repositories.NewMockMatchRepository(ctrl)
 		predRepo := repositories.NewMockPredictionRepository(ctrl)
 		svc := NewScoringService(matchRepo, predRepo)
 
-		matchRepo.EXPECT().FindByID(matchID).Return(&models.Match{
+		matchRepo.EXPECT().Get(matchID).Return(&models.Match{
 			ID:     matchID,
 			Status: models.MatchStatusFinished,
 			Goals1: intPtr(1),
 			Goals2: intPtr(0),
 		}, nil)
-		predRepo.EXPECT().FindByMatch(matchID).Return(nil, errors.New("db error"))
+		predRepo.EXPECT().ListByMatchId(matchID).Return(nil, errors.New("db error"))
 
 		_, err := svc.ScoreMatch(matchIDHex)
 		assertServiceError(t, err, svcerr.ErrInternal)
@@ -255,13 +255,13 @@ func TestScoreMatch(t *testing.T) {
 		predRepo := repositories.NewMockPredictionRepository(ctrl)
 		svc := NewScoringService(matchRepo, predRepo)
 
-		matchRepo.EXPECT().FindByID(matchID).Return(&models.Match{
+		matchRepo.EXPECT().Get(matchID).Return(&models.Match{
 			ID:     matchID,
 			Status: models.MatchStatusFinished,
 			Goals1: intPtr(1),
 			Goals2: intPtr(0),
 		}, nil)
-		predRepo.EXPECT().FindByMatch(matchID).Return([]*models.Prediction{
+		predRepo.EXPECT().ListByMatchId(matchID).Return([]*models.Prediction{
 			{ID: bson.NewObjectID(), Goals1: 1, Goals2: 0},
 		}, nil)
 		predRepo.EXPECT().BulkUpdatePoints(gomock.Any()).Return(errors.New("db error"))

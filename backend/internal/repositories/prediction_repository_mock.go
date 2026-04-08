@@ -41,6 +41,21 @@ func (m *MockPredictionRepository) EXPECT() *MockPredictionRepositoryMockRecorde
 	return m.recorder
 }
 
+// AggregateLeaderboard mocks base method.
+func (m *MockPredictionRepository) AggregateLeaderboard() ([]*models.LeaderboardEntry, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AggregateLeaderboard")
+	ret0, _ := ret[0].([]*models.LeaderboardEntry)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// AggregateLeaderboard indicates an expected call of AggregateLeaderboard.
+func (mr *MockPredictionRepositoryMockRecorder) AggregateLeaderboard() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AggregateLeaderboard", reflect.TypeOf((*MockPredictionRepository)(nil).AggregateLeaderboard))
+}
+
 // BulkUpdatePoints mocks base method.
 func (m *MockPredictionRepository) BulkUpdatePoints(updates []models.PointsUpdate) error {
 	m.ctrl.T.Helper()
@@ -55,17 +70,17 @@ func (mr *MockPredictionRepositoryMockRecorder) BulkUpdatePoints(updates any) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BulkUpdatePoints", reflect.TypeOf((*MockPredictionRepository)(nil).BulkUpdatePoints), updates)
 }
 
-// FindByMatch mocks base method.
-func (m *MockPredictionRepository) FindByMatch(matchID bson.ObjectID) ([]*models.Prediction, error) {
+// ListByMatchId mocks base method.
+func (m *MockPredictionRepository) ListByMatchId(matchID bson.ObjectID) ([]*models.Prediction, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindByMatch", matchID)
+	ret := m.ctrl.Call(m, "ListByMatchId", matchID)
 	ret0, _ := ret[0].([]*models.Prediction)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// FindByMatch indicates an expected call of FindByMatch.
-func (mr *MockPredictionRepositoryMockRecorder) FindByMatch(matchID any) *gomock.Call {
+// ListByMatchId indicates an expected call of ListByMatchId.
+func (mr *MockPredictionRepositoryMockRecorder) ListByMatchId(matchID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByMatch", reflect.TypeOf((*MockPredictionRepository)(nil).FindByMatch), matchID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByMatchId", reflect.TypeOf((*MockPredictionRepository)(nil).ListByMatchId), matchID)
 }

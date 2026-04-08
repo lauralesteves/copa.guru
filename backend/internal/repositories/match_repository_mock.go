@@ -41,17 +41,17 @@ func (m *MockMatchRepository) EXPECT() *MockMatchRepositoryMockRecorder {
 	return m.recorder
 }
 
-// FindByID mocks base method.
-func (m *MockMatchRepository) FindByID(id bson.ObjectID) (*models.Match, error) {
+// Get mocks base method.
+func (m *MockMatchRepository) Get(id bson.ObjectID) (*models.Match, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindByID", id)
+	ret := m.ctrl.Call(m, "Get", id)
 	ret0, _ := ret[0].(*models.Match)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// FindByID indicates an expected call of FindByID.
-func (mr *MockMatchRepositoryMockRecorder) FindByID(id any) *gomock.Call {
+// Get indicates an expected call of Get.
+func (mr *MockMatchRepositoryMockRecorder) Get(id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByID", reflect.TypeOf((*MockMatchRepository)(nil).FindByID), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockMatchRepository)(nil).Get), id)
 }

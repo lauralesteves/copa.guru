@@ -8,6 +8,7 @@ import (
 )
 
 type PredictionRepository interface {
-	FindByMatch(matchID bson.ObjectID) ([]*models.Prediction, error)
+	ListByMatchId(matchID bson.ObjectID) ([]*models.Prediction, error)
 	BulkUpdatePoints(updates []models.PointsUpdate) error
+	AggregateLeaderboard() ([]*models.LeaderboardEntry, error)
 }

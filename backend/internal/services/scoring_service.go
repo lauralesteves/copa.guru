@@ -61,7 +61,7 @@ func (s *scoringService) ScoreMatch(matchID string) (*models.ScoreResult, error)
 		return nil, svcerr.NewValidationError("invalid match ID")
 	}
 
-	match, err := s.matchRepo.FindByID(id)
+	match, err := s.matchRepo.Get(id)
 	if err != nil {
 		slog.Error("failed to find match", "matchId", matchID, "error", err)
 		return nil, svcerr.NewInternalError("failed to find match", err)
@@ -76,7 +76,7 @@ func (s *scoringService) ScoreMatch(matchID string) (*models.ScoreResult, error)
 		return nil, svcerr.NewValidationError("match has no result")
 	}
 
-	predictions, err := s.predictionRepo.FindByMatch(id)
+	predictions, err := s.predictionRepo.ListByMatchId(id)
 	if err != nil {
 		slog.Error("failed to find predictions", "matchId", matchID, "error", err)
 		return nil, svcerr.NewInternalError("failed to find predictions", err)
