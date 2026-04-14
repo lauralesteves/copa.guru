@@ -28,3 +28,12 @@ type ScoreResult struct {
 	ExactScores    int `json:"exactScores"`
 	CorrectResults int `json:"correctResults"`
 }
+
+func (p *Prediction) ToDTO() *PredictionDTO {
+	return &PredictionDTO{
+		MatchID:     p.MatchID,
+		MatchNumber: p.MatchNumber,
+		Goals1:      p.Goals1,
+		Goals2:      p.Goals2,
+	}
+}
