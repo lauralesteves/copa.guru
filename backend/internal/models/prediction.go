@@ -13,25 +13,14 @@ type Prediction struct {
 	MatchNumber int           `json:"matchNumber" bson:"matchNumber"`
 	Goals1      int           `json:"goals1" bson:"goals1"`
 	Goals2      int           `json:"goals2" bson:"goals2"`
-	Points      *int          `json:"points" bson:"points,omitempty"`
+	Points      int           `json:"points" bson:"points"`
 	CreatedAt   time.Time     `json:"createdAt" bson:"createdAt"`
 	UpdatedAt   time.Time     `json:"updatedAt" bson:"updatedAt"`
 }
 
-type PointsUpdate struct {
-	PredictionID bson.ObjectID
-	Points       int
-}
-
-type ScoreResult struct {
-	Total          int `json:"total"`
-	ExactScores    int `json:"exactScores"`
-	CorrectResults int `json:"correctResults"`
-}
-
 func (p *Prediction) ToDTO() *PredictionDTO {
 	return &PredictionDTO{
-		MatchID:     p.MatchID,
+		MatchID:     p.MatchID.Hex(),
 		MatchNumber: p.MatchNumber,
 		Goals1:      p.Goals1,
 		Goals2:      p.Goals2,
