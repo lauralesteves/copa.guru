@@ -19,6 +19,7 @@ type PredictionDistribution struct {
 	Draw    int    `json:"draw"`
 	AwayWin int    `json:"awayWin"`
 	MatchID string `json:"matchId"`
+	Entries int    `json:"entries"`
 }
 
 type PointsUpdate struct {
@@ -30,4 +31,11 @@ type ScoreResult struct {
 	Total          int `json:"total"`
 	ExactScores    int `json:"exactScores"`
 	CorrectResults int `json:"correctResults"`
+}
+
+type UserSummary struct {
+	UserID         string `json:"userId"`
+	TotalPoints    int    `json:"totalPoints"`
+	ExactScores    int    `json:"exactScores"`
+	CorrectResults int    `json:"correctResults"`
 }
