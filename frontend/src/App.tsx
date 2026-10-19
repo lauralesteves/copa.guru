@@ -67,7 +67,7 @@ function HomePage() {
           <GroupStage getGroupMatches={getGroupMatches} allGroupStandings={allGroupStandings} onScoreChange={updateScore} />
         </Suspense>
         <Suspense fallback={<SectionSkeleton lines={2} />}>
-          <KnockoutStage allGroupStandings={allGroupStandings} />
+          <KnockoutStage matches={matches} />
         </Suspense>
         <Suspense fallback={<SectionSkeleton lines={2} />}>
           <WorldGlobe />

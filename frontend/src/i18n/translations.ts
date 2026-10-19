@@ -56,10 +56,15 @@ export interface Translations {
     threeD: string;
     champion: string;
     tbd: string;
+    roundOf32: string;
     roundOf16: string;
     quarters: string;
     semi: string;
     final: string;
+    runnerUp: string;
+    thirdPlace: string;
+    penalties: string;
+    extraTime: string;
   };
   globe: {
     title: string;
@@ -178,10 +183,15 @@ export const translations: Record<Locale, Translations> = {
       threeD: '3D',
       champion: 'CAMPEÃO',
       tbd: 'A definir...',
+      roundOf32: '16 avos',
       roundOf16: 'Oitavas',
       quarters: 'Quartas',
       semi: 'Semi',
       final: 'Final',
+      runnerUp: 'Vice',
+      thirdPlace: '3º lugar',
+      penalties: 'pên.',
+      extraTime: 'prorr.',
     },
     globe: {
       title: 'MAPA MUNDIAL',
@@ -297,16 +307,21 @@ export const translations: Record<Locale, Translations> = {
     },
     knockout: {
       title: 'KNOCKOUT',
-      subtitle: 'From the Round of 16 to the Grand Final',
+      subtitle: 'From the Round of 32 to the Grand Final',
       bracket: 'Bracket',
       graph: 'Graph',
       threeD: '3D',
       champion: 'CHAMPION',
       tbd: 'TBD...',
+      roundOf32: 'Round of 32',
       roundOf16: 'Round of 16',
       quarters: 'Quarters',
       semi: 'Semi',
       final: 'Final',
+      runnerUp: 'Runner-up',
+      thirdPlace: 'Third place',
+      penalties: 'pens',
+      extraTime: 'a.e.t.',
     },
     globe: {
       title: 'WORLD MAP',
@@ -428,10 +443,15 @@ export const translations: Record<Locale, Translations> = {
       threeD: '3D',
       champion: 'CAMPEÓN',
       tbd: 'Por definir...',
+      roundOf32: '16avos',
       roundOf16: 'Octavos',
       quarters: 'Cuartos',
       semi: 'Semi',
       final: 'Final',
+      runnerUp: 'Subcampeón',
+      thirdPlace: 'Tercer puesto',
+      penalties: 'pen.',
+      extraTime: 'pró.',
     },
     globe: {
       title: 'MAPA MUNDIAL',
