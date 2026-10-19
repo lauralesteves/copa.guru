@@ -1,22 +1,25 @@
-import { Suspense, lazy, useState } from 'react';
+import { Suspense, lazy, useMemo, useState } from 'react';
 import { useScrollReveal } from '../../hooks/useScrollReveal';
 import { useLocale } from '../../i18n/LocaleContext';
-import type { GroupName, GroupStanding } from '../../types/worldcup';
+import { buildKnockoutTree } from '../../lib/knockout';
+import type { Match } from '../../types/worldcup';
 import { Bracket } from './Bracket';
 import { MoleculeGraph } from './MoleculeGraph';
+import { Podium } from './Podium';
 
 const Bracket3D = lazy(() =>
   import('./Bracket3D').then((m) => ({ default: m.Bracket3D })),
 );
 
 interface KnockoutStageProps {
-  allGroupStandings: Map<GroupName, GroupStanding[]>;
+  matches: Match[];
 }
 
 type View = 'bracket' | 'molecule' | '3d';
 
-export function KnockoutStage({ allGroupStandings }: KnockoutStageProps) {
+export function KnockoutStage({ matches }: KnockoutStageProps) {
   const { t } = useLocale();
+  const tree = useMemo(() => buildKnockoutTree(matches), [matches]);
   const [view, setView] = useState<View>('molecule');
   const titleRef = useScrollReveal<HTMLHeadingElement>({ y: 30 });
   const subtitleRef = useScrollReveal<HTMLParagraphElement>({
@@ -39,6 +42,8 @@ export function KnockoutStage({ allGroupStandings }: KnockoutStageProps) {
         >
           {t.knockout.subtitle}
         </p>
+
+        <Podium tree={tree} />
 
         {/* View toggle */}
         <div className="flex justify-center gap-2 mb-8">
@@ -77,12 +82,8 @@ export function KnockoutStage({ allGroupStandings }: KnockoutStageProps) {
           </button>
         </div>
 
-        {view === 'bracket' && (
-          <Bracket allGroupStandings={allGroupStandings} />
-        )}
-        {view === 'molecule' && (
-          <MoleculeGraph allGroupStandings={allGroupStandings} />
-        )}
+        {view === 'bracket' && <Bracket tree={tree} />}
+        {view === 'molecule' && <MoleculeGraph tree={tree} />}
         {view === '3d' && (
           <Suspense
             fallback={
@@ -91,7 +92,7 @@ export function KnockoutStage({ allGroupStandings }: KnockoutStageProps) {
               </div>
             }
           >
-            <Bracket3D allGroupStandings={allGroupStandings} />
+            <Bracket3D tree={tree} />
           </Suspense>
         )}
       </div>

@@ -46,6 +46,9 @@ export interface Match {
   team2: string;
   goals1: number | null;
   goals2: number | null;
+  penalties1?: number | null;
+  penalties2?: number | null;
+  extraTime?: boolean;
   date: string;
   time: string;
   stadium: string;

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { drag as d3drag } from 'd3-drag';
 import {
   type SimulationNodeDatum,
   forceCenter,
@@ -6,15 +6,17 @@ import {
   forceManyBody,
   forceSimulation,
 } from 'd3-force';
-import { select } from 'd3-selection';
-import { drag as d3drag } from 'd3-drag';
 import { scaleSqrt } from 'd3-scale';
+import { select } from 'd3-selection';
+import { useEffect, useRef, useState } from 'react';
 import 'd3-transition';
 import { getTeamByCode } from '../../data/teams';
-import type { GroupName, GroupStanding } from '../../types/worldcup';
+import { useLocale } from '../../i18n/LocaleContext';
+import { type KnockoutTree, getWinner } from '../../lib/knockout';
+import type { Match } from '../../types/worldcup';
 
 interface MoleculeGraphProps {
-  allGroupStandings: Map<GroupName, GroupStanding[]>;
+  tree: KnockoutTree;
 }
 
 interface MoleculeNode extends SimulationNodeDatum {
@@ -32,96 +34,105 @@ interface MoleculeLink {
 
 const BASE_SIZE = 7;
 
+interface MoleculeLabels {
+  roundOf16: string;
+  quarters: string;
+  semi: string;
+  final: string;
+  champion: string;
+}
+
+// Each level holds the teams that reached that round: 32 teams in the Round
+// of 32, then the winners of each round, up to the champion.
 function buildNodes(
-  allGroupStandings: Map<GroupName, GroupStanding[]>,
+  tree: KnockoutTree,
+  labels: MoleculeLabels,
 ): { nodes: MoleculeNode[]; links: MoleculeLink[] } {
   const nodes: MoleculeNode[] = [];
   const links: MoleculeLink[] = [];
 
-  // R32 nodes (16 teams: 1st and 2nd from each group)
-  const groupPairs: [GroupName, GroupName][] = [
-    ['A', 'B'], ['C', 'D'], ['E', 'F'], ['G', 'H'], ['I', 'J'], ['K', 'L'],
+  const r32Teams: (string | null)[] = [];
+  for (let i = 0; i < 16; i++) {
+    const m = tree.round32[i];
+    r32Teams.push(m?.team1 ?? null, m?.team2 ?? null);
+  }
+
+  const levels: {
+    stage: string;
+    label: string;
+    size: number;
+    teams: (string | null)[];
+  }[] = [
+    { stage: 'r32', label: '', size: BASE_SIZE, teams: r32Teams },
+    {
+      stage: 'r16',
+      label: labels.roundOf16,
+      size: BASE_SIZE * 1.4,
+      teams: Array.from({ length: 16 }, (_, i) => winnerOf(tree.round32[i])),
+    },
+    {
+      stage: 'qf',
+      label: labels.quarters,
+      size: BASE_SIZE * 1.9,
+      teams: Array.from({ length: 8 }, (_, i) => winnerOf(tree.round16[i])),
+    },
+    {
+      stage: 'sf',
+      label: labels.semi,
+      size: BASE_SIZE * 2.5,
+      teams: Array.from({ length: 4 }, (_, i) => winnerOf(tree.quarter[i])),
+    },
+    {
+      stage: 'final',
+      label: labels.final,
+      size: BASE_SIZE * 3.2,
+      teams: Array.from({ length: 2 }, (_, i) => winnerOf(tree.semi[i])),
+    },
+    {
+      stage: 'champion',
+      label: labels.champion,
+      size: BASE_SIZE * 5,
+      teams: [tree.champion],
+    },
   ];
 
-  let r32Index = 0;
-  const r32Ids: string[] = [];
-
-  for (const [g1, g2] of groupPairs) {
-    const s1 = allGroupStandings.get(g1) ?? [];
-    const s2 = allGroupStandings.get(g2) ?? [];
-
-    const first1 = s1[0]?.points > 0 ? s1[0].teamCode : null;
-    const second1 = s1[1]?.points > 0 ? s1[1].teamCode : null;
-    const first2 = s2[0]?.points > 0 ? s2[0].teamCode : null;
-    const second2 = s2[1]?.points > 0 ? s2[1].teamCode : null;
-
-    // Match: 1st of g1 vs 2nd of g2
-    const id1 = `r32-${r32Index++}`;
-    nodes.push({ id: id1, teamCode: first1, label: `1${g1}`, size: BASE_SIZE, stage: 'r32' });
-    r32Ids.push(id1);
-
-    const id2 = `r32-${r32Index++}`;
-    nodes.push({ id: id2, teamCode: second2, label: `2${g2}`, size: BASE_SIZE, stage: 'r32' });
-    r32Ids.push(id2);
-
-    // Match: 1st of g2 vs 2nd of g1
-    const id3 = `r32-${r32Index++}`;
-    nodes.push({ id: id3, teamCode: first2, label: `1${g2}`, size: BASE_SIZE, stage: 'r32' });
-    r32Ids.push(id3);
-
-    const id4 = `r32-${r32Index++}`;
-    nodes.push({ id: id4, teamCode: second1, label: `2${g1}`, size: BASE_SIZE, stage: 'r32' });
-    r32Ids.push(id4);
+  let prevIds: string[] = [];
+  for (const level of levels) {
+    const ids: string[] = [];
+    level.teams.forEach((teamCode, i) => {
+      const id = `${level.stage}-${i}`;
+      nodes.push({
+        id,
+        teamCode,
+        label: level.label,
+        size: level.size,
+        stage: level.stage,
+      });
+      ids.push(id);
+      if (prevIds.length > 0) {
+        links.push({ source: prevIds[i * 2], target: id });
+        links.push({ source: prevIds[i * 2 + 1], target: id });
+      }
+    });
+    prevIds = ids;
   }
-
-  // R16 nodes (8)
-  const r16Ids: string[] = [];
-  for (let i = 0; i < 8; i++) {
-    const id = `r16-${i}`;
-    nodes.push({ id, teamCode: null, label: 'Oitavas', size: BASE_SIZE * 1.6, stage: 'r16' });
-    r16Ids.push(id);
-    links.push({ source: r32Ids[i * 2], target: id });
-    links.push({ source: r32Ids[i * 2 + 1], target: id });
-  }
-
-  // QF nodes (4)
-  const qfIds: string[] = [];
-  for (let i = 0; i < 4; i++) {
-    const id = `qf-${i}`;
-    nodes.push({ id, teamCode: null, label: 'Quartas', size: BASE_SIZE * 2.2, stage: 'qf' });
-    qfIds.push(id);
-    links.push({ source: r16Ids[i * 2], target: id });
-    links.push({ source: r16Ids[i * 2 + 1], target: id });
-  }
-
-  // SF nodes (2)
-  const sfIds: string[] = [];
-  for (let i = 0; i < 2; i++) {
-    const id = `sf-${i}`;
-    nodes.push({ id, teamCode: null, label: 'Semi', size: BASE_SIZE * 3, stage: 'sf' });
-    sfIds.push(id);
-    links.push({ source: qfIds[i * 2], target: id });
-    links.push({ source: qfIds[i * 2 + 1], target: id });
-  }
-
-  // Final node
-  const finalId = 'final';
-  nodes.push({ id: finalId, teamCode: null, label: 'Final', size: BASE_SIZE * 3.8, stage: 'final' });
-  links.push({ source: sfIds[0], target: finalId });
-  links.push({ source: sfIds[1], target: finalId });
-
-  // Champion node
-  const champId = 'champion';
-  nodes.push({ id: champId, teamCode: null, label: 'Campeão', size: BASE_SIZE * 5, stage: 'champion' });
-  links.push({ source: finalId, target: champId });
 
   return { nodes, links };
 }
 
-export function MoleculeGraph({ allGroupStandings }: MoleculeGraphProps) {
+function winnerOf(match: Match | undefined): string | null {
+  return match ? getWinner(match) : null;
+}
+
+export function MoleculeGraph({ tree }: MoleculeGraphProps) {
+  const { t } = useLocale();
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [tooltip, setTooltip] = useState<{ x: number; y: number; text: string } | null>(null);
+  const [tooltip, setTooltip] = useState<{
+    x: number;
+    y: number;
+    text: string;
+  } | null>(null);
 
   useEffect(() => {
     const svgEl = svgRef.current;
@@ -135,9 +146,11 @@ export function MoleculeGraph({ allGroupStandings }: MoleculeGraphProps) {
     svg.selectAll('*').remove();
     svg.attr('viewBox', `0 0 ${width} ${height}`);
 
-    const { nodes, links } = buildNodes(allGroupStandings);
+    const { nodes, links } = buildNodes(tree, t.knockout);
 
-    const radiusScale = scaleSqrt().domain([0, BASE_SIZE * 5]).range([0, 36]);
+    const radiusScale = scaleSqrt()
+      .domain([0, BASE_SIZE * 5])
+      .range([0, 32]);
 
     // Force simulation
     const simulation = forceSimulation<MoleculeNode>(nodes)
@@ -154,15 +167,23 @@ export function MoleculeGraph({ allGroupStandings }: MoleculeGraphProps) {
             return radiusScale(sSize) + radiusScale(tSize) + 14;
           }),
       )
-      .force('charge', forceManyBody().strength(-180))
+      .force('charge', forceManyBody().strength(-120))
       .force('center', forceCenter(width / 2, height / 2));
 
     // Defs
     const defs = svg.append('defs');
     const filterId = 'mol-shadow';
-    const filter = defs.append('filter').attr('id', filterId)
-      .attr('x', '-30%').attr('y', '-30%').attr('width', '160%').attr('height', '160%');
-    filter.append('feGaussianBlur').attr('in', 'SourceAlpha').attr('stdDeviation', '2');
+    const filter = defs
+      .append('filter')
+      .attr('id', filterId)
+      .attr('x', '-30%')
+      .attr('y', '-30%')
+      .attr('width', '160%')
+      .attr('height', '160%');
+    filter
+      .append('feGaussianBlur')
+      .attr('in', 'SourceAlpha')
+      .attr('stdDeviation', '2');
     filter.append('feOffset').attr('dx', '1').attr('dy', '1');
     const merge = filter.append('feMerge');
     merge.append('feMergeNode');
@@ -170,7 +191,10 @@ export function MoleculeGraph({ allGroupStandings }: MoleculeGraphProps) {
 
     // Glow filter for champion
     const glowFilter = defs.append('filter').attr('id', 'glow');
-    glowFilter.append('feGaussianBlur').attr('stdDeviation', '4').attr('result', 'blur');
+    glowFilter
+      .append('feGaussianBlur')
+      .attr('stdDeviation', '4')
+      .attr('result', 'blur');
     const glowMerge = glowFilter.append('feMerge');
     glowMerge.append('feMergeNode').attr('in', 'blur');
     glowMerge.append('feMergeNode').attr('in', 'SourceGraphic');
@@ -233,7 +257,9 @@ export function MoleculeGraph({ allGroupStandings }: MoleculeGraphProps) {
       .append('text')
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'central')
-      .attr('fill', (d) => (d.stage === 'champion' ? '#00ff9c' : 'rgba(255,255,255,0.25)'))
+      .attr('fill', (d) =>
+        d.stage === 'champion' ? '#00ff9c' : 'rgba(255,255,255,0.25)',
+      )
       .attr('font-size', (d) => Math.max(6, radiusScale(d.size) * 0.4))
       .attr('font-weight', '600')
       .text((d) => d.label);
@@ -241,12 +267,20 @@ export function MoleculeGraph({ allGroupStandings }: MoleculeGraphProps) {
     // Hover
     nodeEls
       .on('mouseenter', function (event, d) {
-        select(this).select('circle')
-          .transition().duration(150)
+        select(this)
+          .select('circle')
+          .transition()
+          .duration(150)
           .attr('stroke-width', 3)
           .attr('stroke', '#00ff9c');
 
-        const name = d.teamCode ? (getTeamByCode(d.teamCode)?.name ?? d.teamCode) : d.label;
+        const teamName = d.teamCode
+          ? (getTeamByCode(d.teamCode)?.name ?? d.teamCode)
+          : null;
+        const name =
+          teamName && d.label
+            ? `${teamName} · ${d.label}`
+            : (teamName ?? d.label);
         const rect = svgEl.getBoundingClientRect();
         setTooltip({
           x: event.clientX - rect.left,
@@ -255,14 +289,18 @@ export function MoleculeGraph({ allGroupStandings }: MoleculeGraphProps) {
         });
       })
       .on('mouseleave', function (_, d) {
-        const defaultStroke = d.stage === 'champion'
-          ? 'rgba(0, 255, 156, 0.5)'
-          : d.teamCode
-            ? (getTeamByCode(d.teamCode)?.primaryColor ?? 'rgba(255,255,255,0.1)')
-            : 'rgba(255, 255, 255, 0.08)';
+        const defaultStroke =
+          d.stage === 'champion'
+            ? 'rgba(0, 255, 156, 0.5)'
+            : d.teamCode
+              ? (getTeamByCode(d.teamCode)?.primaryColor ??
+                'rgba(255,255,255,0.1)')
+              : 'rgba(255, 255, 255, 0.08)';
 
-        select(this).select('circle')
-          .transition().duration(300)
+        select(this)
+          .select('circle')
+          .transition()
+          .duration(300)
           .attr('stroke-width', d.stage === 'champion' ? 2 : 1)
           .attr('stroke', defaultStroke);
 
@@ -298,10 +336,10 @@ export function MoleculeGraph({ allGroupStandings }: MoleculeGraphProps) {
     simulation.on('tick', () => {
       linkEls
         // biome-ignore lint/suspicious/noExplicitAny: d3 force resolves string ids to objects
-        .attr('x1', (d: any) => (d.source.x ?? 0))
-        .attr('y1', (d: any) => (d.source.y ?? 0))
-        .attr('x2', (d: any) => (d.target.x ?? 0))
-        .attr('y2', (d: any) => (d.target.y ?? 0));
+        .attr('x1', (d: any) => d.source.x ?? 0)
+        .attr('y1', (d: any) => d.source.y ?? 0)
+        .attr('x2', (d: any) => d.target.x ?? 0)
+        .attr('y2', (d: any) => d.target.y ?? 0);
 
       nodeEls.attr('transform', (d) => `translate(${d.x ?? 0},${d.y ?? 0})`);
     });
@@ -309,7 +347,7 @@ export function MoleculeGraph({ allGroupStandings }: MoleculeGraphProps) {
     return () => {
       simulation.stop();
     };
-  }, [allGroupStandings]);
+  }, [tree, t]);
 
   return (
     <div ref={containerRef} className="relative w-full overflow-hidden">
@@ -317,7 +355,11 @@ export function MoleculeGraph({ allGroupStandings }: MoleculeGraphProps) {
       {tooltip && (
         <div
           className="absolute pointer-events-none bg-copa-dark/90 text-white text-xs font-semibold px-3 py-1.5 rounded-md border border-white/10"
-          style={{ left: tooltip.x, top: tooltip.y, transform: 'translateX(-50%)' }}
+          style={{
+            left: tooltip.x,
+            top: tooltip.y,
+            transform: 'translateX(-50%)',
+          }}
         >
           {tooltip.text}
         </div>
