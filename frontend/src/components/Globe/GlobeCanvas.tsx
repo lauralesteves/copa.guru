@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
@@ -64,68 +64,51 @@ function EarthSphere() {
   );
 }
 
-function FlagSprite({ point }: { point: PointData }) {
-  const texture = useLoader(
-    THREE.TextureLoader,
-    `/images/flags/96/${point.code}.png`,
-  );
-  const pos = latLngToVector3(point.lat, point.lng, GLOBE_RADIUS);
-  const dir = pos.clone().normalize();
-  const elevation = point.size * 0.3;
-  const spritePos = pos.clone().add(dir.multiplyScalar(elevation + 0.08));
+const FLAG_ALTITUDE = 0.02;
+const _worldPos = new THREE.Vector3();
+const _toCamera = new THREE.Vector3();
 
+function flagPosition(point: PointData): THREE.Vector3 {
+  return latLngToVector3(point.lat, point.lng, GLOBE_RADIUS + FLAG_ALTITUDE);
+}
+
+const FlagSprite = forwardRef<THREE.Sprite, { point: PointData }>(function FlagSprite({ point }, ref) {
+  const texture = useLoader(THREE.TextureLoader, `/images/flags/96/${point.code}.png`);
+  const position = useMemo(() => flagPosition(point), [point]);
   const spriteScale = point.size > 0.5 ? 0.22 : 0.16;
 
   return (
-    <group>
-      {/* Stem line from surface to flag */}
-      <primitive
-        object={(() => {
-          const geo = new THREE.BufferGeometry().setFromPoints([pos, spritePos]);
-          return new THREE.Line(
-            geo,
-            new THREE.LineBasicMaterial({ color: point.color, transparent: true, opacity: 0.4 }),
-          );
-        })()}
-      />
-
-      {/* Flag sprite */}
-      <sprite position={spritePos} scale={[spriteScale, spriteScale * 0.7, 1]}>
-        <spriteMaterial
-          map={texture}
-          transparent
-          opacity={0.95}
-          depthWrite={false}
-        />
-      </sprite>
-    </group>
+    <sprite ref={ref} position={position} scale={[spriteScale, spriteScale * 0.7, 1]} renderOrder={1}>
+      <spriteMaterial map={texture} transparent opacity={0.95} depthTest={false} depthWrite={false} />
+    </sprite>
   );
-}
+});
 
 function Globe({ pointsData, arcsData, onPointHover }: GlobeCanvasProps) {
   const globeRef = useRef<THREE.Group>(null);
   const { raycaster, pointer, camera } = useThree();
-  const spriteRefs = useRef<THREE.Sprite[]>([]);
+  const spriteRefs = useRef<(THREE.Sprite | null)[]>([]);
 
   useFrame((_, delta) => {
     if (globeRef.current) {
       globeRef.current.rotation.y += delta * 0.06;
     }
-  });
 
-  // Raycasting for hover on sprites
-  useFrame(() => {
-    if (spriteRefs.current.length === 0) return;
-    raycaster.setFromCamera(pointer, camera);
-    const intersects = raycaster.intersectObjects(spriteRefs.current);
-    if (intersects.length > 0) {
-      const idx = spriteRefs.current.indexOf(intersects[0].object as THREE.Sprite);
-      if (idx >= 0) {
-        onPointHover(pointsData[idx]);
-        return;
-      }
+    // Flags ignore the depth buffer so they sit cleanly on top of their country;
+    // hide the ones on the far side of the globe instead.
+    for (const sprite of spriteRefs.current) {
+      if (!sprite) continue;
+      sprite.getWorldPosition(_worldPos);
+      _toCamera.copy(camera.position).sub(_worldPos);
+      sprite.visible = _worldPos.normalize().dot(_toCamera.normalize()) > 0.05;
     }
-    onPointHover(null);
+
+    // Raycasting for hover on visible flags
+    const targets = spriteRefs.current.filter((s): s is THREE.Sprite => !!s && s.visible);
+    raycaster.setFromCamera(pointer, camera);
+    const hit = raycaster.intersectObjects(targets)[0];
+    const idx = hit ? spriteRefs.current.indexOf(hit.object as THREE.Sprite) : -1;
+    onPointHover(idx >= 0 ? pointsData[idx] : null);
   });
 
   return (
@@ -153,28 +136,15 @@ function Globe({ pointsData, arcsData, onPointHover }: GlobeCanvasProps) {
       </mesh>
 
       {/* Flag sprites */}
-      {pointsData.map((point) => (
-        <FlagSprite key={point.code} point={point} />
+      {pointsData.map((point, i) => (
+        <FlagSprite
+          key={point.code}
+          point={point}
+          ref={(el) => {
+            spriteRefs.current[i] = el;
+          }}
+        />
       ))}
-
-      {/* Invisible spheres for raycasting hover */}
-      {pointsData.map((point, i) => {
-        const pos = latLngToVector3(point.lat, point.lng, GLOBE_RADIUS);
-        const dir = pos.clone().normalize();
-        const spritePos = pos.clone().add(dir.multiplyScalar(point.size * 0.3 + 0.08));
-        return (
-          <sprite
-            key={`hit-${point.code}`}
-            position={spritePos}
-            scale={[0.25, 0.25, 1]}
-            ref={(el) => {
-              if (el) spriteRefs.current[i] = el;
-            }}
-          >
-            <spriteMaterial transparent opacity={0} depthWrite={false} />
-          </sprite>
-        );
-      })}
 
       {/* Arcs */}
       {arcsData.map((arc, i) => {
