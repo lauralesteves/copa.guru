@@ -71,11 +71,12 @@ func (mr *MockPredictionRepositoryMockRecorder) BulkUpdatePoints(updates any) *g
 }
 
 // BulkUpsert mocks base method.
-func (m *MockPredictionRepository) BulkUpsert(predictions []*models.Prediction) error {
+func (m *MockPredictionRepository) BulkUpsert(predictions []*models.Prediction) (int, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "BulkUpsert", predictions)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(int)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // BulkUpsert indicates an expected call of BulkUpsert.
@@ -85,10 +86,10 @@ func (mr *MockPredictionRepositoryMockRecorder) BulkUpsert(predictions any) *gom
 }
 
 // CountByMatchId mocks base method.
-func (m *MockPredictionRepository) CountByMatchId(matchID bson.ObjectID) (int, error) {
+func (m *MockPredictionRepository) CountByMatchId(matchID bson.ObjectID) (int64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CountByMatchId", matchID)
-	ret0, _ := ret[0].(int)
+	ret0, _ := ret[0].(int64)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -130,10 +131,10 @@ func (mr *MockPredictionRepositoryMockRecorder) GetDistribution(matchID any) *go
 }
 
 // GetUserSummary mocks base method.
-func (m *MockPredictionRepository) GetUserSummary(userID bson.ObjectID) (*models.UserSummary, error) {
+func (m *MockPredictionRepository) GetUserSummary(userID bson.ObjectID) (*models.PredictionSummary, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUserSummary", userID)
-	ret0, _ := ret[0].(*models.UserSummary)
+	ret0, _ := ret[0].(*models.PredictionSummary)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -160,18 +161,18 @@ func (mr *MockPredictionRepositoryMockRecorder) ListByMatchId(matchID any) *gomo
 }
 
 // ListByUserId mocks base method.
-func (m *MockPredictionRepository) ListByUserId(userID bson.ObjectID) ([]*models.Prediction, error) {
+func (m *MockPredictionRepository) ListByUserId(userID bson.ObjectID, filters models.PredictionFilters) ([]*models.Prediction, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListByUserId", userID)
+	ret := m.ctrl.Call(m, "ListByUserId", userID, filters)
 	ret0, _ := ret[0].([]*models.Prediction)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListByUserId indicates an expected call of ListByUserId.
-func (mr *MockPredictionRepositoryMockRecorder) ListByUserId(userID any) *gomock.Call {
+func (mr *MockPredictionRepositoryMockRecorder) ListByUserId(userID, filters any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByUserId", reflect.TypeOf((*MockPredictionRepository)(nil).ListByUserId), userID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByUserId", reflect.TypeOf((*MockPredictionRepository)(nil).ListByUserId), userID, filters)
 }
 
 // UpdatePoints mocks base method.
