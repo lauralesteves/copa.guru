@@ -117,6 +117,20 @@ export function PrivacyPolicy() {
             usando o botão "Limpar tudo" na seção de palpites.
           </p>
 
+          <h3 className="text-white/90 font-semibold">Estatísticas de acesso</h3>
+
+          <p>
+            O Copa.Guru usa o{' '}
+            <a href="https://umami.is" className="text-copa-gold hover:text-copa-gold-light">
+              Umami
+            </a>
+            , uma ferramenta de análise de código aberto, hospedada em servidor próprio e que não
+            usa cookies. Ela registra apenas dados agregados e anônimos, como páginas visitadas,
+            site de origem, país, navegador e tipo de dispositivo, sem armazenar seu endereço IP nem
+            identificar você. Nenhum dado é compartilhado com terceiros, e o pedido de "Do Not
+            Track" do seu navegador é respeitado.
+          </p>
+
           <h3 className="text-white/90 font-semibold">Mais informações</h3>
 
           <p>
@@ -126,7 +140,7 @@ export function PrivacyPolicy() {
           </p>
 
           <p className="text-white/50 mt-8">
-            Esta política é efetiva a partir de <strong>Março/2026</strong>.
+            Esta política é efetiva a partir de <strong>Novembro/2026</strong>.
           </p>
         </div>
       </div>

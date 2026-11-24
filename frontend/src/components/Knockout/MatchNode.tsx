@@ -4,6 +4,11 @@ export interface BracketMatch {
   id: string;
   team1: string | null;
   team2: string | null;
+  goals1: number | null;
+  goals2: number | null;
+  penalties1: number | null;
+  penalties2: number | null;
+  winner: string | null;
   label: string;
   stage: string;
 }
@@ -15,6 +20,83 @@ interface MatchNodeProps {
   width?: number;
   height?: number;
   highlighted?: boolean;
+  tbdLabel?: string;
+}
+
+interface TeamRowProps {
+  code: string | null;
+  goals: number | null;
+  penalties: number | null;
+  isWinner: boolean;
+  hasWinner: boolean;
+  highlighted: boolean;
+  width: number;
+  tbdLabel: string;
+}
+
+function TeamRow({
+  code,
+  goals,
+  penalties,
+  isWinner,
+  hasWinner,
+  highlighted,
+  width,
+  tbdLabel,
+}: TeamRowProps) {
+  if (!code) {
+    return (
+      <text x={12} y={17} fill="rgba(255, 255, 255, 0.2)" fontSize={10}>
+        {tbdLabel}
+      </text>
+    );
+  }
+
+  const team = getTeamByCode(code);
+  const dimmed = hasWinner && !isWinner;
+  let fill = 'rgba(255, 255, 255, 0.8)';
+  if (highlighted) fill = '#00ff9c';
+  else if (isWinner) fill = '#ffffff';
+  else if (dimmed) fill = 'rgba(255, 255, 255, 0.35)';
+
+  return (
+    <>
+      <image
+        href={`/images/flags/48/${code}.png`}
+        x={10}
+        y={6}
+        width={20}
+        height={14}
+        opacity={dimmed ? 0.45 : 1}
+      />
+      <text
+        x={36}
+        y={17}
+        fill={fill}
+        fontSize={11}
+        fontWeight={isWinner ? 700 : 600}
+      >
+        {team?.name ?? code}
+      </text>
+      {goals !== null && (
+        <text
+          x={width - 10}
+          y={17}
+          textAnchor="end"
+          fill={isWinner ? '#00ff9c' : fill}
+          fontSize={12}
+          fontWeight={700}
+        >
+          {penalties !== null && (
+            <tspan fontSize={8} fill="rgba(255, 255, 255, 0.4)">
+              ({penalties}){' '}
+            </tspan>
+          )}
+          {goals}
+        </text>
+      )}
+    </>
+  );
 }
 
 export function MatchNode({
@@ -24,22 +106,28 @@ export function MatchNode({
   width = 160,
   height = 56,
   highlighted = false,
+  tbdLabel = 'A definir',
 }: MatchNodeProps) {
-  const team1 = match.team1 ? getTeamByCode(match.team1) : null;
-  const team2 = match.team2 ? getTeamByCode(match.team2) : null;
+  const hasWinner = match.winner !== null;
+  const isFinal = match.stage === 'final';
 
   return (
-    <g
-      transform={`translate(${x}, ${y})`}
-      className="cursor-pointer"
-    >
+    <g transform={`translate(${x}, ${y})`} className="cursor-pointer">
       {/* Background */}
       <rect
         width={width}
         height={height}
         rx={8}
-        fill={highlighted ? 'rgba(0, 255, 156, 0.1)' : 'rgba(255, 255, 255, 0.03)'}
-        stroke={highlighted ? 'rgba(0, 255, 156, 0.4)' : 'rgba(255, 255, 255, 0.08)'}
+        fill={
+          highlighted ? 'rgba(0, 255, 156, 0.1)' : 'rgba(255, 255, 255, 0.03)'
+        }
+        stroke={
+          highlighted
+            ? 'rgba(0, 255, 156, 0.4)'
+            : isFinal
+              ? 'rgba(0, 255, 156, 0.3)'
+              : 'rgba(255, 255, 255, 0.08)'
+        }
         strokeWidth={1}
         className="transition-all duration-300"
       />
@@ -58,42 +146,17 @@ export function MatchNode({
       </text>
 
       {/* Team 1 row */}
-      <g transform="translate(0, 0)">
-        <rect
+      <g>
+        <TeamRow
+          code={match.team1}
+          goals={match.goals1}
+          penalties={match.penalties1}
+          isWinner={hasWinner && match.winner === match.team1}
+          hasWinner={hasWinner}
+          highlighted={highlighted}
           width={width}
-          height={height / 2}
-          rx={8}
-          fill="transparent"
+          tbdLabel={tbdLabel}
         />
-        {match.team1 ? (
-          <>
-            <image
-              href={`/images/flags/48/${match.team1}.png`}
-              x={10}
-              y={6}
-              width={20}
-              height={14}
-            />
-            <text
-              x={36}
-              y={17}
-              fill={highlighted ? '#00ff9c' : 'rgba(255, 255, 255, 0.8)'}
-              fontSize={11}
-              fontWeight={600}
-            >
-              {team1?.name ?? match.team1}
-            </text>
-          </>
-        ) : (
-          <text
-            x={12}
-            y={17}
-            fill="rgba(255, 255, 255, 0.2)"
-            fontSize={10}
-          >
-            A definir...
-          </text>
-        )}
       </g>
 
       {/* Divider */}
@@ -108,35 +171,16 @@ export function MatchNode({
 
       {/* Team 2 row */}
       <g transform={`translate(0, ${height / 2})`}>
-        {match.team2 ? (
-          <>
-            <image
-              href={`/images/flags/48/${match.team2}.png`}
-              x={10}
-              y={6}
-              width={20}
-              height={14}
-            />
-            <text
-              x={36}
-              y={17}
-              fill={highlighted ? '#00ff9c' : 'rgba(255, 255, 255, 0.8)'}
-              fontSize={11}
-              fontWeight={600}
-            >
-              {team2?.name ?? match.team2}
-            </text>
-          </>
-        ) : (
-          <text
-            x={12}
-            y={17}
-            fill="rgba(255, 255, 255, 0.2)"
-            fontSize={10}
-          >
-            A definir
-          </text>
-        )}
+        <TeamRow
+          code={match.team2}
+          goals={match.goals2}
+          penalties={match.penalties2}
+          isWinner={hasWinner && match.winner === match.team2}
+          hasWinner={hasWinner}
+          highlighted={highlighted}
+          width={width}
+          tbdLabel={tbdLabel}
+        />
       </g>
     </g>
   );

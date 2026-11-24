@@ -42,4 +42,10 @@ export const teamCoordinates: Record<string, { lat: number; lng: number }> = {
   URU: { lat: -34.9, lng: -56.2 },
   USA: { lat: 38.9, lng: -77.0 },
   UZB: { lat: 41.3, lng: 69.3 },
+  CZE: { lat: 50.1, lng: 14.4 },
+  BIH: { lat: 43.9, lng: 18.4 },
+  TUR: { lat: 39.9, lng: 32.9 },
+  SWE: { lat: 59.3, lng: 18.1 },
+  IRQ: { lat: 33.3, lng: 44.4 },
+  COD: { lat: -4.3, lng: 15.3 },
 };

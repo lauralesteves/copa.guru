@@ -1,93 +1,99 @@
-import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import type { GroupName, GroupStanding } from '../../types/worldcup';
+import { useEffect, useRef, useState } from 'react';
+import { getTeamByCode } from '../../data/teams';
+import { useLocale } from '../../i18n/LocaleContext';
+import { type KnockoutTree, getWinner } from '../../lib/knockout';
+import type { Match } from '../../types/worldcup';
 import { type BracketMatch, MatchNode } from './MatchNode';
 
 gsap.registerPlugin(ScrollTrigger);
 
 interface BracketProps {
-  allGroupStandings: Map<GroupName, GroupStanding[]>;
+  tree: KnockoutTree;
 }
 
-// 2026 World Cup bracket:
-// 48 teams -> 32 advance from groups (top 2 per group + 8 best 3rd)
-// Round of 32 -> Round of 16 -> QF -> SF -> Final
-// For simplicity, we show the top-2 per group advancing to R32
+interface BracketLabels {
+  roundOf32: string;
+  roundOf16: string;
+  quarters: string;
+  semi: string;
+  final: string;
+  thirdPlace: string;
+}
 
-// R32 matchups (FIFA confirmed structure):
-// The bracket pairs groups: A vs B, C vs D, E vs F, G vs H, I vs J, K vs L
-function buildBracketMatches(
-  allGroupStandings: Map<GroupName, GroupStanding[]>,
-): BracketMatch[] {
-  function getTeam(group: GroupName, pos: number): string | null {
-    const standings = allGroupStandings.get(group);
-    if (!standings || !standings[pos]) return null;
-    const s = standings[pos];
-    return s.points > 0 ? s.teamCode : null;
+function toBracketMatch(
+  match: Match | undefined,
+  id: string,
+  label: string,
+  stage: string,
+): BracketMatch {
+  if (!match) {
+    return {
+      id,
+      team1: null,
+      team2: null,
+      goals1: null,
+      goals2: null,
+      penalties1: null,
+      penalties2: null,
+      winner: null,
+      label,
+      stage,
+    };
   }
+  return {
+    id,
+    team1: match.team1,
+    team2: match.team2,
+    goals1: match.goals1,
+    goals2: match.goals2,
+    penalties1: match.penalties1 ?? null,
+    penalties2: match.penalties2 ?? null,
+    winner: getWinner(match),
+    label,
+    stage,
+  };
+}
 
-  // Round of 32 (16 matches) - group pairings
-  const r32: BracketMatch[] = [
-    { id: 'r32-1', team1: getTeam('A', 0), team2: getTeam('B', 1), label: 'R32', stage: 'round32' },
-    { id: 'r32-2', team1: getTeam('B', 0), team2: getTeam('A', 1), label: 'R32', stage: 'round32' },
-    { id: 'r32-3', team1: getTeam('C', 0), team2: getTeam('D', 1), label: 'R32', stage: 'round32' },
-    { id: 'r32-4', team1: getTeam('D', 0), team2: getTeam('C', 1), label: 'R32', stage: 'round32' },
-    { id: 'r32-5', team1: getTeam('E', 0), team2: getTeam('F', 1), label: 'R32', stage: 'round32' },
-    { id: 'r32-6', team1: getTeam('F', 0), team2: getTeam('E', 1), label: 'R32', stage: 'round32' },
-    { id: 'r32-7', team1: getTeam('G', 0), team2: getTeam('H', 1), label: 'R32', stage: 'round32' },
-    { id: 'r32-8', team1: getTeam('H', 0), team2: getTeam('G', 1), label: 'R32', stage: 'round32' },
-    { id: 'r32-9', team1: getTeam('I', 0), team2: getTeam('J', 1), label: 'R32', stage: 'round32' },
-    { id: 'r32-10', team1: getTeam('J', 0), team2: getTeam('I', 1), label: 'R32', stage: 'round32' },
-    { id: 'r32-11', team1: getTeam('K', 0), team2: getTeam('L', 1), label: 'R32', stage: 'round32' },
-    { id: 'r32-12', team1: getTeam('L', 0), team2: getTeam('K', 1), label: 'R32', stage: 'round32' },
-    // 3rd place qualifiers (4 slots)
-    { id: 'r32-13', team1: null, team2: null, label: 'R32', stage: 'round32' },
-    { id: 'r32-14', team1: null, team2: null, label: 'R32', stage: 'round32' },
-    { id: 'r32-15', team1: null, team2: null, label: 'R32', stage: 'round32' },
-    { id: 'r32-16', team1: null, team2: null, label: 'R32', stage: 'round32' },
+// 2026 World Cup bracket: 32 teams (top 2 per group + 8 best 3rd) play the
+// Round of 32 -> Round of 16 -> QF -> SF -> Final. The tree is already ordered
+// so that matches i*2 and i*2+1 feed match i of the next round.
+function buildBracketMatches(
+  tree: KnockoutTree,
+  labels: BracketLabels,
+): BracketMatch[] {
+  const rounds: [Match[], number, string, string, string][] = [
+    [tree.round32, 16, 'r32', labels.roundOf32, 'round32'],
+    [tree.round16, 8, 'r16', labels.roundOf16, 'round16'],
+    [tree.quarter, 4, 'qf', labels.quarters, 'quarter'],
+    [tree.semi, 2, 'sf', labels.semi, 'semi'],
   ];
 
-  // R16 placeholders
-  const r16: BracketMatch[] = Array.from({ length: 8 }, (_, i) => ({
-    id: `r16-${i + 1}`,
-    team1: null,
-    team2: null,
-    label: 'OITAVAS',
-    stage: 'round16',
-  }));
-
-  // QF placeholders
-  const qf: BracketMatch[] = Array.from({ length: 4 }, (_, i) => ({
-    id: `qf-${i + 1}`,
-    team1: null,
-    team2: null,
-    label: 'QUARTAS',
-    stage: 'quarter',
-  }));
-
-  // SF placeholders
-  const sf: BracketMatch[] = Array.from({ length: 2 }, (_, i) => ({
-    id: `sf-${i + 1}`,
-    team1: null,
-    team2: null,
-    label: 'SEMI',
-    stage: 'semi',
-  }));
-
-  // Final
-  const final: BracketMatch[] = [
-    { id: 'final', team1: null, team2: null, label: 'FINAL', stage: 'final' },
-  ];
-
-  return [...r32, ...r16, ...qf, ...sf, ...final];
+  const result: BracketMatch[] = [];
+  for (const [matches, count, prefix, label, stage] of rounds) {
+    for (let i = 0; i < count; i++) {
+      result.push(
+        toBracketMatch(
+          matches[i],
+          `${prefix}-${i + 1}`,
+          label.toUpperCase(),
+          stage,
+        ),
+      );
+    }
+  }
+  result.push(
+    toBracketMatch(tree.final[0], 'final', labels.final.toUpperCase(), 'final'),
+  );
+  return result;
 }
 
 // Layout config
-const NODE_W = 150;
+const NODE_W = 180;
 const NODE_H = 52;
 const H_GAP = 50;
-const V_GAP = 12;
+const V_GAP = 20;
 
 interface RoundLayout {
   x: number;
@@ -160,25 +166,48 @@ interface ConnectorLine {
   y2: number;
 }
 
-export function Bracket({ allGroupStandings }: BracketProps) {
+export function Bracket({ tree }: BracketProps) {
+  const { t } = useLocale();
   const svgRef = useRef<SVGSVGElement>(null);
   const linesRef = useRef<SVGGElement>(null);
   const [highlightedTeam, setHighlightedTeam] = useState<string | null>(null);
 
-  const bracketMatches = buildBracketMatches(allGroupStandings);
+  const bracketMatches = buildBracketMatches(tree, t.knockout);
+  const thirdMatch = tree.third
+    ? toBracketMatch(
+        tree.third,
+        'third',
+        t.knockout.thirdPlace.toUpperCase(),
+        'third',
+      )
+    : null;
   const rounds = computeLayout();
 
   // Build positioned nodes for top-half bracket
-  const topR32 = bracketMatches.filter((m) => m.stage === 'round32').slice(0, 8);
-  const r16Matches = bracketMatches.filter((m) => m.stage === 'round16').slice(0, 4);
-  const qfMatches = bracketMatches.filter((m) => m.stage === 'quarter').slice(0, 2);
-  const sfMatches = bracketMatches.filter((m) => m.stage === 'semi').slice(0, 1);
+  const topR32 = bracketMatches
+    .filter((m) => m.stage === 'round32')
+    .slice(0, 8);
+  const r16Matches = bracketMatches
+    .filter((m) => m.stage === 'round16')
+    .slice(0, 4);
+  const qfMatches = bracketMatches
+    .filter((m) => m.stage === 'quarter')
+    .slice(0, 2);
+  const sfMatches = bracketMatches
+    .filter((m) => m.stage === 'semi')
+    .slice(0, 1);
   const finalMatch = bracketMatches.filter((m) => m.stage === 'final');
 
   // Bottom-half R32
-  const bottomR32 = bracketMatches.filter((m) => m.stage === 'round32').slice(8, 16);
-  const r16Bottom = bracketMatches.filter((m) => m.stage === 'round16').slice(4, 8);
-  const qfBottom = bracketMatches.filter((m) => m.stage === 'quarter').slice(2, 4);
+  const bottomR32 = bracketMatches
+    .filter((m) => m.stage === 'round32')
+    .slice(8, 16);
+  const r16Bottom = bracketMatches
+    .filter((m) => m.stage === 'round16')
+    .slice(4, 8);
+  const qfBottom = bracketMatches
+    .filter((m) => m.stage === 'quarter')
+    .slice(2, 4);
   const sfBottom = bracketMatches.filter((m) => m.stage === 'semi').slice(1, 2);
 
   const allRounds = [
@@ -186,25 +215,38 @@ export function Bracket({ allGroupStandings }: BracketProps) {
     { matches: r16Matches, round: rounds[1] },
     { matches: qfMatches, round: rounds[2] },
     { matches: sfMatches, round: rounds[3] },
-    { matches: finalMatch, round: rounds[4] },
   ];
 
   // Bottom half offset
   const bottomOffset = (NODE_H + V_GAP) * 8 + 60;
+  // Final sits halfway between both semi-finals
+  allRounds.push({
+    matches: finalMatch,
+    round: { ...rounds[4], startY: rounds[3].startY + bottomOffset / 2 },
+  });
   const allRoundsBottom = [
-    { matches: bottomR32, round: { ...rounds[0], startY: rounds[0].startY + bottomOffset } },
-    { matches: r16Bottom, round: { ...rounds[1], startY: rounds[1].startY + bottomOffset } },
-    { matches: qfBottom, round: { ...rounds[2], startY: rounds[2].startY + bottomOffset } },
-    { matches: sfBottom, round: { ...rounds[3], startY: rounds[3].startY + bottomOffset } },
+    {
+      matches: bottomR32,
+      round: { ...rounds[0], startY: rounds[0].startY + bottomOffset },
+    },
+    {
+      matches: r16Bottom,
+      round: { ...rounds[1], startY: rounds[1].startY + bottomOffset },
+    },
+    {
+      matches: qfBottom,
+      round: { ...rounds[2], startY: rounds[2].startY + bottomOffset },
+    },
+    {
+      matches: sfBottom,
+      round: { ...rounds[3], startY: rounds[3].startY + bottomOffset },
+    },
   ];
 
   const nodePositions: NodePos[] = [];
   const connectors: ConnectorLine[] = [];
 
-  function layoutRound(
-    matches: BracketMatch[],
-    round: RoundLayout,
-  ) {
+  function layoutRound(matches: BracketMatch[], round: RoundLayout) {
     matches.forEach((match, i) => {
       const y = round.startY + i * round.spacing;
       nodePositions.push({ match, x: round.x, y });
@@ -349,7 +391,8 @@ export function Bracket({ allGroupStandings }: BracketProps) {
           <g
             key={np.match.id}
             onMouseEnter={() => {
-              if (np.match.team1) setHighlightedTeam(np.match.team1);
+              const team = np.match.winner ?? np.match.team1;
+              if (team) setHighlightedTeam(team);
             }}
           >
             <MatchNode
@@ -362,24 +405,70 @@ export function Bracket({ allGroupStandings }: BracketProps) {
                 highlightedTeam !== null &&
                 isTeamInMatch(np.match, highlightedTeam)
               }
+              tbdLabel={t.knockout.tbd}
             />
           </g>
         ))}
 
-        {/* "CHAMPION" label above final */}
-        {finalPos[0] && (
-          <text
-            x={finalPos[0].x + NODE_W / 2}
-            y={finalPos[0].y - 20}
-            textAnchor="middle"
-            fill="rgba(0, 255, 156, 0.6)"
-            fontSize={14}
-            fontWeight={700}
-            letterSpacing={4}
-            fontFamily="'Bebas Neue', sans-serif"
+        {/* Third place match below the final */}
+        {finalPos[0] && thirdMatch && (
+          <g
+            onMouseEnter={() => {
+              const team = thirdMatch.winner ?? thirdMatch.team1;
+              if (team) setHighlightedTeam(team);
+            }}
           >
-            CAMPEAO
-          </text>
+            <MatchNode
+              match={thirdMatch}
+              x={finalPos[0].x}
+              y={finalPos[0].y + NODE_H + 60}
+              width={NODE_W}
+              height={NODE_H}
+              highlighted={
+                highlightedTeam !== null &&
+                isTeamInMatch(thirdMatch, highlightedTeam)
+              }
+              tbdLabel={t.knockout.tbd}
+            />
+          </g>
+        )}
+
+        {/* Champion label above final */}
+        {finalPos[0] && (
+          <g>
+            <text
+              x={finalPos[0].x + NODE_W / 2}
+              y={finalPos[0].y - (tree.champion ? 48 : 20)}
+              textAnchor="middle"
+              fill="rgba(0, 255, 156, 0.6)"
+              fontSize={14}
+              fontWeight={700}
+              letterSpacing={4}
+              fontFamily="'Bebas Neue', sans-serif"
+            >
+              {t.knockout.champion}
+            </text>
+            {tree.champion && (
+              <>
+                <image
+                  href={`/images/flags/48/${tree.champion}.png`}
+                  x={finalPos[0].x + NODE_W / 2 - 34}
+                  y={finalPos[0].y - 40}
+                  width={20}
+                  height={14}
+                />
+                <text
+                  x={finalPos[0].x + NODE_W / 2 - 8}
+                  y={finalPos[0].y - 29}
+                  fill="#00ff9c"
+                  fontSize={13}
+                  fontWeight={700}
+                >
+                  {getTeamByCode(tree.champion)?.name ?? tree.champion}
+                </text>
+              </>
+            )}
+          </g>
         )}
       </svg>
     </div>

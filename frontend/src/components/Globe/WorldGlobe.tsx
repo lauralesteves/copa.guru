@@ -21,8 +21,13 @@ export function WorldGlobe() {
   const titleRef = useScrollReveal<HTMLHeadingElement>({ y: 30 });
   const [hoveredTeam, setHoveredTeam] = useState<string | null>(null);
 
+  // Teams/groups live in a module cache filled asynchronously by fetchWorldCupData();
+  // depend on the cached arrays so the globe updates once the data arrives.
+  const teams = getTeams();
+  const groups = getGroups();
+
   const pointsData = useMemo(() => {
-    return getTeams()
+    return teams
       .filter((t) => teamCoordinates[t.code])
       .map((t) => ({
         lat: teamCoordinates[t.code].lat,
@@ -34,11 +39,11 @@ export function WorldGlobe() {
         size: t.isHost ? 0.6 : 0.35,
         confederation: t.confederation,
       }));
-  }, []);
+  }, [teams]);
 
   const arcsData = useMemo(() => {
     const arcs: ArcData[] = [];
-    for (const group of getGroups()) {
+    for (const group of groups) {
       const validTeams = group.teams.filter(
         (c) => !c.startsWith('TBD') && teamCoordinates[c],
       );
@@ -59,7 +64,7 @@ export function WorldGlobe() {
       }
     }
     return arcs;
-  }, []);
+  }, [groups]);
 
   const handlePointHover = useCallback(
     // biome-ignore lint/suspicious/noExplicitAny: globe.gl point typing
