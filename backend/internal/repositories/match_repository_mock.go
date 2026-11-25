@@ -11,6 +11,7 @@ package repositories
 
 import (
 	reflect "reflect"
+	time "time"
 
 	models "github.com/lauralesteves/copa-guru-backend/internal/models"
 	bson "go.mongodb.org/mongo-driver/v2/bson"
@@ -41,6 +42,97 @@ func (m *MockMatchRepository) EXPECT() *MockMatchRepositoryMockRecorder {
 	return m.recorder
 }
 
+// BulkUpsert mocks base method.
+func (m *MockMatchRepository) BulkUpsert(matches []*models.Match) (int, int, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "BulkUpsert", matches)
+	ret0, _ := ret[0].(int)
+	ret1, _ := ret[1].(int)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// BulkUpsert indicates an expected call of BulkUpsert.
+func (mr *MockMatchRepositoryMockRecorder) BulkUpsert(matches any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BulkUpsert", reflect.TypeOf((*MockMatchRepository)(nil).BulkUpsert), matches)
+}
+
+// FindAll mocks base method.
+func (m *MockMatchRepository) FindAll(filters models.MatchFilters) ([]*models.Match, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindAll", filters)
+	ret0, _ := ret[0].([]*models.Match)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindAll indicates an expected call of FindAll.
+func (mr *MockMatchRepositoryMockRecorder) FindAll(filters any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAll", reflect.TypeOf((*MockMatchRepository)(nil).FindAll), filters)
+}
+
+// FindByExternalID mocks base method.
+func (m *MockMatchRepository) FindByExternalID(externalID string) (*models.Match, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindByExternalID", externalID)
+	ret0, _ := ret[0].(*models.Match)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByExternalID indicates an expected call of FindByExternalID.
+func (mr *MockMatchRepositoryMockRecorder) FindByExternalID(externalID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByExternalID", reflect.TypeOf((*MockMatchRepository)(nil).FindByExternalID), externalID)
+}
+
+// FindByMatchNumber mocks base method.
+func (m *MockMatchRepository) FindByMatchNumber(matchNumber int) (*models.Match, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindByMatchNumber", matchNumber)
+	ret0, _ := ret[0].(*models.Match)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByMatchNumber indicates an expected call of FindByMatchNumber.
+func (mr *MockMatchRepositoryMockRecorder) FindByMatchNumber(matchNumber any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByMatchNumber", reflect.TypeOf((*MockMatchRepository)(nil).FindByMatchNumber), matchNumber)
+}
+
+// FindByStatus mocks base method.
+func (m *MockMatchRepository) FindByStatus(statuses []models.MatchStatus) ([]*models.Match, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindByStatus", statuses)
+	ret0, _ := ret[0].([]*models.Match)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByStatus indicates an expected call of FindByStatus.
+func (mr *MockMatchRepositoryMockRecorder) FindByStatus(statuses any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByStatus", reflect.TypeOf((*MockMatchRepository)(nil).FindByStatus), statuses)
+}
+
+// FindScheduledBefore mocks base method.
+func (m *MockMatchRepository) FindScheduledBefore(date time.Time) ([]*models.Match, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindScheduledBefore", date)
+	ret0, _ := ret[0].([]*models.Match)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindScheduledBefore indicates an expected call of FindScheduledBefore.
+func (mr *MockMatchRepositoryMockRecorder) FindScheduledBefore(date any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindScheduledBefore", reflect.TypeOf((*MockMatchRepository)(nil).FindScheduledBefore), date)
+}
+
 // Get mocks base method.
 func (m *MockMatchRepository) Get(id bson.ObjectID) (*models.Match, error) {
 	m.ctrl.T.Helper()
@@ -54,4 +146,32 @@ func (m *MockMatchRepository) Get(id bson.ObjectID) (*models.Match, error) {
 func (mr *MockMatchRepositoryMockRecorder) Get(id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockMatchRepository)(nil).Get), id)
+}
+
+// UpdateResult mocks base method.
+func (m *MockMatchRepository) UpdateResult(matchNumber, goals1, goals2 int, status models.MatchStatus) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateResult", matchNumber, goals1, goals2, status)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateResult indicates an expected call of UpdateResult.
+func (mr *MockMatchRepositoryMockRecorder) UpdateResult(matchNumber, goals1, goals2, status any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateResult", reflect.TypeOf((*MockMatchRepository)(nil).UpdateResult), matchNumber, goals1, goals2, status)
+}
+
+// UpsertByMatchNumber mocks base method.
+func (m *MockMatchRepository) UpsertByMatchNumber(match *models.Match) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpsertByMatchNumber", match)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpsertByMatchNumber indicates an expected call of UpsertByMatchNumber.
+func (mr *MockMatchRepositoryMockRecorder) UpsertByMatchNumber(match any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertByMatchNumber", reflect.TypeOf((*MockMatchRepository)(nil).UpsertByMatchNumber), match)
 }
