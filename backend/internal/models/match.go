@@ -32,3 +32,30 @@ type Match struct {
 	Status      MatchStatus   `json:"status" bson:"status"`
 	UpdatedAt   time.Time     `json:"updatedAt" bson:"updatedAt"`
 }
+
+func (s MatchStatus) IsValid() bool {
+	switch s {
+	case MatchStatusScheduled, MatchStatusLive, MatchStatusFinished, MatchStatusPostponed, MatchStatusCancelled:
+		return true
+	}
+	return false
+}
+
+func (m *Match) ToDTO() *MatchDTO {
+	return &MatchDTO{
+		ID:          m.ID.Hex(),
+		ExternalID:  m.ExternalID,
+		MatchNumber: m.MatchNumber,
+		Team1:       m.Team1,
+		Team2:       m.Team2,
+		Goals1:      m.Goals1,
+		Goals2:      m.Goals2,
+		Date:        m.Date,
+		Stadium:     m.Stadium,
+		City:        m.City,
+		Group:       m.Group,
+		Stage:       m.Stage,
+		Status:      m.Status,
+		UpdatedAt:   m.UpdatedAt,
+	}
+}
