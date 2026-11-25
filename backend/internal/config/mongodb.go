@@ -18,6 +18,8 @@ const (
 const (
 	UserCollection        = "users"
 	LeaderboardCollection = "leaderboard"
+	MatchCollection       = "matches"
+	PredictionCollection  = "predictions"
 )
 
 func GetDatabaseName() string {

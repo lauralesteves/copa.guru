@@ -47,10 +47,10 @@ func getResult(goals1, goals2 int) matchResult {
 
 func CalculatePoints(predictedGoals1, predictedGoals2, actualGoals1, actualGoals2 int) int {
 	if predictedGoals1 == actualGoals1 && predictedGoals2 == actualGoals2 {
-		return 10
+		return models.PointsExactScore
 	}
 	if getResult(predictedGoals1, predictedGoals2) == getResult(actualGoals1, actualGoals2) {
-		return 5
+		return models.PointsCorrectResult
 	}
 	return 0
 }
@@ -92,9 +92,9 @@ func (s *scoringService) ScoreMatch(matchID string) (*models.ScoreResult, error)
 			Points:       points,
 		})
 		result.Total++
-		if points == 10 {
+		if points == models.PointsExactScore {
 			result.ExactScores++
-		} else if points == 5 {
+		} else if points == models.PointsCorrectResult {
 			result.CorrectResults++
 		}
 	}
