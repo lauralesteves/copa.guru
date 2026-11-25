@@ -128,9 +128,10 @@ func (r *matchRepository) FindByStatus(statuses []models.MatchStatus) ([]*models
 }
 
 // upsertByMatchNumber builds the filter and update of an upsert keyed by
-// matchNumber. Empty external ids and nil goals are left untouched, so
-// re-running a seed never erases a synced id or a result, and the sparse
-// unique index on externalId never sees duplicated empty strings.
+// matchNumber. Empty external ids, nil goals and an empty status are left
+// untouched, so re-running a seed never erases a synced id, a result or a
+// status, and the sparse unique index on externalId never sees duplicated
+// empty strings. A new match without status starts as SCHEDULED.
 func upsertByMatchNumber(match *models.Match, now time.Time) (bson.M, bson.M) {
 	set := bson.M{
 		"team1":     match.Team1,
@@ -140,8 +141,13 @@ func upsertByMatchNumber(match *models.Match, now time.Time) (bson.M, bson.M) {
 		"city":      match.City,
 		"group":     match.Group,
 		"stage":     match.Stage,
-		"status":    match.Status,
 		"updatedAt": now,
+	}
+	update := bson.M{"$set": set}
+	if match.Status != "" {
+		set["status"] = match.Status
+	} else {
+		update["$setOnInsert"] = bson.M{"status": models.MatchStatusScheduled}
 	}
 	if match.ExternalID != "" {
 		set["externalId"] = match.ExternalID
@@ -153,7 +159,7 @@ func upsertByMatchNumber(match *models.Match, now time.Time) (bson.M, bson.M) {
 		set["goals2"] = *match.Goals2
 	}
 
-	return bson.M{"matchNumber": match.MatchNumber}, bson.M{"$set": set}
+	return bson.M{"matchNumber": match.MatchNumber}, update
 }
 
 // UpsertByMatchNumber creates or updates a match keyed by its match number.

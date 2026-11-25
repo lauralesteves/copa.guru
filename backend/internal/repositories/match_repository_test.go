@@ -127,6 +127,28 @@ func TestMatchUpsertByMatchNumber_KeepsResult(t *testing.T) {
 	}
 }
 
+func TestMatchUpsertByMatchNumber_EmptyStatus(t *testing.T) {
+	repo, cleanup := setupMatchRepo(t)
+	defer cleanup()
+
+	// A new match without status starts as SCHEDULED.
+	upsertMatches(t, repo, newMatch(1, "A", "GROUP_STAGE", "", kickoff))
+	created, _ := repo.FindByMatchNumber(1)
+	if created.Status != models.MatchStatusScheduled {
+		t.Errorf("status = %q, want SCHEDULED on insert", created.Status)
+	}
+
+	// An existing match keeps its status when upserted without one.
+	if err := repo.UpdateResult(1, 1, 1, models.MatchStatusFinished); err != nil {
+		t.Fatalf("UpdateResult() error: %v", err)
+	}
+	upsertMatches(t, repo, newMatch(1, "A", "GROUP_STAGE", "", kickoff))
+	kept, _ := repo.FindByMatchNumber(1)
+	if kept.Status != models.MatchStatusFinished {
+		t.Errorf("status = %q, want FINISHED kept", kept.Status)
+	}
+}
+
 func TestMatchUpsertByMatchNumber_WithoutExternalIDs(t *testing.T) {
 	repo, cleanup := setupMatchRepo(t)
 	defer cleanup()
