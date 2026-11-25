@@ -16,6 +16,17 @@ const (
 	MatchStatusCancelled MatchStatus = "CANCELLED"
 )
 
+// Match stages, stored in Match.Stage.
+const (
+	StageGroup         = "GROUP_STAGE"
+	StageRoundOf32     = "ROUND_OF_32"
+	StageRoundOf16     = "ROUND_OF_16"
+	StageQuarterFinals = "QUARTER_FINALS"
+	StageSemiFinals    = "SEMI_FINALS"
+	StageThirdPlace    = "THIRD_PLACE"
+	StageFinal         = "FINAL"
+)
+
 type Match struct {
 	ID          bson.ObjectID `json:"id" bson:"_id,omitempty"`
 	ExternalID  string        `json:"externalId" bson:"externalId,omitempty"`
