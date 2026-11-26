@@ -16,6 +16,17 @@ const (
 	MatchStatusCancelled MatchStatus = "CANCELLED"
 )
 
+// Match stages, stored in Match.Stage.
+const (
+	StageGroup         = "GROUP_STAGE"
+	StageRoundOf32     = "ROUND_OF_32"
+	StageRoundOf16     = "ROUND_OF_16"
+	StageQuarterFinals = "QUARTER_FINALS"
+	StageSemiFinals    = "SEMI_FINALS"
+	StageThirdPlace    = "THIRD_PLACE"
+	StageFinal         = "FINAL"
+)
+
 type Match struct {
 	ID          bson.ObjectID `json:"id" bson:"_id,omitempty"`
 	ExternalID  string        `json:"externalId" bson:"externalId,omitempty"`
@@ -31,4 +42,31 @@ type Match struct {
 	Stage       string        `json:"stage" bson:"stage"`
 	Status      MatchStatus   `json:"status" bson:"status"`
 	UpdatedAt   time.Time     `json:"updatedAt" bson:"updatedAt"`
+}
+
+func (s MatchStatus) IsValid() bool {
+	switch s {
+	case MatchStatusScheduled, MatchStatusLive, MatchStatusFinished, MatchStatusPostponed, MatchStatusCancelled:
+		return true
+	}
+	return false
+}
+
+func (m *Match) ToDTO() *MatchDTO {
+	return &MatchDTO{
+		ID:          m.ID.Hex(),
+		ExternalID:  m.ExternalID,
+		MatchNumber: m.MatchNumber,
+		Team1:       m.Team1,
+		Team2:       m.Team2,
+		Goals1:      m.Goals1,
+		Goals2:      m.Goals2,
+		Date:        m.Date,
+		Stadium:     m.Stadium,
+		City:        m.City,
+		Group:       m.Group,
+		Stage:       m.Stage,
+		Status:      m.Status,
+		UpdatedAt:   m.UpdatedAt,
+	}
 }

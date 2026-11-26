@@ -1,4 +1,4 @@
-.PHONY: up down run build test test-ci mocks clean db\:init db\:indexes db\:seed local-user
+.PHONY: up down run build test test-ci mocks clean db\:init db\:indexes db\:seed seed local-user
 
 up:
 	docker compose up -d
@@ -32,6 +32,11 @@ db\:indexes:
 
 db\:seed:
 	@set -a && . ./.env && set +a && mongosh "$$MONGODB_DSN/$$MONGODB_DATABASE_NAME" < docs/mongodb/seeds.mongodb.js
+
+# Populates matches from frontend/public/data/worldcup2026.json.
+# RESULTS=1 also loads the scores and marks the matches FINISHED.
+seed:
+	@set -a && . ./.env && set +a && go run ./scripts/seed $(if $(RESULTS),-results)
 
 local-user:
 	@test -n "$(CREDS)" || (echo "usage: make local-user CREDS=email:password" && exit 1)
