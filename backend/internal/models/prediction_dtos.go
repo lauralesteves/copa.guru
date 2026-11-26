@@ -54,3 +54,23 @@ type PredictionDistribution struct {
 	Draw    int    `json:"draw" bson:"draw"`
 	AwayWin int    `json:"awayWin" bson:"awayWin"`
 }
+
+// PredictionInput get the user input in prediction
+type PredictionInput struct {
+	MatchNumber int `json:"matchNumber" bson:"matchNumber"`
+	Goals1      int `json:"goals1" bson:"goals1"`
+	Goals2      int `json:"goals2" bson:"goals2"`
+}
+
+// RejectedPrediction get the reason of rejection
+type RejectedPrediction struct {
+	Index       int    `json:"index" bson:"index"`
+	MatchNumber int    `json:"matchNumber" bson:"matchNumber"`
+	Reason      string `json:"reason" bson:"reason"`
+}
+
+// BatchResult 
+type BatchResult struct {
+	Saved    int                  `json:"saved" bson:"saved"`
+	Rejected []RejectedPrediction `json:"rejected" bson:"rejected"`
+}
