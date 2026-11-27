@@ -22,6 +22,7 @@ type PredictionRepository interface {
 
 	GetByUserAndMatch(userID, matchID bson.ObjectID) (*models.Prediction, error)
 	ListByUserId(userID bson.ObjectID, filters models.PredictionFilters) ([]*models.Prediction, error)
+	ListByUserWithMatch(userID bson.ObjectID, filters models.PredictionFilters) ([]*models.PredictionWithMatch, error)
 	ListByMatchId(matchID bson.ObjectID) ([]*models.Prediction, error)
 	CountByMatchId(matchID bson.ObjectID) (int64, error)
 
@@ -206,6 +207,71 @@ func listByUserPipeline(userID bson.ObjectID, filters models.PredictionFilters) 
 	}
 
 	return append(pipeline, bson.D{{Key: "$sort", Value: bson.D{{Key: "matchNumber", Value: 1}}}})
+}
+
+// Get users with and match
+func listByUserWithMatchPipeline(userID bson.ObjectID, filters models.PredictionFilters) mongo.Pipeline {
+	pipeline := mongo.Pipeline{
+		bson.D{{Key: "$match", Value: bson.M{
+			"userId": userID,
+		}}},
+		bson.D{{Key: "$lookup", Value: bson.M{
+			"from":         config.MatchCollection,
+			"localField":   "matchId",
+			"foreignField": "_id",
+			"as":           "match",
+		}}},
+		bson.D{{Key: "$unwind", Value: bson.M{
+			"path":                       "$match",
+			"preserveNullAndEmptyArrays": true,
+		}}},
+	}
+
+	matchFilter := bson.M{}
+
+	if filters.Stage != "" {
+		matchFilter["match.stage"] = filters.Stage
+	}
+
+	if filters.Group != "" {
+		matchFilter["match.group"] = filters.Group
+	}
+
+	if len(matchFilter) > 0 {
+		pipeline = append(pipeline, bson.D{
+			{Key: "$match", Value: matchFilter},
+		})
+	}
+
+	pipeline = append(pipeline, bson.D{
+		{Key: "$sort", Value: bson.D{
+			{Key: "matchNumber", Value: 1},
+		}},
+	})
+
+	return pipeline
+}
+
+func (r *predictionRepository) ListByUserWithMatch(userID bson.ObjectID, filters models.PredictionFilters) ([]*models.PredictionWithMatch, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	pipeline := listByUserWithMatchPipeline(userID, filters)
+
+	cursor, err := r.collection.Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	predictions := make([]*models.PredictionWithMatch, 0)
+
+	if err := cursor.All(ctx, &predictions); err != nil {
+		return nil, err
+	}
+
+	return predictions, nil
+
 }
 
 // ListByMatchId returns every prediction for a match.
