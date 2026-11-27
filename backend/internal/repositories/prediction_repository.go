@@ -23,6 +23,7 @@ type PredictionRepository interface {
 	GetByUserAndMatch(userID, matchID bson.ObjectID) (*models.Prediction, error)
 	ListByUserId(userID bson.ObjectID, filters models.PredictionFilters) ([]*models.Prediction, error)
 	ListByUserWithMatch(userID bson.ObjectID, filters models.PredictionFilters) ([]*models.PredictionWithMatch, error)
+	ListByMatchWithUser(matchID bson.ObjectID) ([]*models.PredictionWithUser, error)
 	ListByMatchId(matchID bson.ObjectID) ([]*models.Prediction, error)
 	CountByMatchId(matchID bson.ObjectID) (int64, error)
 
@@ -207,6 +208,64 @@ func listByUserPipeline(userID bson.ObjectID, filters models.PredictionFilters) 
 	}
 
 	return append(pipeline, bson.D{{Key: "$sort", Value: bson.D{{Key: "matchNumber", Value: 1}}}})
+}
+
+func listByMatchWithUserPipeline(matchID bson.ObjectID) mongo.Pipeline {
+	pipeline := mongo.Pipeline{
+		bson.D{{Key: "$match", Value: bson.M{
+			"matchId": matchID,
+		}}},
+		bson.D{{Key: "$lookup", Value: bson.M{
+			"from":         config.UserCollection,
+			"localField":   "userId",
+			"foreignField": "_id",
+			"as":           "user",
+		}}},
+		bson.D{{Key: "$unwind", Value: bson.M{
+			"path":                       "$user",
+			"preserveNullAndEmptyArrays": true,
+		}}},
+		bson.D{{Key: "$project", Value: bson.M{
+			"_id":         1,
+			"userId":      1,
+			"matchId":     1,
+			"matchNumber": 1,
+			"goals1":      1,
+			"goals2":      1,
+			"points":      1,
+			"createdAt":   1,
+			"updatedAt":   1,
+			"userName":    "$user.name",
+			"userPicture": "$user.picture",
+		}}},
+		bson.D{{Key: "$sort", Value: bson.M{
+			"_id": 1,
+		}}},
+	}
+
+	return pipeline
+}
+
+func (r *predictionRepository) ListByMatchWithUser(matchID bson.ObjectID) ([]*models.PredictionWithUser, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	pipeline := listByMatchWithUserPipeline(matchID)
+
+	cursor, err := r.collection.Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	predictions := make([]*models.PredictionWithUser, 0)
+
+	if err := cursor.All(ctx, &predictions); err != nil {
+		return nil, err
+	}
+
+	return predictions, nil
+
 }
 
 // Get users with and match

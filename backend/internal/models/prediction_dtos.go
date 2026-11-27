@@ -26,6 +26,12 @@ type PredictionMatchDTO struct {
 	Status MatchStatus `json:"status"`
 }
 
+type MatchPredictionDTO struct {
+	Prediction  *PredictionDTO `json:"prediction"`
+	UserName    string         `json:"userName"`
+	UserPicture string         `json:"userPicture"`
+}
+
 // PredictionFilters narrows ListByUserId by fields of the predicted match.
 // Empty fields are ignored.
 type PredictionFilters struct {
@@ -57,20 +63,30 @@ type PredictionDistribution struct {
 
 // PredictionInput get the user input in prediction
 type PredictionInput struct {
-	MatchNumber int `json:"matchNumber" bson:"matchNumber"`
-	Goals1      int `json:"goals1" bson:"goals1"`
-	Goals2      int `json:"goals2" bson:"goals2"`
+	MatchNumber int `json:"matchNumber"`
+	Goals1      int `json:"goals1"`
+	Goals2      int `json:"goals2"`
 }
 
 // RejectedPrediction get the reason of rejection
 type RejectedPrediction struct {
-	Index       int    `json:"index" bson:"index"`
-	MatchNumber int    `json:"matchNumber" bson:"matchNumber"`
-	Reason      string `json:"reason" bson:"reason"`
+	Index       int    `json:"index"`
+	MatchNumber int    `json:"matchNumber"`
+	Reason      string `json:"reason"`
 }
 
-// BatchResult 
+// BatchResult
 type BatchResult struct {
-	Saved    int                  `json:"saved" bson:"saved"`
-	Rejected []RejectedPrediction `json:"rejected" bson:"rejected"`
+	Saved    int                  `json:"saved"`
+	Rejected []RejectedPrediction `json:"rejected"`
+}
+
+type MyPredictionsResponse struct {
+	Predictions []*PredictionDTO  `json:"predictions"`
+	Summary     PredictionSummary `json:"summary"`
+}
+
+type MatchPredictionsResponse struct {
+	Match       *MatchDTO             `json:"match"`
+	Predictions []*MatchPredictionDTO `json:"predictions"`
 }
