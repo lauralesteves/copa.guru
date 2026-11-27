@@ -160,6 +160,21 @@ func (mr *MockPredictionRepositoryMockRecorder) ListByMatchId(matchID any) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByMatchId", reflect.TypeOf((*MockPredictionRepository)(nil).ListByMatchId), matchID)
 }
 
+// ListByMatchWithUser mocks base method.
+func (m *MockPredictionRepository) ListByMatchWithUser(matchID bson.ObjectID) ([]*models.PredictionWithUser, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListByMatchWithUser", matchID)
+	ret0, _ := ret[0].([]*models.PredictionWithUser)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListByMatchWithUser indicates an expected call of ListByMatchWithUser.
+func (mr *MockPredictionRepositoryMockRecorder) ListByMatchWithUser(matchID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByMatchWithUser", reflect.TypeOf((*MockPredictionRepository)(nil).ListByMatchWithUser), matchID)
+}
+
 // ListByUserId mocks base method.
 func (m *MockPredictionRepository) ListByUserId(userID bson.ObjectID, filters models.PredictionFilters) ([]*models.Prediction, error) {
 	m.ctrl.T.Helper()
