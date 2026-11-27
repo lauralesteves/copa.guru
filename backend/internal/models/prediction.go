@@ -66,3 +66,14 @@ type ScoreResult struct {
 	ExactScores    int `json:"exactScores"`
 	CorrectResults int `json:"correctResults"`
 }
+
+type PredictionWithMatch struct {
+	Prediction `bson:",inline"`
+	Match      *Match `bson:"match"`
+}
+
+type PredictionWithUser struct {
+	Prediction  `bson:",inline"`
+	UserName    string `bson:"userName"`
+	UserPicture string `bson:"userPicture"`
+}
